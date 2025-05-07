@@ -14,8 +14,17 @@ cpi = ["no-entrypoint"]
 no-entrypoint = []
 no-idl = []
 no-log-ix-name = []
-idl-build = ["anchor-lang/idl-build"]
+idl-build = ["anchor-lang/idl-build", "anchor-spl/idl-build"]
 
 
 [dependencies]
-anchor-lang = { version = "0.31.1", features = ["init-if-needed"] }
+anchor-lang = { version = "0.31.1", features = ["init-if-needed", "event-cpi"] }
+anchor-spl = "0.31.1"
+pyth-sdk-solana = "0.10.4"
+ahash = "0.8.1"
+num-traits = "0.2.19"
+num = "0.4.3"
+bytemuck = "1.23.0"
+
+[dev-dependencies]
+solana-program-test = "2.2.2"
