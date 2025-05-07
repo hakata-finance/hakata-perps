@@ -13,7 +13,7 @@ import {
   VersionedTransaction,
 } from "@solana/web3.js";
 import * as spl from "@solana/spl-token";
-import { HakataPerpetuals } from "../../target/types/hakata_perpetuals";
+import { HakataPerpetuals } from "../../../../target/types/hakata_perpetuals";
 
 export type PositionSide = "long" | "short";
 

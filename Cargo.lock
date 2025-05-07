@@ -1866,11 +1866,15 @@ dependencies = [
  "ahash",
  "anchor-lang",
  "anchor-spl",
+ "bincode",
  "bytemuck",
+ "maplit",
  "num 0.4.3",
  "num-traits",
  "pyth-sdk-solana",
  "solana-program-test",
+ "solana-sdk",
+ "tokio",
 ]
 
 [[package]]
@@ -2523,6 +2527,12 @@ dependencies = [
  "cc",
  "libc",
 ]
+
+[[package]]
+name = "maplit"
+version = "1.0.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "3e2e65a1a2e43cfcb47a895c4c8b10d1f4a61097f9f254f183aee60cad9c651d"
 
 [[package]]
 name = "memchr"
