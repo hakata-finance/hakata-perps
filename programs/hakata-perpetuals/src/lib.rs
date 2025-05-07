@@ -13,7 +13,7 @@ use {
     },
 };
 
-declare_id!("6wCkVSLvphXyQphT8xDemkx92caLJXcaFF9qjxxL2o8Q");
+declare_id!("CkawHJw5TVjUt1ggAZtuo3hgHBMptJHtxXk6A6nY5RWg");
 
 #[macro_export]
 macro_rules! try_from {

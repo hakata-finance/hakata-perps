@@ -1,18 +1,17 @@
 [toolchain]
 anchor_version = "0.31.1"
-solana_version = "2.2.2"
+solana_version = "2.1.0"
 package_manager = "npm"
 
 [features]
-seeds = false
-# resolution = true
+resolution = true
 skip-lint = false
 
-[programs.localnet]
-hakata_perpetuals = "6wCkVSLvphXyQphT8xDemkx92caLJXcaFF9qjxxL2o8Q"
-
 [programs.devnet]
-perpetuals = "6wCkVSLvphXyQphT8xDemkx92caLJXcaFF9qjxxL2o8Q"
+hakata_perpetuals = "CkawHJw5TVjUt1ggAZtuo3hgHBMptJHtxXk6A6nY5RWg"
+
+[programs.localnet]
+hakata_perpetuals = "CkawHJw5TVjUt1ggAZtuo3hgHBMptJHtxXk6A6nY5RWg"
 
 [registry]
 url = "https://api.apr.dev"
