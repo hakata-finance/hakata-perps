@@ -1,6 +1,7 @@
 #![allow(unexpected_cfgs)]
 
 pub mod error;
+pub mod instructions;
 pub mod math;
 pub mod state;
 
