@@ -13,7 +13,6 @@ import {
   VersionedTransaction,
 } from "@solana/web3.js";
 import * as spl from "@solana/spl-token";
-import { BN } from "bn.js";
 import { HakataPerpetuals } from "../../target/types/hakata_perpetuals";
 
 export type PositionSide = "long" | "short";
@@ -249,11 +248,10 @@ export class TestClient {
 
     await this.provider.connection.confirmTransaction(
       {
-        blockhash: latestBlockHash.blockhash,
-        lastValidBlockHeight: latestBlockHash.lastValidBlockHeight,
         signature: txSignature,
-      },
-      { commitment: "processed" }
+        blockhash: latestBlockHash.blockhash,
+        lastValidBlockHeight: latestBlockHash.lastValidBlockHeight
+      }
     );
   };
 
@@ -305,7 +303,7 @@ export class TestClient {
   }
 
   toTokenAmount(uiAmount: number, decimals: number) {
-    return new BN(uiAmount * 10 ** decimals);
+    return new anchor.BN(uiAmount * 10 ** decimals);
   }
 
   toUiAmount(token_amount: number, decimals: number) {
@@ -602,7 +600,7 @@ export class TestClient {
     }
   };
 
-  withdrawFees = async (amount: typeof BN, custody, receivingTokenAccount) => {
+  withdrawFees = async (amount: anchor.BN, custody, receivingTokenAccount) => {
     let multisig = await this.program.account.multisig.fetch(
       this.multisig.publicKey
     );
@@ -634,7 +632,7 @@ export class TestClient {
     }
   };
 
-  withdrawSolFees = async (amount: typeof BN, custody, receivingAccount) => {
+  withdrawSolFees = async (amount: anchor.BN, custody, receivingAccount) => {
     let multisig = await this.program.account.multisig.fetch(
       this.multisig.publicKey
     );
@@ -670,10 +668,10 @@ export class TestClient {
       try {
         await this.program.methods
           .setTestOraclePrice({
-            price: new BN(price * 1000),
+            price: new anchor.BN(price * 1000),
             expo: -3,
-            conf: new BN(0),
-            publishTime: new BN(this.getTime()),
+            conf: new anchor.BN(0),
+            publishTime: new anchor.BN(this.getTime()),
           })
           .accounts({
             admin: this.admins[i].publicKey,
@@ -703,7 +701,7 @@ export class TestClient {
       try {
         await this.program.methods
           .setTestTime({
-            time: new BN(time),
+            time: new anchor.BN(time),
           })
           .accounts({
             admin: this.admins[i].publicKey,
@@ -722,8 +720,8 @@ export class TestClient {
   };
 
   swap = async (
-    amountIn: typeof BN,
-    minAmountOut: typeof BN,
+    amountIn: anchor.BN,
+    minAmountOut: anchor.BN,
     user,
     fundingAccount: PublicKey,
     receivingAccount: PublicKey,
@@ -762,8 +760,8 @@ export class TestClient {
   };
 
   addLiquidity = async (
-    amountIn: typeof BN,
-    minLpAmountOut: typeof BN,
+    amountIn: anchor.BN,
+    minLpAmountOut: anchor.BN,
     user,
     fundingAccount: PublicKey,
     custody
@@ -799,8 +797,8 @@ export class TestClient {
   };
 
   removeLiquidity = async (
-    lpAmountIn: typeof BN,
-    minAmountOut: typeof BN,
+    lpAmountIn: anchor.BN,
+    minAmountOut: anchor.BN,
     user,
     receivingAccount: PublicKey,
     custody
@@ -837,8 +835,8 @@ export class TestClient {
 
   openPosition = async (
     price: number,
-    collateral: typeof BN,
-    size: typeof BN,
+    collateral: anchor.BN,
+    size: anchor.BN,
     side: PositionSide,
     user,
     fundingAccount: PublicKey,
@@ -848,7 +846,7 @@ export class TestClient {
     try {
       await this.program.methods
         .openPosition({
-          price: new BN(price * 1000000),
+          price: new anchor.BN(price * 1000000),
           collateral,
           size,
           side: side === "long" ? { long: {} } : { short: {} },
@@ -877,7 +875,7 @@ export class TestClient {
   };
 
   addCollateral = async (
-    collateral: typeof BN,
+    collateral: anchor.BN,
     user,
     fundingAccount: PublicKey,
     positionAccount: PublicKey,
@@ -911,7 +909,7 @@ export class TestClient {
   };
 
   removeCollateral = async (
-    collateralUsd: typeof BN,
+    collateralUsd: anchor.BN,
     user,
     receivingAccount: PublicKey,
     positionAccount: PublicKey,
@@ -954,7 +952,7 @@ export class TestClient {
     try {
       await this.program.methods
         .closePosition({
-          price: new BN(price),
+          price: new anchor.BN(price),
         })
         .accounts({
           owner: user.wallet.publicKey,
@@ -1011,7 +1009,7 @@ export class TestClient {
   };
 
   getEntryPriceAndFee = async (
-    size: typeof BN,
+    size: anchor.BN,
     side: PositionSide,
     custody
   ) => {
@@ -1038,7 +1036,7 @@ export class TestClient {
   };
 
   getExitPriceAndFee = async (
-    size: typeof BN,
+    size: anchor.BN,
     positionAccount: PublicKey,
     custody
   ) => {
@@ -1089,7 +1087,7 @@ export class TestClient {
     try {
       return await this.program.methods
         .getSwapAmountAndFee({
-          amountIn: new BN(amountIn),
+          amountIn: new anchor.BN(amountIn),
         })
         .accounts({
           signer: this.provider.wallet.publicKey,

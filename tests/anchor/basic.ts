@@ -2,10 +2,9 @@ import * as anchor from "@coral-xyz/anchor";
 import { PublicKey, SystemProgram, SYSVAR_RENT_PUBKEY } from "@solana/web3.js";
 import * as spl from "@solana/spl-token";
 import { expect, assert } from "chai";
-import { BN } from "bn.js";
 import { TestClient } from "./test_client";
 
-describe("perpetuals", () => {
+describe("Hakata Perpetuals", () => {
   let tc = new TestClient();
   tc.printErrors = true;
   let oracleConfig;
@@ -41,7 +40,7 @@ describe("perpetuals", () => {
       pools: [],
       transferAuthorityBump: tc.authority.bump,
       perpetualsBump: tc.perpetuals.bump,
-      inceptionTime: new BN(0),
+      inceptionTime: new anchor.BN(0),
     };
 
     multisigExpected = {
@@ -115,10 +114,10 @@ describe("perpetuals", () => {
       name: "test pool",
       custodies: [],
       ratios: [],
-      aumUsd: new BN(0),
+      aumUsd: new anchor.BN(0),
       bump: tc.pool.bump,
       lpTokenBump: pool.lpTokenBump,
-      inceptionTime: new BN(0),
+      inceptionTime: new anchor.BN(0),
     };
     expect(JSON.stringify(pool)).to.equal(JSON.stringify(poolExpected));
 
@@ -130,7 +129,7 @@ describe("perpetuals", () => {
 
   it("addAndRemoveCustody", async () => {
     oracleConfig = {
-      maxPriceError: new BN(10000),
+      maxPriceError: new anchor.BN(10000),
       maxPriceAgeSec: 60,
       oracleType: { test: {} },
       oracleAccount: tc.custodies[0].oracleAccount,
@@ -138,16 +137,16 @@ describe("perpetuals", () => {
     pricing = {
       useEma: true,
       useUnrealizedPnlInAum: true,
-      tradeSpreadLong: new BN(100),
-      tradeSpreadShort: new BN(100),
-      swapSpread: new BN(200),
-      minInitialLeverage: new BN(10000),
-      maxInitialLeverage: new BN(1000000),
-      maxLeverage: new BN(1000000),
-      maxPayoffMult: new BN(10000),
-      maxUtilization: new BN(10000),
-      maxPositionLockedUsd: new BN(1000000000),
-      maxTotalLockedUsd: new BN(1000000000),
+      tradeSpreadLong: new anchor.BN(100),
+      tradeSpreadShort: new anchor.BN(100),
+      swapSpread: new anchor.BN(200),
+      minInitialLeverage: new anchor.BN(10000),
+      maxInitialLeverage: new anchor.BN(1000000),
+      maxLeverage: new anchor.BN(1000000),
+      maxPayoffMult: new anchor.BN(10000),
+      maxUtilization: new anchor.BN(10000),
+      maxPositionLockedUsd: new anchor.BN(1000000000),
+      maxTotalLockedUsd: new anchor.BN(1000000000),
     };
     permissions = {
       allowSwap: true,
@@ -161,42 +160,42 @@ describe("perpetuals", () => {
     };
     fees = {
       mode: { linear: {} },
-      ratioMult: new BN(20000),
-      utilizationMult: new BN(20000),
-      swapIn: new BN(100),
-      swapOut: new BN(100),
-      stableSwapIn: new BN(100),
-      stableSwapOut: new BN(100),
-      addLiquidity: new BN(100),
-      removeLiquidity: new BN(100),
-      openPosition: new BN(100),
-      closePosition: new BN(100),
-      liquidation: new BN(100),
-      protocolShare: new BN(10),
+      ratioMult: new anchor.BN(20000),
+      utilizationMult: new anchor.BN(20000),
+      swapIn: new anchor.BN(100),
+      swapOut: new anchor.BN(100),
+      stableSwapIn: new anchor.BN(100),
+      stableSwapOut: new anchor.BN(100),
+      addLiquidity: new anchor.BN(100),
+      removeLiquidity: new anchor.BN(100),
+      openPosition: new anchor.BN(100),
+      closePosition: new anchor.BN(100),
+      liquidation: new anchor.BN(100),
+      protocolShare: new anchor.BN(10),
     };
     borrowRate = {
-      baseRate: new BN(0),
-      slope1: new BN(80000),
-      slope2: new BN(120000),
-      optimalUtilization: new BN(800000000),
+      baseRate: new anchor.BN(0),
+      slope1: new anchor.BN(80000),
+      slope2: new anchor.BN(120000),
+      optimalUtilization: new anchor.BN(800000000),
     };
     ratios = [
       {
-        target: new BN(5000),
-        min: new BN(10),
-        max: new BN(10000),
+        target: new anchor.BN(5000),
+        min: new anchor.BN(10),
+        max: new anchor.BN(10000),
       },
       {
-        target: new BN(5000),
-        min: new BN(10),
-        max: new BN(10000),
+        target: new anchor.BN(5000),
+        min: new anchor.BN(10),
+        max: new anchor.BN(10000),
       },
     ];
     let ratios1 = [
       {
-        target: new BN(10000),
-        min: new BN(10),
-        max: new BN(10000),
+        target: new anchor.BN(10000),
+        min: new anchor.BN(10),
+        max: new anchor.BN(10000),
       },
     ];
     isStable = false;
@@ -358,8 +357,8 @@ describe("perpetuals", () => {
   it("setCustodyConfig", async () => {
     oracleConfig.maxPriceAgeSec = 90;
     permissions.allowPnlWithdrawal = false;
-    fees.liquidation = new BN(200);
-    ratios[0].min = new BN(90);
+    fees.liquidation = new anchor.BN(200);
+    ratios[0].min = new anchor.BN(90);
     await tc.setCustodyConfig(
       tc.custodies[0],
       isStable,
@@ -386,9 +385,9 @@ describe("perpetuals", () => {
       tc.custodies[0].oracleAccount
     );
     let oracleExpected = {
-      price: new BN(123000),
+      price: new anchor.BN(123000),
       expo: -3,
-      conf: new BN(0),
+      conf: new anchor.BN(0),
       publishTime: oracle.publishTime,
     };
     expect(JSON.stringify(oracle)).to.equal(JSON.stringify(oracleExpected));
@@ -401,21 +400,21 @@ describe("perpetuals", () => {
       tc.perpetuals.publicKey
     );
     expect(JSON.stringify(perpetuals.inceptionTime)).to.equal(
-      JSON.stringify(new BN(111))
+      JSON.stringify(new anchor.BN(111))
     );
   });
 
   it("addLiquidity", async () => {
     await tc.addLiquidity(
       tc.toTokenAmount(10, tc.custodies[0].decimals),
-      new BN(1),
+      new anchor.BN(1),
       tc.users[0],
       tc.users[0].tokenAccounts[0],
       tc.custodies[0]
     );
     await tc.addLiquidity(
       tc.toTokenAmount(10, tc.custodies[1].decimals),
-      new BN(1),
+      new anchor.BN(1),
       tc.users[1],
       tc.users[1].tokenAccounts[1],
       tc.custodies[1]
@@ -425,7 +424,7 @@ describe("perpetuals", () => {
   it("swap", async () => {
     await tc.swap(
       tc.toTokenAmount(1, tc.custodies[0].decimals),
-      new BN(1),
+      new anchor.BN(1),
       tc.users[0],
       tc.users[0].tokenAccounts[0],
       tc.users[0].tokenAccounts[1],
@@ -437,14 +436,14 @@ describe("perpetuals", () => {
   it("removeLiquidity", async () => {
     await tc.removeLiquidity(
       tc.toTokenAmount(1, 6),
-      new BN(1),
+      new anchor.BN(1),
       tc.users[0],
       tc.users[0].tokenAccounts[0],
       tc.custodies[0]
     );
     await tc.removeLiquidity(
       tc.toTokenAmount(1, 6),
-      new BN(1),
+      new anchor.BN(1),
       tc.users[1],
       tc.users[1].tokenAccounts[1],
       tc.custodies[1]
