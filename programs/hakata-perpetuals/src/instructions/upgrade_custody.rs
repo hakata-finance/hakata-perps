@@ -90,9 +90,8 @@ pub struct UpgradeCustody<'info> {
 #[derive(AnchorSerialize, AnchorDeserialize)]
 pub struct UpgradeCustodyParams {}
 
-pub fn upgrade_custody<'info>(
-    // TODO: Check if lifetime is correct
-    ctx: Context<'_, 'info, '_, 'info, UpgradeCustody<'info>>,
+pub fn upgrade_custody<'a, 'b, 'c, 'info>(
+    ctx: Context<'a, 'b, 'c, 'info, UpgradeCustody<'info>>,
     params: &UpgradeCustodyParams,
 ) -> Result<u8> {
     // validate signatures
