@@ -102,12 +102,12 @@ pub mod hakata_perpetuals {
         instructions::withdraw_sol_fees(ctx, &params)
     }
 
-    pub fn upgrade_custody<'a, 'b, 'c, 'info>(
-        ctx: Context<'a, 'b, 'c, 'info, UpgradeCustody<'info>>,
-        params: UpgradeCustodyParams,
-    ) -> Result<u8> {
-        instructions::upgrade_custody(ctx, &params)
-    }
+    // pub fn upgrade_custody<'a, 'b, 'c, 'info>(
+    //     ctx: Context<'a, 'b, 'c, 'info, UpgradeCustody<'info>>,
+    //     params: UpgradeCustodyParams,
+    // ) -> Result<u8> {
+    //     instructions::upgrade_custody(ctx, &params)
+    // }
 
     // test instructions    
 
