@@ -49,21 +49,17 @@ const ChartPanel = () => {
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-2">
           <span className="text-xl font-bold">AAPL / USD</span>
-          <span className="text-[#C8FF00] font-bold">TradingView</span>
+          <span className="text-[#C8FF00] font-bold">147.0811 0.17%</span>
         </div>
         <div className="flex items-center gap-4 text-sm text-gray-400">
           <VolatilityScore score={65} />
-          <div>
-            <span className="mr-1">Funding Rate</span>
-            <span className="text-white">0.003%/hr</span>
-          </div>
           <SentimentScore score={42} confidence={78} />
           <button className="p-2 rounded-full hover:bg-gray-800" tabIndex={0} aria-label="Info" onClick={() => {}} onKeyDown={() => {}}>
             <Info size={20} />
           </button>
         </div>
       </div>
-      <div className="flex items-center gap-2 mb-4 text-sm">
+      {/* <div className="flex items-center gap-2 mb-4 text-sm">
         <div className="flex space-x-1">
           {timeFrames.map((tf) => (
             <button 
@@ -103,7 +99,7 @@ const ChartPanel = () => {
             Indicators
           </button>
         </div>
-      </div>
+      </div> */}
       <div className="h-[400px] relative bg-[#0D0D0D] rounded" aria-label="TradingView Chart" tabIndex={0}>
         <div
           id="tradingview_aapl_usd"
