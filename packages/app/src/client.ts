@@ -162,11 +162,11 @@ export class PerpetualsClient {
   };
 
   getCustodies = async (poolName: string) => {
-    //return this.program.account.custody.all();
-    let pool = await this.getPool(poolName);
-    return this.program.account.custody.fetchMultiple(
-      pool.tokens.map((t) => t.custody)
-    );
+    return this.program.account.custody.all();
+    // let pool = await this.getPool(poolName);
+    // return this.program.account.custody.fetchMultiple(
+    //   pool.tokens.map((t) => t.custody)
+    // );
   };
 
   getCustodyMetas = async (poolName: string) => {
