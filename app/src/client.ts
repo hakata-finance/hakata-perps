@@ -6,7 +6,7 @@ import {
   workspace,
   utils,
   BN,
-} from "@project-serum/anchor";
+} from "@coral-xyz/anchor";
 import {
   PublicKey,
   TransactionInstruction,
@@ -30,13 +30,13 @@ import { sha256 } from "js-sha256";
 import { encode } from "bs58";
 import { readFileSync } from "fs";
 import { resolveOrCreateAssociatedTokenAddress } from "@orca-so/sdk";
-import { Perpetuals } from "../../target/types/perpetuals";
+import { HakataPerpetuals } from "../../target/types/hakata_perpetuals";
 
 export type PositionSide = "long" | "short";
 
 export class PerpetualsClient {
   provider: AnchorProvider;
-  program: Program<Perpetuals>;
+  program: Program<HakataPerpetuals>;
   admin: Keypair;
 
   // pdas
@@ -51,7 +51,7 @@ export class PerpetualsClient {
       skipPreflight: true
     });
     setProvider(this.provider);
-    this.program = workspace.Perpetuals as Program<Perpetuals>;
+    this.program = workspace.hakataPerpetuals as Program<HakataPerpetuals>;
 
     this.admin = Keypair.fromSecretKey(
       new Uint8Array(JSON.parse(readFileSync(adminKey).toString()))

@@ -17,7 +17,7 @@ hakata_perpetuals = "CkawHJw5TVjUt1ggAZtuo3hgHBMptJHtxXk6A6nY5RWg"
 url = "https://api.apr.dev"
 
 [provider]
-cluster = "localnet"
+cluster = "devnet"
 wallet = "~/.config/solana/id.json"
 
 [scripts]
