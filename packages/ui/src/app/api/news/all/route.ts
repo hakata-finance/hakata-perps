@@ -1,6 +1,9 @@
 import { NextResponse } from 'next/server';
+import { mockNews } from './mock';
 
 export async function GET() {
+  return NextResponse.json(mockNews.feed);
+
   const API_KEY = process.env.ALPHA_VANTAGE_KEY;
   const symbol = 'AAPL'; // Replace with dynamic symbol
   const url = `https://www.alphavantage.co/query?function=NEWS_SENTIMENT&tickers=${symbol}&sort=LATEST&limit=50&apikey=${API_KEY}`;

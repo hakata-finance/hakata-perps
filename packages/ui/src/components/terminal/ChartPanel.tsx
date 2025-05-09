@@ -53,7 +53,7 @@ const ChartPanel = () => {
         </div>
         <div className="flex items-center gap-4 text-sm text-gray-400">
           <VolatilityScore score={65} />
-          <SentimentScore score={42} confidence={78} />
+          <SentimentScore />
           <button className="p-2 rounded-full hover:bg-gray-800" tabIndex={0} aria-label="Info" onClick={() => {}} onKeyDown={() => {}}>
             <Settings size={20} />
           </button>
