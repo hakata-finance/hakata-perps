@@ -98,7 +98,9 @@ const OrderForm = () => {
               {activeSideTab === 'buy' ? 'Buy / Long' : 'Sell / Short'}
             </Button>
           ) : (
-            <WalletMultiButton className="w-full font-bold py-6 !bg-[#23262B] !text-white !rounded-lg" />
+            <div className="orderform-wallet-btn">
+              <WalletMultiButton className="w-full font-bold py-6 !bg-[#23262B] !text-white !rounded-lg" />
+            </div>
           )}
         </TabsContent>
         
@@ -201,7 +203,9 @@ const OrderForm = () => {
                   {activeSideTab === 'buy' ? 'Buy / Long' : 'Sell / Short'}
                 </Button>
               ) : (
-                <WalletMultiButton className="w-full font-bold py-6 !bg-[#23262B] !text-white !rounded-lg" />
+                <div className="orderform-wallet-btn">
+                  <WalletMultiButton />
+                </div>
               )}
             </div>
           </div>

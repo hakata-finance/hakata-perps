@@ -318,3 +318,12 @@
   border-color: #fff;
   box-shadow: none;
 }
+
+.orderform-wallet-btn .wallet-adapter-dropdown {
+  width: 100%;
+}
+
+.orderform-wallet-btn .wallet-adapter-button {
+  width: 100% !important;
+  justify-content: center;
+}
