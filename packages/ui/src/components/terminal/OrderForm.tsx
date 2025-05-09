@@ -1,16 +1,18 @@
-
 import React, { useState } from 'react';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Input } from "@/components/ui/input";
 import { Slider } from "@/components/ui/slider";
 import { Button } from "@/components/ui/button";
 import { ArrowDown, ArrowUp } from "lucide-react";
+import { WalletMultiButton } from '@solana/wallet-adapter-react-ui';
+import { useWallet } from '@solana/wallet-adapter-react';
 
 const OrderForm = () => {
   const [leverage, setLeverage] = useState<number>(50);
   const [amount, setAmount] = useState<string>("10");
   const [activeTab, setActiveTab] = useState<string>("market");
   const [activeSideTab, setActiveSideTab] = useState<string>("buy");
+  const { connected } = useWallet();
   
   return (
     <div className="rounded-lg bg-[#121212] p-4 border border-gray-800">
@@ -87,13 +89,17 @@ const OrderForm = () => {
             </div>
           </div>
           
-          <Button className={`w-full font-bold py-6 ${
-            activeSideTab === 'buy' 
-              ? 'bg-[#C8FF00] hover:bg-[#BDFF00] text-black' 
-              : 'bg-[#FF6666] hover:bg-[#FF5555] text-white'
-          }`}>
-            {activeSideTab === 'buy' ? 'Buy / Long' : 'Sell / Short'}
-          </Button>
+          {connected ? (
+            <Button className={`w-full font-bold py-6 ${
+              activeSideTab === 'buy' 
+                ? 'bg-[#C8FF00] hover:bg-[#BDFF00] text-black' 
+                : 'bg-[#FF6666] hover:bg-[#FF5555] text-white'
+            }`}>
+              {activeSideTab === 'buy' ? 'Buy / Long' : 'Sell / Short'}
+            </Button>
+          ) : (
+            <WalletMultiButton className="w-full font-bold py-6 !bg-[#23262B] !text-white !rounded-lg" />
+          )}
         </TabsContent>
         
         <TabsContent value="limit">
@@ -186,13 +192,17 @@ const OrderForm = () => {
                 </div>
               </div>
               
-              <Button className={`w-full font-bold py-6 ${
-                activeSideTab === 'buy' 
-                  ? 'bg-[#C8FF00] hover:bg-[#BDFF00] text-black' 
-                  : 'bg-[#FF6666] hover:bg-[#FF5555] text-white'
-              }`}>
-                {activeSideTab === 'buy' ? 'Buy / Long' : 'Sell / Short'}
-              </Button>
+              {connected ? (
+                <Button className={`w-full font-bold py-6 ${
+                  activeSideTab === 'buy' 
+                    ? 'bg-[#C8FF00] hover:bg-[#BDFF00] text-black' 
+                    : 'bg-[#FF6666] hover:bg-[#FF5555] text-white'
+                }`}>
+                  {activeSideTab === 'buy' ? 'Buy / Long' : 'Sell / Short'}
+                </Button>
+              ) : (
+                <WalletMultiButton className="w-full font-bold py-6 !bg-[#23262B] !text-white !rounded-lg" />
+              )}
             </div>
           </div>
         </TabsContent>
