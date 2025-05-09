@@ -1,73 +1,66 @@
 
-import React, { useState } from 'react';
-import { Tabs, TabsContent } from "@/components/ui/tabs";
+import { useEffect, useState } from 'react';
+import { Tabs } from "@/components/ui/tabs";
 import NewsFilters from './NewsFilters';
 import NewsContainer from './NewsContainer';
 import { useNewsFiltering } from '@/hooks/useNewsFiltering';
 import { NewsItemProps } from './NewsItem';
 
-// Mock data for news items
-const allNews: NewsItemProps[] = [
-  {
-    title: "Federal Reserve Raises Interest Rates by 25 Basis Points",
-    timestamp: "12:45 PM",
-    source: "Financial Times",
-    impact: 'high',
-    sentiment: 'negative',
-    url: "#"
-  },
-  {
-    title: "SOL Reports Strong Q2 Earnings, Beats Expectations",
-    timestamp: "10:30 AM",
-    source: "Bloomberg",
-    impact: 'high',
-    sentiment: 'positive',
-    url: "#"
-  },
-  {
-    title: "Market Volatility Increases as Geopolitical Tensions Rise",
-    timestamp: "9:15 AM",
-    source: "Reuters",
-    impact: 'medium',
-    sentiment: 'negative',
-    url: "#"
-  },
-  {
-    title: "New Technology Partnership Announced for Blockchain Scaling",
-    timestamp: "8:20 AM",
-    source: "CoinDesk",
-    impact: 'medium',
-    sentiment: 'positive',
-    url: "#"
-  },
-  {
-    title: "Regulatory Body Issues New Guidelines for Crypto Trading",
-    timestamp: "Yesterday",
-    source: "WSJ",
-    impact: 'high',
-    sentiment: 'neutral',
-    url: "#"
-  },
-  {
-    title: "Technical Analysis: SOL Approaches Key Resistance Level",
-    timestamp: "Yesterday",
-    source: "TradingView",
-    impact: 'low',
-    sentiment: 'neutral',
-    url: "#"
-  },
-];
+interface TickerSentiment {
+  ticker: string;
+  // TODO: Filter by relevance score
+  relevance_score: string;
+  ticker_sentiment_score: string;
+  ticker_sentiment_label: string;
+}
+
+interface NewsItem {
+  title: string;
+  url: string;
+  time_published: string;
+  source: string;
+  overall_sentiment_score: number;
+  overall_sentiment_label: string;
+  ticker_sentiment: TickerSentiment[];
+}
+
+const mapSentimentToLabel = (label: string): 'positive' | 'neutral' | 'negative' => {
+  if (label.toLowerCase().includes('bullish')) return 'positive';
+  if (label.toLowerCase().includes('bearish')) return 'negative';
+  return 'neutral';
+};
+
+const mapNewsToProps = (item: NewsItem): NewsItemProps => ({
+  title: item.title,
+  timestamp: new Date(item.time_published).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+  source: item.source,
+  sentiment: mapSentimentToLabel(item.overall_sentiment_label),
+  // TODO: Add impact
+  // impact: 'high',
+  url: item.url,
+});
+
 
 const NewsFeed = () => {
+  const [news, setNews] = useState<NewsItemProps[]>([]);
   const [activeTab, setActiveTab] = useState<string>("all");
-  const filteredNews = useNewsFiltering(allNews, activeTab);
+
+  useEffect(() => {
+    fetch('/api/news/all')
+      .then(res => res.json())
+      .then((data: NewsItem[]) => {
+        const transformed = data.map(mapNewsToProps);
+        setNews(transformed);
+      });
+  }, []);
+
+  const filteredNews = useNewsFiltering(news, activeTab);
   
   return (
     <div className="h-full flex flex-col">
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
         <NewsFilters activeTab={activeTab} />
       </Tabs>
-      
       <NewsContainer news={filteredNews} />
     </div>
   );

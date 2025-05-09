@@ -1,18 +1,18 @@
 
 import React from 'react';
 import { ExternalLink, ArrowUp, ArrowDown, Clock } from 'lucide-react';
-import { cn } from "@/lib/utils";
 
 export interface NewsItemProps {
   title: string;
   timestamp: string;
   source: string;
-  impact: 'high' | 'medium' | 'low';
+  // TODO: Add impact
+  // impact: 'high' | 'medium' | 'low';
   sentiment: 'positive' | 'negative' | 'neutral';
   url?: string;
 }
 
-const NewsItem = ({ title, timestamp, source, impact, sentiment, url }: NewsItemProps) => {
+const NewsItem = ({ title, timestamp, source, sentiment, url }: NewsItemProps) => {
   return (
     <div className="p-3 border border-gray-800 rounded-md bg-black/40 hover:bg-gray-900/40 transition-colors">
       <div className="flex justify-between items-start">
@@ -30,14 +30,14 @@ const NewsItem = ({ title, timestamp, source, impact, sentiment, url }: NewsItem
         
         <div className="flex items-center space-x-2">
           <span>{source}</span>
-          <div className={cn(
+          {/* <div className={cn(
             "px-1.5 py-0.5 rounded text-[10px]",
             impact === 'high' ? "bg-red-900/40 text-red-300" :
             impact === 'medium' ? "bg-yellow-900/40 text-yellow-300" :
             "bg-blue-900/40 text-blue-300"
           )}>
             {impact.toUpperCase()}
-          </div>
+          </div> */}
           
           {url && (
             <a 
