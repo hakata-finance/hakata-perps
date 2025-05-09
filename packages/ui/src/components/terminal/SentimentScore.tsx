@@ -48,7 +48,7 @@ const SentimentScore: React.FC<SentimentScoreProps> = ({ score, confidence }) =>
           <p className="text-xs mt-1">Confidence: {confidence}%</p>
         </TooltipContent>
       </Tooltip>
-      <Badge variant="outline" className={`${sentiment.color} ml-1`}>
+      <Badge className={`${sentiment.color} ml-1`}>
         {sentiment.label} ({formattedScore})
       </Badge>
     </div>

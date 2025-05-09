@@ -31,7 +31,7 @@ const VolatilityScore: React.FC<VolatilityScoreProps> = ({ score }) => {
           <p className="text-xs">Market volatility indicator based on price movements and trading volume</p>
         </TooltipContent>
       </Tooltip>
-      <Badge variant="outline" className={`${volatility.color} ml-1`}>
+      <Badge className={`${volatility.color} ml-1`}>
         {volatility.label} ({score}%)
       </Badge>
     </div>

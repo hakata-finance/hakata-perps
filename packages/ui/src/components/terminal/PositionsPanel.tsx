@@ -16,8 +16,8 @@ const PositionsPanel = () => {
         <TabsContent value="positions" className="py-4">
           <div className="text-gray-400">No open positions</div>
         </TabsContent>
-        <TabsContent value="orders" className="py-4">Orders content</TabsContent>
-        <TabsContent value="history" className="py-4">History content</TabsContent>
+        <TabsContent value="orders" className="py-4 text-gray-400">No orders</TabsContent>
+        <TabsContent value="history" className="py-4 text-gray-400">No history</TabsContent>
       </Tabs>
     </div>
   );

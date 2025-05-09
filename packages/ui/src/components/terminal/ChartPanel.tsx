@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Plus, Maximize2, Minimize2, Info } from "lucide-react";
+import { Plus, Maximize2, Minimize2, Settings } from "lucide-react";
 import VolatilityScore from './VolatilityScore';
 import SentimentScore from './SentimentScore';
 
@@ -55,7 +55,7 @@ const ChartPanel = () => {
           <VolatilityScore score={65} />
           <SentimentScore score={42} confidence={78} />
           <button className="p-2 rounded-full hover:bg-gray-800" tabIndex={0} aria-label="Info" onClick={() => {}} onKeyDown={() => {}}>
-            <Info size={20} />
+            <Settings size={20} />
           </button>
         </div>
       </div>

@@ -2,14 +2,14 @@
 
 import React, { useState } from 'react';
 import BreakingNewsBanner from '@/components/terminal/BreakingNewsBanner';
-import Navbar from '@/components/terminal/Navbar';
+import Navbar from '@/components/layout/Navbar';
 import ChartPanel from '@/components/terminal/ChartPanel';
 import PositionsPanel from '@/components/terminal/PositionsPanel';
 import OrderForm from '@/components/terminal/OrderForm';
 import InfoPanel from '@/components/terminal/InfoPanel';
 
 export default function Home() {
-  const [showBreakingNews, setShowBreakingNews] = useState<boolean>(true);
+  const [showBreakingNews] = useState<boolean>(true);
 
   return (
     <div className="min-h-screen bg-black text-white">

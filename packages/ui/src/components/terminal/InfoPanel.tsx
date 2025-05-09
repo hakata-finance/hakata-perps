@@ -3,7 +3,6 @@ import React, { useState } from 'react';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Bell } from "lucide-react";
 import NewsFeed from './NewsFeed';
-import MarketInsightsPanel from './MarketInsightsPanel';
 
 const InfoPanel = () => {
   const [activeTab, setActiveTab] = useState<string>("news");
@@ -17,9 +16,6 @@ const InfoPanel = () => {
           </TabsTrigger>
           <TabsTrigger value="newsfeed" className="data-[state=active]:bg-gray-800">
             News Feed
-          </TabsTrigger>
-          <TabsTrigger value="insights" className="data-[state=active]:bg-gray-800">
-            Insights
           </TabsTrigger>
         </TabsList>
         
@@ -60,11 +56,6 @@ const InfoPanel = () => {
         {/* News Feed Tab */}
         <TabsContent value="newsfeed" className="h-[350px]">
           <NewsFeed />
-        </TabsContent>
-        
-        {/* Insights Tab */}
-        <TabsContent value="insights">
-          <MarketInsightsPanel className="border-0 shadow-none bg-transparent" />
         </TabsContent>
       </Tabs>
     </div>
