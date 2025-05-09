@@ -23,7 +23,7 @@ const NewsItem = ({ title, timestamp, source, sentiment, url }: NewsItemProps) =
       </div>
       
       <div className="flex items-center justify-between text-xs text-gray-400 mt-2">
-        <div className="flex items-center space-x-2">
+        <div className="flex items-center space-x-1">
           <Clock size={12} />
           <span>{timestamp}</span>
         </div>

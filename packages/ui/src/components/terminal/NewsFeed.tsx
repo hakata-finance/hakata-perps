@@ -30,9 +30,30 @@ const mapSentimentToLabel = (label: string): 'positive' | 'neutral' | 'negative'
   return 'neutral';
 };
 
+export function formatAlphaVantageDate(raw: string): string {
+  if (!raw || raw.length < 15) return '';
+
+  const year = raw.slice(0, 4);
+  const month = parseInt(raw.slice(4, 6)) - 1; // JS months are 0-indexed
+  const day = raw.slice(6, 8);
+  const hour = raw.slice(9, 11);
+  const minute = raw.slice(11, 13);
+  const second = raw.slice(13, 15);
+
+  const date = new Date(year, month, day, hour, minute, second);
+
+  return date.toLocaleDateString('en-GB', {
+    day: '2-digit',
+    month: 'short',
+    year: 'numeric',
+  });
+}
+
+
 const mapNewsToProps = (item: NewsItem): NewsItemProps => ({
   title: item.title,
-  timestamp: new Date(item.time_published).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+  // timestamp: new Date(item.time_published).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+  timestamp: formatAlphaVantageDate(item.time_published),
   source: item.source,
   sentiment: mapSentimentToLabel(item.overall_sentiment_label),
   // TODO: Add impact
