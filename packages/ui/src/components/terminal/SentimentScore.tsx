@@ -2,10 +2,14 @@
 import { Badge } from "@/components/ui/badge";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { useAaplSentimentScore } from '@/hooks/useAaplSentimentScore';
-import { TrendingUp, TrendingDown } from "lucide-react";
+import { TrendingUp, TrendingDown, LucideTrendingUpDown } from "lucide-react";
 
-const SentimentScore: React.FC<SentimentScoreProps> = () => {
-  const { score, confidence } = useAaplSentimentScore();
+const SentimentScore: React.FC = () => {
+  const { score, confidence, loading } = useAaplSentimentScore();
+
+  if (loading || score === null || confidence === null) {
+    return <div>Loading sentiment...</div>;
+  }
 
   // Determine sentiment and strength
   const getSentiment = () => {
@@ -24,7 +28,7 @@ const SentimentScore: React.FC<SentimentScoreProps> = () => {
     return { 
       label: 'Neutral', 
       color: 'bg-gray-500/20 text-gray-400',
-      icon: null
+      icon: <LucideTrendingUpDown size={14} className="text-gray-400" />
     };
   };
 

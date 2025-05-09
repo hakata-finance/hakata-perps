@@ -3,13 +3,15 @@ import React from 'react';
 import { Badge } from "@/components/ui/badge";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { Activity } from "lucide-react";
+import { useVolatilityScore } from '@/hooks/useVolatilityScore';
 
-interface VolatilityScoreProps {
-  score: number; // 0 to 100
-}
+const VolatilityScore: React.FC = () => {
+  const { score, loading } = useVolatilityScore();
 
-const VolatilityScore: React.FC<VolatilityScoreProps> = ({ score }) => {
-  // Determine volatility level
+  if (loading || score === null) {
+    return <div>Loading volatility...</div>;
+  }
+
   const getVolatilityLevel = () => {
     if (score < 30) return { label: 'Low', color: 'bg-green-500/20 text-green-400' };
     if (score < 70) return { label: 'Moderate', color: 'bg-orange-500/20 text-orange-400' };
