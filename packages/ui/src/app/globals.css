@@ -1,6 +1,10 @@
 @import "tailwindcss";
 @import "tailwind-animate";
 
+html {
+  background-color: hsl(240 10% 3.9%);
+}
+
 @layer base {
   :root {
     --background: 240 50% 99%;
