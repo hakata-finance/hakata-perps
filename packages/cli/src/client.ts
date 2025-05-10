@@ -30,7 +30,7 @@ import { sha256 } from "js-sha256";
 import { encode } from "bs58";
 import { readFileSync } from "fs";
 import { resolveOrCreateAssociatedTokenAddress } from "@orca-so/sdk";
-import { HakataPerpetuals } from "../../target/types/hakata_perpetuals";
+import { HakataPerpetuals } from "../../core/target/types/hakata_perpetuals";
 
 export type PositionSide = "long" | "short";
 
