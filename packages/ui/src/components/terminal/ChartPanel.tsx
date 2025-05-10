@@ -1,3 +1,5 @@
+'use client';
+
 import React, { useState, useEffect, useRef } from 'react';
 import { Plus, Maximize2, Minimize2, Settings } from "lucide-react";
 import VolatilityScore from './VolatilityScore';

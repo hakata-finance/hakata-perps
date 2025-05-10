@@ -1,9 +1,10 @@
+'use client';
+
 import React, { useState } from 'react';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Input } from "@/components/ui/input";
 import { Slider } from "@/components/ui/slider";
 import { Button } from "@/components/ui/button";
-import { ArrowDown, ArrowUp } from "lucide-react";
 import { WalletMultiButton } from '@solana/wallet-adapter-react-ui';
 import { useWallet } from '@solana/wallet-adapter-react';
 
@@ -51,14 +52,6 @@ const OrderForm = () => {
                   onChange={(e) => setAmount(e.target.value)}
                   className="bg-[#1E1E1E] border-gray-700 pr-16"
                 />
-                <div className="absolute right-2 top-1/2 transform -translate-y-1/2 flex space-x-1">
-                  <button className="p-1 rounded hover:bg-gray-700">
-                    <ArrowUp size={14} />
-                  </button>
-                  <button className="p-1 rounded hover:bg-gray-700">
-                    <ArrowDown size={14} />
-                  </button>
-                </div>
               </div>
               <div className="flex items-center px-4 py-2 bg-[#1E1E1E] rounded-md">
                 <span>USDC</span>
@@ -132,14 +125,6 @@ const OrderForm = () => {
                       value="147.08" 
                       className="bg-[#1E1E1E] border-gray-700 pr-16"
                     />
-                    <div className="absolute right-2 top-1/2 transform -translate-y-1/2 flex space-x-1">
-                      <button className="p-1 rounded hover:bg-gray-700">
-                        <ArrowUp size={14} />
-                      </button>
-                      <button className="p-1 rounded hover:bg-gray-700">
-                        <ArrowDown size={14} />
-                      </button>
-                    </div>
                   </div>
                   <div className="flex items-center px-4 py-2 bg-[#1E1E1E] rounded-md">
                     <span>USD</span>
@@ -156,14 +141,6 @@ const OrderForm = () => {
                       onChange={(e) => setAmount(e.target.value)}
                       className="bg-[#1E1E1E] border-gray-700 pr-16"
                     />
-                    <div className="absolute right-2 top-1/2 transform -translate-y-1/2 flex space-x-1">
-                      <button className="p-1 rounded hover:bg-gray-700">
-                        <ArrowUp size={14} />
-                      </button>
-                      <button className="p-1 rounded hover:bg-gray-700">
-                        <ArrowDown size={14} />
-                      </button>
-                    </div>
                   </div>
                   <div className="flex items-center px-4 py-2 bg-[#1E1E1E] rounded-md">
                     <span>USDC</span>
