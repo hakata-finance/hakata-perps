@@ -2,7 +2,6 @@
 
 import React, { useState } from 'react';
 import BreakingNewsBanner from '@/components/terminal/BreakingNewsBanner';
-import Navbar from '@/components/layout/Navbar';
 import ChartPanel from '@/components/terminal/ChartPanel';
 import PositionsPanel from '@/components/terminal/PositionsPanel';
 import OrderForm from '@/components/terminal/OrderForm';
@@ -13,8 +12,6 @@ const TradePage = () => {
 
   return (
     <div className="min-h-screen bg-black text-white">
-      {/* Simple Navbar */}
-      <Navbar />
       {/* Breaking News Banner */}
       <BreakingNewsBanner 
         message="BREAKING: Federal Reserve announces unexpected 50 basis point rate cut" 

@@ -4,7 +4,7 @@ import logo from '../../../public/logo.png';
 
 const Navbar = () => {
   return (
-    <div className="bg-[#121212] border-b border-gray-800 px-4 py-3 flex items-center justify-between">
+    <div className="bg-[#121212] border-b border-gray-800 px-4 py-3 flex items-center justify-between text-white">
       <div className="flex items-center space-x-2">
         <Image src={logo} alt="Hakata Finance logo" width={30} height={30} />
         <span className="font-bold text-xl">Hakata Finance</span>
