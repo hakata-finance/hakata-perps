@@ -17,7 +17,7 @@ const Navbar = () => {
     <nav className="bg-[#121212] border-b border-gray-800 px-4 py-3 flex items-center  text-white">
       <div className="flex items-center space-x-2">
         <Image src={logo} alt="Hakata Finance logo" width={30} height={30} />
-        <span className="font-bold text-xl">Hakata Finance</span>
+        <h1 className="font-bold text-xl">Hakata Finance</h1>
         <span className="text-xs bg-gray-800 text-gray-400 px-2 py-0.5 rounded">BETA</span>
       </div>
       <ul className="flex gap-4 ml-6 mr-auto">
