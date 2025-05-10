@@ -1,0 +1,6513 @@
+{
+  "address": "CkawHJw5TVjUt1ggAZtuo3hgHBMptJHtxXk6A6nY5RWg",
+  "metadata": {
+    "name": "hakata_perpetuals",
+    "version": "0.1.0",
+    "spec": "0.1.0",
+    "description": "Hakata Finance - Solana Perpetuals Exchange"
+  },
+  "instructions": [
+    {
+      "name": "add_collateral",
+      "discriminator": [
+        127,
+        82,
+        121,
+        42,
+        161,
+        176,
+        249,
+        206
+      ],
+      "accounts": [
+        {
+          "name": "owner",
+          "writable": true,
+          "signer": true,
+          "relations": [
+            "funding_account",
+            "position"
+          ]
+        },
+        {
+          "name": "funding_account",
+          "writable": true
+        },
+        {
+          "name": "transfer_authority",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  116,
+                  114,
+                  97,
+                  110,
+                  115,
+                  102,
+                  101,
+                  114,
+                  95,
+                  97,
+                  117,
+                  116,
+                  104,
+                  111,
+                  114,
+                  105,
+                  116,
+                  121
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "perpetuals",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  112,
+                  101,
+                  114,
+                  112,
+                  101,
+                  116,
+                  117,
+                  97,
+                  108,
+                  115
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "pool",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  112,
+                  111,
+                  111,
+                  108
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "pool.name",
+                "account": "Pool"
+              }
+            ]
+          }
+        },
+        {
+          "name": "position",
+          "writable": true
+        },
+        {
+          "name": "custody",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  99,
+                  117,
+                  115,
+                  116,
+                  111,
+                  100,
+                  121
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "pool"
+              },
+              {
+                "kind": "account",
+                "path": "custody.mint",
+                "account": "Custody"
+              }
+            ]
+          }
+        },
+        {
+          "name": "custody_oracle_account"
+        },
+        {
+          "name": "custody_token_account",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  99,
+                  117,
+                  115,
+                  116,
+                  111,
+                  100,
+                  121,
+                  95,
+                  116,
+                  111,
+                  107,
+                  101,
+                  110,
+                  95,
+                  97,
+                  99,
+                  99,
+                  111,
+                  117,
+                  110,
+                  116
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "pool"
+              },
+              {
+                "kind": "account",
+                "path": "custody.mint",
+                "account": "Custody"
+              }
+            ]
+          }
+        },
+        {
+          "name": "token_program",
+          "address": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"
+        }
+      ],
+      "args": [
+        {
+          "name": "params",
+          "type": {
+            "defined": {
+              "name": "AddCollateralParams"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "add_custody",
+      "discriminator": [
+        247,
+        254,
+        126,
+        17,
+        26,
+        6,
+        215,
+        117
+      ],
+      "accounts": [
+        {
+          "name": "admin",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "multisig",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  109,
+                  117,
+                  108,
+                  116,
+                  105,
+                  115,
+                  105,
+                  103
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "transfer_authority",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  116,
+                  114,
+                  97,
+                  110,
+                  115,
+                  102,
+                  101,
+                  114,
+                  95,
+                  97,
+                  117,
+                  116,
+                  104,
+                  111,
+                  114,
+                  105,
+                  116,
+                  121
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "perpetuals",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  112,
+                  101,
+                  114,
+                  112,
+                  101,
+                  116,
+                  117,
+                  97,
+                  108,
+                  115
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "pool",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  112,
+                  111,
+                  111,
+                  108
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "pool.name",
+                "account": "Pool"
+              }
+            ]
+          }
+        },
+        {
+          "name": "custody",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  99,
+                  117,
+                  115,
+                  116,
+                  111,
+                  100,
+                  121
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "pool"
+              },
+              {
+                "kind": "account",
+                "path": "custody_token_mint"
+              }
+            ]
+          }
+        },
+        {
+          "name": "custody_token_account",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  99,
+                  117,
+                  115,
+                  116,
+                  111,
+                  100,
+                  121,
+                  95,
+                  116,
+                  111,
+                  107,
+                  101,
+                  110,
+                  95,
+                  97,
+                  99,
+                  99,
+                  111,
+                  117,
+                  110,
+                  116
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "pool"
+              },
+              {
+                "kind": "account",
+                "path": "custody_token_mint"
+              }
+            ]
+          }
+        },
+        {
+          "name": "custody_token_mint"
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        },
+        {
+          "name": "token_program",
+          "address": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"
+        },
+        {
+          "name": "rent",
+          "address": "SysvarRent111111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "params",
+          "type": {
+            "defined": {
+              "name": "AddCustodyParams"
+            }
+          }
+        }
+      ],
+      "returns": "u8"
+    },
+    {
+      "name": "add_liquidity",
+      "discriminator": [
+        181,
+        157,
+        89,
+        67,
+        143,
+        182,
+        52,
+        72
+      ],
+      "accounts": [
+        {
+          "name": "owner",
+          "writable": true,
+          "signer": true,
+          "relations": [
+            "funding_account",
+            "lp_token_account"
+          ]
+        },
+        {
+          "name": "funding_account",
+          "writable": true
+        },
+        {
+          "name": "lp_token_account",
+          "writable": true
+        },
+        {
+          "name": "transfer_authority",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  116,
+                  114,
+                  97,
+                  110,
+                  115,
+                  102,
+                  101,
+                  114,
+                  95,
+                  97,
+                  117,
+                  116,
+                  104,
+                  111,
+                  114,
+                  105,
+                  116,
+                  121
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "perpetuals",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  112,
+                  101,
+                  114,
+                  112,
+                  101,
+                  116,
+                  117,
+                  97,
+                  108,
+                  115
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "pool",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  112,
+                  111,
+                  111,
+                  108
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "pool.name",
+                "account": "Pool"
+              }
+            ]
+          }
+        },
+        {
+          "name": "custody",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  99,
+                  117,
+                  115,
+                  116,
+                  111,
+                  100,
+                  121
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "pool"
+              },
+              {
+                "kind": "account",
+                "path": "custody.mint",
+                "account": "Custody"
+              }
+            ]
+          }
+        },
+        {
+          "name": "custody_oracle_account"
+        },
+        {
+          "name": "custody_token_account",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  99,
+                  117,
+                  115,
+                  116,
+                  111,
+                  100,
+                  121,
+                  95,
+                  116,
+                  111,
+                  107,
+                  101,
+                  110,
+                  95,
+                  97,
+                  99,
+                  99,
+                  111,
+                  117,
+                  110,
+                  116
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "pool"
+              },
+              {
+                "kind": "account",
+                "path": "custody.mint",
+                "account": "Custody"
+              }
+            ]
+          }
+        },
+        {
+          "name": "lp_token_mint",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  108,
+                  112,
+                  95,
+                  116,
+                  111,
+                  107,
+                  101,
+                  110,
+                  95,
+                  109,
+                  105,
+                  110,
+                  116
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "pool"
+              }
+            ]
+          }
+        },
+        {
+          "name": "token_program",
+          "address": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"
+        }
+      ],
+      "args": [
+        {
+          "name": "params",
+          "type": {
+            "defined": {
+              "name": "AddLiquidityParams"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "add_pool",
+      "discriminator": [
+        115,
+        230,
+        212,
+        211,
+        175,
+        49,
+        39,
+        169
+      ],
+      "accounts": [
+        {
+          "name": "admin",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "multisig",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  109,
+                  117,
+                  108,
+                  116,
+                  105,
+                  115,
+                  105,
+                  103
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "transfer_authority",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  116,
+                  114,
+                  97,
+                  110,
+                  115,
+                  102,
+                  101,
+                  114,
+                  95,
+                  97,
+                  117,
+                  116,
+                  104,
+                  111,
+                  114,
+                  105,
+                  116,
+                  121
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "perpetuals",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  112,
+                  101,
+                  114,
+                  112,
+                  101,
+                  116,
+                  117,
+                  97,
+                  108,
+                  115
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "pool",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  112,
+                  111,
+                  111,
+                  108
+                ]
+              },
+              {
+                "kind": "arg",
+                "path": "params.name"
+              }
+            ]
+          }
+        },
+        {
+          "name": "lp_token_mint",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  108,
+                  112,
+                  95,
+                  116,
+                  111,
+                  107,
+                  101,
+                  110,
+                  95,
+                  109,
+                  105,
+                  110,
+                  116
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "pool"
+              }
+            ]
+          }
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        },
+        {
+          "name": "token_program",
+          "address": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"
+        },
+        {
+          "name": "rent",
+          "address": "SysvarRent111111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "params",
+          "type": {
+            "defined": {
+              "name": "AddPoolParams"
+            }
+          }
+        }
+      ],
+      "returns": "u8"
+    },
+    {
+      "name": "close_position",
+      "discriminator": [
+        123,
+        134,
+        81,
+        0,
+        49,
+        68,
+        98,
+        98
+      ],
+      "accounts": [
+        {
+          "name": "owner",
+          "writable": true,
+          "signer": true,
+          "relations": [
+            "receiving_account",
+            "position"
+          ]
+        },
+        {
+          "name": "receiving_account",
+          "writable": true
+        },
+        {
+          "name": "transfer_authority",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  116,
+                  114,
+                  97,
+                  110,
+                  115,
+                  102,
+                  101,
+                  114,
+                  95,
+                  97,
+                  117,
+                  116,
+                  104,
+                  111,
+                  114,
+                  105,
+                  116,
+                  121
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "perpetuals",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  112,
+                  101,
+                  114,
+                  112,
+                  101,
+                  116,
+                  117,
+                  97,
+                  108,
+                  115
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "pool",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  112,
+                  111,
+                  111,
+                  108
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "pool.name",
+                "account": "Pool"
+              }
+            ]
+          }
+        },
+        {
+          "name": "position",
+          "writable": true
+        },
+        {
+          "name": "custody",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  99,
+                  117,
+                  115,
+                  116,
+                  111,
+                  100,
+                  121
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "pool"
+              },
+              {
+                "kind": "account",
+                "path": "custody.mint",
+                "account": "Custody"
+              }
+            ]
+          }
+        },
+        {
+          "name": "custody_oracle_account"
+        },
+        {
+          "name": "custody_token_account",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  99,
+                  117,
+                  115,
+                  116,
+                  111,
+                  100,
+                  121,
+                  95,
+                  116,
+                  111,
+                  107,
+                  101,
+                  110,
+                  95,
+                  97,
+                  99,
+                  99,
+                  111,
+                  117,
+                  110,
+                  116
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "pool"
+              },
+              {
+                "kind": "account",
+                "path": "custody.mint",
+                "account": "Custody"
+              }
+            ]
+          }
+        },
+        {
+          "name": "token_program",
+          "address": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"
+        }
+      ],
+      "args": [
+        {
+          "name": "params",
+          "type": {
+            "defined": {
+              "name": "ClosePositionParams"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "get_add_liquidity_amount_and_fee",
+      "discriminator": [
+        172,
+        150,
+        249,
+        181,
+        233,
+        241,
+        78,
+        139
+      ],
+      "accounts": [
+        {
+          "name": "perpetuals",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  112,
+                  101,
+                  114,
+                  112,
+                  101,
+                  116,
+                  117,
+                  97,
+                  108,
+                  115
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "pool",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  112,
+                  111,
+                  111,
+                  108
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "pool.name",
+                "account": "Pool"
+              }
+            ]
+          }
+        },
+        {
+          "name": "custody",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  99,
+                  117,
+                  115,
+                  116,
+                  111,
+                  100,
+                  121
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "pool"
+              },
+              {
+                "kind": "account",
+                "path": "custody.mint",
+                "account": "Custody"
+              }
+            ]
+          }
+        },
+        {
+          "name": "custody_oracle_account"
+        },
+        {
+          "name": "lp_token_mint",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  108,
+                  112,
+                  95,
+                  116,
+                  111,
+                  107,
+                  101,
+                  110,
+                  95,
+                  109,
+                  105,
+                  110,
+                  116
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "pool"
+              }
+            ]
+          }
+        }
+      ],
+      "args": [
+        {
+          "name": "params",
+          "type": {
+            "defined": {
+              "name": "GetAddLiquidityAmountAndFeeParams"
+            }
+          }
+        }
+      ],
+      "returns": {
+        "defined": {
+          "name": "AmountAndFee"
+        }
+      }
+    },
+    {
+      "name": "get_assets_under_management",
+      "discriminator": [
+        44,
+        3,
+        161,
+        69,
+        174,
+        75,
+        137,
+        162
+      ],
+      "accounts": [
+        {
+          "name": "perpetuals",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  112,
+                  101,
+                  114,
+                  112,
+                  101,
+                  116,
+                  117,
+                  97,
+                  108,
+                  115
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "pool",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  112,
+                  111,
+                  111,
+                  108
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "pool.name",
+                "account": "Pool"
+              }
+            ]
+          }
+        }
+      ],
+      "args": [
+        {
+          "name": "params",
+          "type": {
+            "defined": {
+              "name": "GetAssetsUnderManagementParams"
+            }
+          }
+        }
+      ],
+      "returns": "u128"
+    },
+    {
+      "name": "get_entry_price_and_fee",
+      "discriminator": [
+        134,
+        30,
+        231,
+        199,
+        83,
+        72,
+        27,
+        99
+      ],
+      "accounts": [
+        {
+          "name": "perpetuals",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  112,
+                  101,
+                  114,
+                  112,
+                  101,
+                  116,
+                  117,
+                  97,
+                  108,
+                  115
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "pool",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  112,
+                  111,
+                  111,
+                  108
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "pool.name",
+                "account": "Pool"
+              }
+            ]
+          }
+        },
+        {
+          "name": "custody",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  99,
+                  117,
+                  115,
+                  116,
+                  111,
+                  100,
+                  121
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "pool"
+              },
+              {
+                "kind": "account",
+                "path": "custody.mint",
+                "account": "Custody"
+              }
+            ]
+          }
+        },
+        {
+          "name": "custody_oracle_account"
+        }
+      ],
+      "args": [
+        {
+          "name": "params",
+          "type": {
+            "defined": {
+              "name": "GetEntryPriceAndFeeParams"
+            }
+          }
+        }
+      ],
+      "returns": {
+        "defined": {
+          "name": "NewPositionPricesAndFee"
+        }
+      }
+    },
+    {
+      "name": "get_exit_price_and_fee",
+      "discriminator": [
+        73,
+        77,
+        94,
+        31,
+        8,
+        9,
+        92,
+        32
+      ],
+      "accounts": [
+        {
+          "name": "perpetuals",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  112,
+                  101,
+                  114,
+                  112,
+                  101,
+                  116,
+                  117,
+                  97,
+                  108,
+                  115
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "pool",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  112,
+                  111,
+                  111,
+                  108
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "pool.name",
+                "account": "Pool"
+              }
+            ]
+          }
+        },
+        {
+          "name": "position"
+        },
+        {
+          "name": "custody",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  99,
+                  117,
+                  115,
+                  116,
+                  111,
+                  100,
+                  121
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "pool"
+              },
+              {
+                "kind": "account",
+                "path": "custody.mint",
+                "account": "Custody"
+              }
+            ]
+          }
+        },
+        {
+          "name": "custody_oracle_account"
+        }
+      ],
+      "args": [
+        {
+          "name": "params",
+          "type": {
+            "defined": {
+              "name": "GetExitPriceAndFeeParams"
+            }
+          }
+        }
+      ],
+      "returns": {
+        "defined": {
+          "name": "PriceAndFee"
+        }
+      }
+    },
+    {
+      "name": "get_liquidation_price",
+      "discriminator": [
+        73,
+        174,
+        119,
+        65,
+        149,
+        5,
+        73,
+        239
+      ],
+      "accounts": [
+        {
+          "name": "perpetuals",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  112,
+                  101,
+                  114,
+                  112,
+                  101,
+                  116,
+                  117,
+                  97,
+                  108,
+                  115
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "pool",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  112,
+                  111,
+                  111,
+                  108
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "pool.name",
+                "account": "Pool"
+              }
+            ]
+          }
+        },
+        {
+          "name": "position"
+        },
+        {
+          "name": "custody",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  99,
+                  117,
+                  115,
+                  116,
+                  111,
+                  100,
+                  121
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "pool"
+              },
+              {
+                "kind": "account",
+                "path": "custody.mint",
+                "account": "Custody"
+              }
+            ]
+          }
+        },
+        {
+          "name": "custody_oracle_account"
+        }
+      ],
+      "args": [
+        {
+          "name": "params",
+          "type": {
+            "defined": {
+              "name": "GetLiquidationPriceParams"
+            }
+          }
+        }
+      ],
+      "returns": "u64"
+    },
+    {
+      "name": "get_liquidation_state",
+      "discriminator": [
+        127,
+        126,
+        199,
+        117,
+        90,
+        89,
+        29,
+        50
+      ],
+      "accounts": [
+        {
+          "name": "perpetuals",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  112,
+                  101,
+                  114,
+                  112,
+                  101,
+                  116,
+                  117,
+                  97,
+                  108,
+                  115
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "pool",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  112,
+                  111,
+                  111,
+                  108
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "pool.name",
+                "account": "Pool"
+              }
+            ]
+          }
+        },
+        {
+          "name": "position"
+        },
+        {
+          "name": "custody",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  99,
+                  117,
+                  115,
+                  116,
+                  111,
+                  100,
+                  121
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "pool"
+              },
+              {
+                "kind": "account",
+                "path": "custody.mint",
+                "account": "Custody"
+              }
+            ]
+          }
+        },
+        {
+          "name": "custody_oracle_account"
+        }
+      ],
+      "args": [
+        {
+          "name": "params",
+          "type": {
+            "defined": {
+              "name": "GetLiquidationStateParams"
+            }
+          }
+        }
+      ],
+      "returns": "u8"
+    },
+    {
+      "name": "get_oracle_price",
+      "discriminator": [
+        200,
+        20,
+        0,
+        106,
+        56,
+        210,
+        230,
+        140
+      ],
+      "accounts": [
+        {
+          "name": "perpetuals",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  112,
+                  101,
+                  114,
+                  112,
+                  101,
+                  116,
+                  117,
+                  97,
+                  108,
+                  115
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "pool",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  112,
+                  111,
+                  111,
+                  108
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "pool.name",
+                "account": "Pool"
+              }
+            ]
+          }
+        },
+        {
+          "name": "custody",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  99,
+                  117,
+                  115,
+                  116,
+                  111,
+                  100,
+                  121
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "pool"
+              },
+              {
+                "kind": "account",
+                "path": "custody.mint",
+                "account": "Custody"
+              }
+            ]
+          }
+        },
+        {
+          "name": "custody_oracle_account"
+        }
+      ],
+      "args": [
+        {
+          "name": "params",
+          "type": {
+            "defined": {
+              "name": "GetOraclePriceParams"
+            }
+          }
+        }
+      ],
+      "returns": "u64"
+    },
+    {
+      "name": "get_pnl",
+      "discriminator": [
+        106,
+        212,
+        3,
+        250,
+        195,
+        224,
+        64,
+        160
+      ],
+      "accounts": [
+        {
+          "name": "perpetuals",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  112,
+                  101,
+                  114,
+                  112,
+                  101,
+                  116,
+                  117,
+                  97,
+                  108,
+                  115
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "pool",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  112,
+                  111,
+                  111,
+                  108
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "pool.name",
+                "account": "Pool"
+              }
+            ]
+          }
+        },
+        {
+          "name": "position"
+        },
+        {
+          "name": "custody",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  99,
+                  117,
+                  115,
+                  116,
+                  111,
+                  100,
+                  121
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "pool"
+              },
+              {
+                "kind": "account",
+                "path": "custody.mint",
+                "account": "Custody"
+              }
+            ]
+          }
+        },
+        {
+          "name": "custody_oracle_account"
+        }
+      ],
+      "args": [
+        {
+          "name": "params",
+          "type": {
+            "defined": {
+              "name": "GetPnlParams"
+            }
+          }
+        }
+      ],
+      "returns": {
+        "defined": {
+          "name": "ProfitAndLoss"
+        }
+      }
+    },
+    {
+      "name": "get_remove_liquidity_amount_and_fee",
+      "discriminator": [
+        194,
+        226,
+        233,
+        102,
+        14,
+        21,
+        196,
+        7
+      ],
+      "accounts": [
+        {
+          "name": "perpetuals",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  112,
+                  101,
+                  114,
+                  112,
+                  101,
+                  116,
+                  117,
+                  97,
+                  108,
+                  115
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "pool",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  112,
+                  111,
+                  111,
+                  108
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "pool.name",
+                "account": "Pool"
+              }
+            ]
+          }
+        },
+        {
+          "name": "custody",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  99,
+                  117,
+                  115,
+                  116,
+                  111,
+                  100,
+                  121
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "pool"
+              },
+              {
+                "kind": "account",
+                "path": "custody.mint",
+                "account": "Custody"
+              }
+            ]
+          }
+        },
+        {
+          "name": "custody_oracle_account"
+        },
+        {
+          "name": "lp_token_mint",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  108,
+                  112,
+                  95,
+                  116,
+                  111,
+                  107,
+                  101,
+                  110,
+                  95,
+                  109,
+                  105,
+                  110,
+                  116
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "pool"
+              }
+            ]
+          }
+        }
+      ],
+      "args": [
+        {
+          "name": "params",
+          "type": {
+            "defined": {
+              "name": "GetRemoveLiquidityAmountAndFeeParams"
+            }
+          }
+        }
+      ],
+      "returns": {
+        "defined": {
+          "name": "AmountAndFee"
+        }
+      }
+    },
+    {
+      "name": "get_swap_amount_and_fees",
+      "discriminator": [
+        247,
+        121,
+        40,
+        99,
+        35,
+        82,
+        100,
+        32
+      ],
+      "accounts": [
+        {
+          "name": "perpetuals",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  112,
+                  101,
+                  114,
+                  112,
+                  101,
+                  116,
+                  117,
+                  97,
+                  108,
+                  115
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "pool",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  112,
+                  111,
+                  111,
+                  108
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "pool.name",
+                "account": "Pool"
+              }
+            ]
+          }
+        },
+        {
+          "name": "receiving_custody",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  99,
+                  117,
+                  115,
+                  116,
+                  111,
+                  100,
+                  121
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "pool"
+              },
+              {
+                "kind": "account",
+                "path": "receiving_custody.mint",
+                "account": "Custody"
+              }
+            ]
+          }
+        },
+        {
+          "name": "receiving_custody_oracle_account"
+        },
+        {
+          "name": "dispensing_custody",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  99,
+                  117,
+                  115,
+                  116,
+                  111,
+                  100,
+                  121
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "pool"
+              },
+              {
+                "kind": "account",
+                "path": "dispensing_custody.mint",
+                "account": "Custody"
+              }
+            ]
+          }
+        },
+        {
+          "name": "dispensing_custody_oracle_account"
+        }
+      ],
+      "args": [
+        {
+          "name": "params",
+          "type": {
+            "defined": {
+              "name": "GetSwapAmountAndFeesParams"
+            }
+          }
+        }
+      ],
+      "returns": {
+        "defined": {
+          "name": "SwapAmountAndFees"
+        }
+      }
+    },
+    {
+      "name": "init",
+      "discriminator": [
+        220,
+        59,
+        207,
+        236,
+        108,
+        250,
+        47,
+        100
+      ],
+      "accounts": [
+        {
+          "name": "upgrade_authority",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "multisig",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  109,
+                  117,
+                  108,
+                  116,
+                  105,
+                  115,
+                  105,
+                  103
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "transfer_authority",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  116,
+                  114,
+                  97,
+                  110,
+                  115,
+                  102,
+                  101,
+                  114,
+                  95,
+                  97,
+                  117,
+                  116,
+                  104,
+                  111,
+                  114,
+                  105,
+                  116,
+                  121
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "perpetuals",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  112,
+                  101,
+                  114,
+                  112,
+                  101,
+                  116,
+                  117,
+                  97,
+                  108,
+                  115
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "perpetuals_program",
+          "address": "CkawHJw5TVjUt1ggAZtuo3hgHBMptJHtxXk6A6nY5RWg"
+        },
+        {
+          "name": "perpetuals_program_data"
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        },
+        {
+          "name": "token_program",
+          "address": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"
+        }
+      ],
+      "args": [
+        {
+          "name": "params",
+          "type": {
+            "defined": {
+              "name": "InitParams"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "liquidate",
+      "discriminator": [
+        223,
+        179,
+        226,
+        125,
+        48,
+        46,
+        39,
+        74
+      ],
+      "accounts": [
+        {
+          "name": "signer",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "receiving_account",
+          "writable": true
+        },
+        {
+          "name": "rewards_receiving_account",
+          "writable": true
+        },
+        {
+          "name": "transfer_authority",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  116,
+                  114,
+                  97,
+                  110,
+                  115,
+                  102,
+                  101,
+                  114,
+                  95,
+                  97,
+                  117,
+                  116,
+                  104,
+                  111,
+                  114,
+                  105,
+                  116,
+                  121
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "perpetuals",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  112,
+                  101,
+                  114,
+                  112,
+                  101,
+                  116,
+                  117,
+                  97,
+                  108,
+                  115
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "pool",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  112,
+                  111,
+                  111,
+                  108
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "pool.name",
+                "account": "Pool"
+              }
+            ]
+          }
+        },
+        {
+          "name": "position",
+          "writable": true
+        },
+        {
+          "name": "custody",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  99,
+                  117,
+                  115,
+                  116,
+                  111,
+                  100,
+                  121
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "pool"
+              },
+              {
+                "kind": "account",
+                "path": "custody.mint",
+                "account": "Custody"
+              }
+            ]
+          }
+        },
+        {
+          "name": "custody_oracle_account"
+        },
+        {
+          "name": "custody_token_account",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  99,
+                  117,
+                  115,
+                  116,
+                  111,
+                  100,
+                  121,
+                  95,
+                  116,
+                  111,
+                  107,
+                  101,
+                  110,
+                  95,
+                  97,
+                  99,
+                  99,
+                  111,
+                  117,
+                  110,
+                  116
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "pool"
+              },
+              {
+                "kind": "account",
+                "path": "custody.mint",
+                "account": "Custody"
+              }
+            ]
+          }
+        },
+        {
+          "name": "token_program",
+          "address": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"
+        }
+      ],
+      "args": [
+        {
+          "name": "params",
+          "type": {
+            "defined": {
+              "name": "LiquidateParams"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "open_position",
+      "discriminator": [
+        135,
+        128,
+        47,
+        77,
+        15,
+        152,
+        240,
+        49
+      ],
+      "accounts": [
+        {
+          "name": "owner",
+          "writable": true,
+          "signer": true,
+          "relations": [
+            "funding_account"
+          ]
+        },
+        {
+          "name": "funding_account",
+          "writable": true
+        },
+        {
+          "name": "transfer_authority",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  116,
+                  114,
+                  97,
+                  110,
+                  115,
+                  102,
+                  101,
+                  114,
+                  95,
+                  97,
+                  117,
+                  116,
+                  104,
+                  111,
+                  114,
+                  105,
+                  116,
+                  121
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "perpetuals",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  112,
+                  101,
+                  114,
+                  112,
+                  101,
+                  116,
+                  117,
+                  97,
+                  108,
+                  115
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "pool",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  112,
+                  111,
+                  111,
+                  108
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "pool.name",
+                "account": "Pool"
+              }
+            ]
+          }
+        },
+        {
+          "name": "position",
+          "writable": true
+        },
+        {
+          "name": "custody",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  99,
+                  117,
+                  115,
+                  116,
+                  111,
+                  100,
+                  121
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "pool"
+              },
+              {
+                "kind": "account",
+                "path": "custody.mint",
+                "account": "Custody"
+              }
+            ]
+          }
+        },
+        {
+          "name": "custody_oracle_account"
+        },
+        {
+          "name": "custody_token_account",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  99,
+                  117,
+                  115,
+                  116,
+                  111,
+                  100,
+                  121,
+                  95,
+                  116,
+                  111,
+                  107,
+                  101,
+                  110,
+                  95,
+                  97,
+                  99,
+                  99,
+                  111,
+                  117,
+                  110,
+                  116
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "pool"
+              },
+              {
+                "kind": "account",
+                "path": "custody.mint",
+                "account": "Custody"
+              }
+            ]
+          }
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        },
+        {
+          "name": "token_program",
+          "address": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"
+        }
+      ],
+      "args": [
+        {
+          "name": "params",
+          "type": {
+            "defined": {
+              "name": "OpenPositionParams"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "remove_collateral",
+      "discriminator": [
+        86,
+        222,
+        130,
+        86,
+        92,
+        20,
+        72,
+        65
+      ],
+      "accounts": [
+        {
+          "name": "owner",
+          "writable": true,
+          "signer": true,
+          "relations": [
+            "receiving_account",
+            "position"
+          ]
+        },
+        {
+          "name": "receiving_account",
+          "writable": true
+        },
+        {
+          "name": "transfer_authority",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  116,
+                  114,
+                  97,
+                  110,
+                  115,
+                  102,
+                  101,
+                  114,
+                  95,
+                  97,
+                  117,
+                  116,
+                  104,
+                  111,
+                  114,
+                  105,
+                  116,
+                  121
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "perpetuals",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  112,
+                  101,
+                  114,
+                  112,
+                  101,
+                  116,
+                  117,
+                  97,
+                  108,
+                  115
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "pool",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  112,
+                  111,
+                  111,
+                  108
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "pool.name",
+                "account": "Pool"
+              }
+            ]
+          }
+        },
+        {
+          "name": "position",
+          "writable": true
+        },
+        {
+          "name": "custody",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  99,
+                  117,
+                  115,
+                  116,
+                  111,
+                  100,
+                  121
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "pool"
+              },
+              {
+                "kind": "account",
+                "path": "custody.mint",
+                "account": "Custody"
+              }
+            ]
+          }
+        },
+        {
+          "name": "custody_oracle_account"
+        },
+        {
+          "name": "custody_token_account",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  99,
+                  117,
+                  115,
+                  116,
+                  111,
+                  100,
+                  121,
+                  95,
+                  116,
+                  111,
+                  107,
+                  101,
+                  110,
+                  95,
+                  97,
+                  99,
+                  99,
+                  111,
+                  117,
+                  110,
+                  116
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "pool"
+              },
+              {
+                "kind": "account",
+                "path": "custody.mint",
+                "account": "Custody"
+              }
+            ]
+          }
+        },
+        {
+          "name": "token_program",
+          "address": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"
+        }
+      ],
+      "args": [
+        {
+          "name": "params",
+          "type": {
+            "defined": {
+              "name": "RemoveCollateralParams"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "remove_custody",
+      "discriminator": [
+        143,
+        229,
+        131,
+        48,
+        248,
+        212,
+        167,
+        185
+      ],
+      "accounts": [
+        {
+          "name": "admin",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "multisig",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  109,
+                  117,
+                  108,
+                  116,
+                  105,
+                  115,
+                  105,
+                  103
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "transfer_authority",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  116,
+                  114,
+                  97,
+                  110,
+                  115,
+                  102,
+                  101,
+                  114,
+                  95,
+                  97,
+                  117,
+                  116,
+                  104,
+                  111,
+                  114,
+                  105,
+                  116,
+                  121
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "perpetuals",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  112,
+                  101,
+                  114,
+                  112,
+                  101,
+                  116,
+                  117,
+                  97,
+                  108,
+                  115
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "pool",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  112,
+                  111,
+                  111,
+                  108
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "pool.name",
+                "account": "Pool"
+              }
+            ]
+          }
+        },
+        {
+          "name": "custody",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  99,
+                  117,
+                  115,
+                  116,
+                  111,
+                  100,
+                  121
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "pool"
+              },
+              {
+                "kind": "account",
+                "path": "custody.mint",
+                "account": "Custody"
+              }
+            ]
+          }
+        },
+        {
+          "name": "custody_token_account",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  99,
+                  117,
+                  115,
+                  116,
+                  111,
+                  100,
+                  121,
+                  95,
+                  116,
+                  111,
+                  107,
+                  101,
+                  110,
+                  95,
+                  97,
+                  99,
+                  99,
+                  111,
+                  117,
+                  110,
+                  116
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "pool"
+              },
+              {
+                "kind": "account",
+                "path": "custody.mint",
+                "account": "Custody"
+              }
+            ]
+          }
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        },
+        {
+          "name": "token_program",
+          "address": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"
+        }
+      ],
+      "args": [
+        {
+          "name": "params",
+          "type": {
+            "defined": {
+              "name": "RemoveCustodyParams"
+            }
+          }
+        }
+      ],
+      "returns": "u8"
+    },
+    {
+      "name": "remove_liquidity",
+      "discriminator": [
+        80,
+        85,
+        209,
+        72,
+        24,
+        206,
+        177,
+        108
+      ],
+      "accounts": [
+        {
+          "name": "owner",
+          "writable": true,
+          "signer": true,
+          "relations": [
+            "receiving_account",
+            "lp_token_account"
+          ]
+        },
+        {
+          "name": "receiving_account",
+          "writable": true
+        },
+        {
+          "name": "lp_token_account",
+          "writable": true
+        },
+        {
+          "name": "transfer_authority",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  116,
+                  114,
+                  97,
+                  110,
+                  115,
+                  102,
+                  101,
+                  114,
+                  95,
+                  97,
+                  117,
+                  116,
+                  104,
+                  111,
+                  114,
+                  105,
+                  116,
+                  121
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "perpetuals",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  112,
+                  101,
+                  114,
+                  112,
+                  101,
+                  116,
+                  117,
+                  97,
+                  108,
+                  115
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "pool",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  112,
+                  111,
+                  111,
+                  108
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "pool.name",
+                "account": "Pool"
+              }
+            ]
+          }
+        },
+        {
+          "name": "custody",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  99,
+                  117,
+                  115,
+                  116,
+                  111,
+                  100,
+                  121
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "pool"
+              },
+              {
+                "kind": "account",
+                "path": "custody.mint",
+                "account": "Custody"
+              }
+            ]
+          }
+        },
+        {
+          "name": "custody_oracle_account"
+        },
+        {
+          "name": "custody_token_account",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  99,
+                  117,
+                  115,
+                  116,
+                  111,
+                  100,
+                  121,
+                  95,
+                  116,
+                  111,
+                  107,
+                  101,
+                  110,
+                  95,
+                  97,
+                  99,
+                  99,
+                  111,
+                  117,
+                  110,
+                  116
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "pool"
+              },
+              {
+                "kind": "account",
+                "path": "custody.mint",
+                "account": "Custody"
+              }
+            ]
+          }
+        },
+        {
+          "name": "lp_token_mint",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  108,
+                  112,
+                  95,
+                  116,
+                  111,
+                  107,
+                  101,
+                  110,
+                  95,
+                  109,
+                  105,
+                  110,
+                  116
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "pool"
+              }
+            ]
+          }
+        },
+        {
+          "name": "token_program",
+          "address": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"
+        }
+      ],
+      "args": [
+        {
+          "name": "params",
+          "type": {
+            "defined": {
+              "name": "RemoveLiquidityParams"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "remove_pool",
+      "discriminator": [
+        132,
+        42,
+        53,
+        138,
+        28,
+        220,
+        170,
+        55
+      ],
+      "accounts": [
+        {
+          "name": "admin",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "multisig",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  109,
+                  117,
+                  108,
+                  116,
+                  105,
+                  115,
+                  105,
+                  103
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "transfer_authority",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  116,
+                  114,
+                  97,
+                  110,
+                  115,
+                  102,
+                  101,
+                  114,
+                  95,
+                  97,
+                  117,
+                  116,
+                  104,
+                  111,
+                  114,
+                  105,
+                  116,
+                  121
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "perpetuals",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  112,
+                  101,
+                  114,
+                  112,
+                  101,
+                  116,
+                  117,
+                  97,
+                  108,
+                  115
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "pool",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  112,
+                  111,
+                  111,
+                  108
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "pool.name",
+                "account": "Pool"
+              }
+            ]
+          }
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "params",
+          "type": {
+            "defined": {
+              "name": "RemovePoolParams"
+            }
+          }
+        }
+      ],
+      "returns": "u8"
+    },
+    {
+      "name": "set_admin_signers",
+      "discriminator": [
+        240,
+        171,
+        141,
+        105,
+        124,
+        2,
+        225,
+        188
+      ],
+      "accounts": [
+        {
+          "name": "admin",
+          "signer": true
+        },
+        {
+          "name": "multisig",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  109,
+                  117,
+                  108,
+                  116,
+                  105,
+                  115,
+                  105,
+                  103
+                ]
+              }
+            ]
+          }
+        }
+      ],
+      "args": [
+        {
+          "name": "params",
+          "type": {
+            "defined": {
+              "name": "SetAdminSignersParams"
+            }
+          }
+        }
+      ],
+      "returns": "u8"
+    },
+    {
+      "name": "set_custody_config",
+      "discriminator": [
+        133,
+        97,
+        130,
+        143,
+        215,
+        229,
+        36,
+        176
+      ],
+      "accounts": [
+        {
+          "name": "admin",
+          "signer": true
+        },
+        {
+          "name": "multisig",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  109,
+                  117,
+                  108,
+                  116,
+                  105,
+                  115,
+                  105,
+                  103
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "pool",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  112,
+                  111,
+                  111,
+                  108
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "pool.name",
+                "account": "Pool"
+              }
+            ]
+          }
+        },
+        {
+          "name": "custody",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  99,
+                  117,
+                  115,
+                  116,
+                  111,
+                  100,
+                  121
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "pool"
+              },
+              {
+                "kind": "account",
+                "path": "custody.mint",
+                "account": "Custody"
+              }
+            ]
+          }
+        }
+      ],
+      "args": [
+        {
+          "name": "params",
+          "type": {
+            "defined": {
+              "name": "SetCustodyConfigParams"
+            }
+          }
+        }
+      ],
+      "returns": "u8"
+    },
+    {
+      "name": "set_permissions",
+      "discriminator": [
+        214,
+        165,
+        105,
+        182,
+        213,
+        162,
+        212,
+        34
+      ],
+      "accounts": [
+        {
+          "name": "admin",
+          "signer": true
+        },
+        {
+          "name": "multisig",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  109,
+                  117,
+                  108,
+                  116,
+                  105,
+                  115,
+                  105,
+                  103
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "perpetuals",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  112,
+                  101,
+                  114,
+                  112,
+                  101,
+                  116,
+                  117,
+                  97,
+                  108,
+                  115
+                ]
+              }
+            ]
+          }
+        }
+      ],
+      "args": [
+        {
+          "name": "params",
+          "type": {
+            "defined": {
+              "name": "SetPermissionsParams"
+            }
+          }
+        }
+      ],
+      "returns": "u8"
+    },
+    {
+      "name": "set_test_oracle_price",
+      "discriminator": [
+        44,
+        111,
+        165,
+        185,
+        58,
+        14,
+        249,
+        249
+      ],
+      "accounts": [
+        {
+          "name": "admin",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "multisig",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  109,
+                  117,
+                  108,
+                  116,
+                  105,
+                  115,
+                  105,
+                  103
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "perpetuals",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  112,
+                  101,
+                  114,
+                  112,
+                  101,
+                  116,
+                  117,
+                  97,
+                  108,
+                  115
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "pool",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  112,
+                  111,
+                  111,
+                  108
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "pool.name",
+                "account": "Pool"
+              }
+            ]
+          }
+        },
+        {
+          "name": "custody",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  99,
+                  117,
+                  115,
+                  116,
+                  111,
+                  100,
+                  121
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "pool"
+              },
+              {
+                "kind": "account",
+                "path": "custody.mint",
+                "account": "Custody"
+              }
+            ]
+          }
+        },
+        {
+          "name": "oracle_account",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  111,
+                  114,
+                  97,
+                  99,
+                  108,
+                  101,
+                  95,
+                  97,
+                  99,
+                  99,
+                  111,
+                  117,
+                  110,
+                  116
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "pool"
+              },
+              {
+                "kind": "account",
+                "path": "custody.mint",
+                "account": "Custody"
+              }
+            ]
+          }
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "params",
+          "type": {
+            "defined": {
+              "name": "SetTestOraclePriceParams"
+            }
+          }
+        }
+      ],
+      "returns": "u8"
+    },
+    {
+      "name": "set_test_time",
+      "discriminator": [
+        242,
+        231,
+        177,
+        251,
+        126,
+        145,
+        159,
+        104
+      ],
+      "accounts": [
+        {
+          "name": "admin",
+          "signer": true
+        },
+        {
+          "name": "multisig",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  109,
+                  117,
+                  108,
+                  116,
+                  105,
+                  115,
+                  105,
+                  103
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "perpetuals",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  112,
+                  101,
+                  114,
+                  112,
+                  101,
+                  116,
+                  117,
+                  97,
+                  108,
+                  115
+                ]
+              }
+            ]
+          }
+        }
+      ],
+      "args": [
+        {
+          "name": "params",
+          "type": {
+            "defined": {
+              "name": "SetTestTimeParams"
+            }
+          }
+        }
+      ],
+      "returns": "u8"
+    },
+    {
+      "name": "swap",
+      "discriminator": [
+        248,
+        198,
+        158,
+        145,
+        225,
+        117,
+        135,
+        200
+      ],
+      "accounts": [
+        {
+          "name": "owner",
+          "writable": true,
+          "signer": true,
+          "relations": [
+            "funding_account",
+            "receiving_account"
+          ]
+        },
+        {
+          "name": "funding_account",
+          "writable": true
+        },
+        {
+          "name": "receiving_account",
+          "writable": true
+        },
+        {
+          "name": "transfer_authority",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  116,
+                  114,
+                  97,
+                  110,
+                  115,
+                  102,
+                  101,
+                  114,
+                  95,
+                  97,
+                  117,
+                  116,
+                  104,
+                  111,
+                  114,
+                  105,
+                  116,
+                  121
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "perpetuals",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  112,
+                  101,
+                  114,
+                  112,
+                  101,
+                  116,
+                  117,
+                  97,
+                  108,
+                  115
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "pool",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  112,
+                  111,
+                  111,
+                  108
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "pool.name",
+                "account": "Pool"
+              }
+            ]
+          }
+        },
+        {
+          "name": "receiving_custody",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  99,
+                  117,
+                  115,
+                  116,
+                  111,
+                  100,
+                  121
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "pool"
+              },
+              {
+                "kind": "account",
+                "path": "receiving_custody.mint",
+                "account": "Custody"
+              }
+            ]
+          }
+        },
+        {
+          "name": "receiving_custody_oracle_account"
+        },
+        {
+          "name": "receiving_custody_token_account",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  99,
+                  117,
+                  115,
+                  116,
+                  111,
+                  100,
+                  121,
+                  95,
+                  116,
+                  111,
+                  107,
+                  101,
+                  110,
+                  95,
+                  97,
+                  99,
+                  99,
+                  111,
+                  117,
+                  110,
+                  116
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "pool"
+              },
+              {
+                "kind": "account",
+                "path": "receiving_custody.mint",
+                "account": "Custody"
+              }
+            ]
+          }
+        },
+        {
+          "name": "dispensing_custody",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  99,
+                  117,
+                  115,
+                  116,
+                  111,
+                  100,
+                  121
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "pool"
+              },
+              {
+                "kind": "account",
+                "path": "dispensing_custody.mint",
+                "account": "Custody"
+              }
+            ]
+          }
+        },
+        {
+          "name": "dispensing_custody_oracle_account"
+        },
+        {
+          "name": "dispensing_custody_token_account",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  99,
+                  117,
+                  115,
+                  116,
+                  111,
+                  100,
+                  121,
+                  95,
+                  116,
+                  111,
+                  107,
+                  101,
+                  110,
+                  95,
+                  97,
+                  99,
+                  99,
+                  111,
+                  117,
+                  110,
+                  116
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "pool"
+              },
+              {
+                "kind": "account",
+                "path": "dispensing_custody.mint",
+                "account": "Custody"
+              }
+            ]
+          }
+        },
+        {
+          "name": "token_program",
+          "address": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"
+        }
+      ],
+      "args": [
+        {
+          "name": "params",
+          "type": {
+            "defined": {
+              "name": "SwapParams"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "test_init",
+      "discriminator": [
+        48,
+        51,
+        92,
+        122,
+        81,
+        19,
+        112,
+        41
+      ],
+      "accounts": [
+        {
+          "name": "upgrade_authority",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "multisig",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  109,
+                  117,
+                  108,
+                  116,
+                  105,
+                  115,
+                  105,
+                  103
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "transfer_authority",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  116,
+                  114,
+                  97,
+                  110,
+                  115,
+                  102,
+                  101,
+                  114,
+                  95,
+                  97,
+                  117,
+                  116,
+                  104,
+                  111,
+                  114,
+                  105,
+                  116,
+                  121
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "perpetuals",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  112,
+                  101,
+                  114,
+                  112,
+                  101,
+                  116,
+                  117,
+                  97,
+                  108,
+                  115
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        },
+        {
+          "name": "token_program",
+          "address": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"
+        }
+      ],
+      "args": [
+        {
+          "name": "params",
+          "type": {
+            "defined": {
+              "name": "TestInitParams"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "testing_edit_custody",
+      "discriminator": [
+        52,
+        140,
+        179,
+        232,
+        62,
+        61,
+        97,
+        71
+      ],
+      "accounts": [
+        {
+          "name": "admin",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "multisig",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  109,
+                  117,
+                  108,
+                  116,
+                  105,
+                  115,
+                  105,
+                  103
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "transfer_authority",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  116,
+                  114,
+                  97,
+                  110,
+                  115,
+                  102,
+                  101,
+                  114,
+                  95,
+                  97,
+                  117,
+                  116,
+                  104,
+                  111,
+                  114,
+                  105,
+                  116,
+                  121
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "perpetuals",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  112,
+                  101,
+                  114,
+                  112,
+                  101,
+                  116,
+                  117,
+                  97,
+                  108,
+                  115
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "pool",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  112,
+                  111,
+                  111,
+                  108
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "pool.name",
+                "account": "Pool"
+              }
+            ]
+          }
+        },
+        {
+          "name": "custody",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  99,
+                  117,
+                  115,
+                  116,
+                  111,
+                  100,
+                  121
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "pool"
+              },
+              {
+                "kind": "account",
+                "path": "custody_token_mint"
+              }
+            ]
+          }
+        },
+        {
+          "name": "custody_token_account",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  99,
+                  117,
+                  115,
+                  116,
+                  111,
+                  100,
+                  121,
+                  95,
+                  116,
+                  111,
+                  107,
+                  101,
+                  110,
+                  95,
+                  97,
+                  99,
+                  99,
+                  111,
+                  117,
+                  110,
+                  116
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "pool"
+              },
+              {
+                "kind": "account",
+                "path": "custody_token_mint"
+              }
+            ]
+          }
+        },
+        {
+          "name": "custody_token_mint"
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        },
+        {
+          "name": "token_program",
+          "address": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"
+        },
+        {
+          "name": "rent",
+          "address": "SysvarRent111111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "params",
+          "type": {
+            "defined": {
+              "name": "EditCustodyParams"
+            }
+          }
+        }
+      ],
+      "returns": "u8"
+    },
+    {
+      "name": "withdraw_fees",
+      "discriminator": [
+        198,
+        212,
+        171,
+        109,
+        144,
+        215,
+        174,
+        89
+      ],
+      "accounts": [
+        {
+          "name": "admin",
+          "signer": true
+        },
+        {
+          "name": "multisig",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  109,
+                  117,
+                  108,
+                  116,
+                  105,
+                  115,
+                  105,
+                  103
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "transfer_authority",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  116,
+                  114,
+                  97,
+                  110,
+                  115,
+                  102,
+                  101,
+                  114,
+                  95,
+                  97,
+                  117,
+                  116,
+                  104,
+                  111,
+                  114,
+                  105,
+                  116,
+                  121
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "perpetuals",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  112,
+                  101,
+                  114,
+                  112,
+                  101,
+                  116,
+                  117,
+                  97,
+                  108,
+                  115
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "pool",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  112,
+                  111,
+                  111,
+                  108
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "pool.name",
+                "account": "Pool"
+              }
+            ]
+          }
+        },
+        {
+          "name": "custody",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  99,
+                  117,
+                  115,
+                  116,
+                  111,
+                  100,
+                  121
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "pool"
+              },
+              {
+                "kind": "account",
+                "path": "custody.mint",
+                "account": "Custody"
+              }
+            ]
+          }
+        },
+        {
+          "name": "custody_token_account",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  99,
+                  117,
+                  115,
+                  116,
+                  111,
+                  100,
+                  121,
+                  95,
+                  116,
+                  111,
+                  107,
+                  101,
+                  110,
+                  95,
+                  97,
+                  99,
+                  99,
+                  111,
+                  117,
+                  110,
+                  116
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "pool"
+              },
+              {
+                "kind": "account",
+                "path": "custody.mint",
+                "account": "Custody"
+              }
+            ]
+          }
+        },
+        {
+          "name": "receiving_token_account",
+          "writable": true
+        },
+        {
+          "name": "token_program",
+          "address": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"
+        }
+      ],
+      "args": [
+        {
+          "name": "params",
+          "type": {
+            "defined": {
+              "name": "WithdrawFeesParams"
+            }
+          }
+        }
+      ],
+      "returns": "u8"
+    },
+    {
+      "name": "withdraw_sol_fees",
+      "discriminator": [
+        191,
+        53,
+        166,
+        97,
+        124,
+        212,
+        228,
+        219
+      ],
+      "accounts": [
+        {
+          "name": "admin",
+          "signer": true
+        },
+        {
+          "name": "multisig",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  109,
+                  117,
+                  108,
+                  116,
+                  105,
+                  115,
+                  105,
+                  103
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "transfer_authority",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  116,
+                  114,
+                  97,
+                  110,
+                  115,
+                  102,
+                  101,
+                  114,
+                  95,
+                  97,
+                  117,
+                  116,
+                  104,
+                  111,
+                  114,
+                  105,
+                  116,
+                  121
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "perpetuals",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  112,
+                  101,
+                  114,
+                  112,
+                  101,
+                  116,
+                  117,
+                  97,
+                  108,
+                  115
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "receiving_account",
+          "writable": true
+        }
+      ],
+      "args": [
+        {
+          "name": "params",
+          "type": {
+            "defined": {
+              "name": "WithdrawSolFeesParams"
+            }
+          }
+        }
+      ],
+      "returns": "u8"
+    }
+  ],
+  "accounts": [
+    {
+      "name": "Custody",
+      "discriminator": [
+        1,
+        184,
+        48,
+        81,
+        93,
+        131,
+        63,
+        145
+      ]
+    },
+    {
+      "name": "Multisig",
+      "discriminator": [
+        224,
+        116,
+        121,
+        186,
+        68,
+        161,
+        79,
+        236
+      ]
+    },
+    {
+      "name": "Perpetuals",
+      "discriminator": [
+        28,
+        167,
+        98,
+        191,
+        104,
+        82,
+        108,
+        196
+      ]
+    },
+    {
+      "name": "Pool",
+      "discriminator": [
+        241,
+        154,
+        109,
+        4,
+        17,
+        177,
+        109,
+        188
+      ]
+    },
+    {
+      "name": "Position",
+      "discriminator": [
+        170,
+        188,
+        143,
+        228,
+        122,
+        64,
+        247,
+        208
+      ]
+    },
+    {
+      "name": "TestOracle",
+      "discriminator": [
+        198,
+        49,
+        63,
+        134,
+        232,
+        251,
+        168,
+        28
+      ]
+    }
+  ],
+  "errors": [
+    {
+      "code": 6000,
+      "name": "MultisigAccountNotAuthorized",
+      "msg": "Account is not authorized to sign this instruction"
+    },
+    {
+      "code": 6001,
+      "name": "MultisigAlreadySigned",
+      "msg": "Account has already signed this instruction"
+    },
+    {
+      "code": 6002,
+      "name": "MultisigAlreadyExecuted",
+      "msg": "This instruction has already been executed"
+    },
+    {
+      "code": 6003,
+      "name": "MathOverflow",
+      "msg": "Overflow in arithmetic operation"
+    },
+    {
+      "code": 6004,
+      "name": "UnsupportedOracle",
+      "msg": "Unsupported price oracle"
+    },
+    {
+      "code": 6005,
+      "name": "InvalidOracleAccount",
+      "msg": "Invalid oracle account"
+    },
+    {
+      "code": 6006,
+      "name": "InvalidOracleState",
+      "msg": "Invalid oracle state"
+    },
+    {
+      "code": 6007,
+      "name": "StaleOraclePrice",
+      "msg": "Stale oracle price"
+    },
+    {
+      "code": 6008,
+      "name": "InvalidOraclePrice",
+      "msg": "Invalid oracle price"
+    },
+    {
+      "code": 6009,
+      "name": "InvalidEnvironment",
+      "msg": "Instruction is not allowed in production"
+    },
+    {
+      "code": 6010,
+      "name": "InvalidPoolState",
+      "msg": "Invalid pool state"
+    },
+    {
+      "code": 6011,
+      "name": "InvalidCustodyState",
+      "msg": "Invalid custody state"
+    },
+    {
+      "code": 6012,
+      "name": "InvalidPositionState",
+      "msg": "Invalid position state"
+    },
+    {
+      "code": 6013,
+      "name": "InvalidPerpetualsConfig",
+      "msg": "Invalid perpetuals config"
+    },
+    {
+      "code": 6014,
+      "name": "InvalidPoolConfig",
+      "msg": "Invalid pool config"
+    },
+    {
+      "code": 6015,
+      "name": "InvalidCustodyConfig",
+      "msg": "Invalid custody config"
+    },
+    {
+      "code": 6016,
+      "name": "InsufficientAmountReturned",
+      "msg": "Insufficient token amount returned"
+    },
+    {
+      "code": 6017,
+      "name": "MaxPriceSlippage",
+      "msg": "Price slippage limit exceeded"
+    },
+    {
+      "code": 6018,
+      "name": "MaxLeverage",
+      "msg": "Position leverage limit exceeded"
+    },
+    {
+      "code": 6019,
+      "name": "CustodyAmountLimit",
+      "msg": "Custody amount limit exceeded"
+    },
+    {
+      "code": 6020,
+      "name": "PositionAmountLimit",
+      "msg": "Position amount limit exceeded"
+    },
+    {
+      "code": 6021,
+      "name": "TokenRatioOutOfRange",
+      "msg": "Token ratio out of range"
+    },
+    {
+      "code": 6022,
+      "name": "UnsupportedToken",
+      "msg": "Token is not supported"
+    },
+    {
+      "code": 6023,
+      "name": "InstructionNotAllowed",
+      "msg": "Instruction is not allowed at this time"
+    },
+    {
+      "code": 6024,
+      "name": "MaxUtilization",
+      "msg": "Token utilization limit exceeded"
+    }
+  ],
+  "types": [
+    {
+      "name": "AddCollateralParams",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "collateral",
+            "type": "u64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "AddCustodyParams",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "is_stable",
+            "type": "bool"
+          },
+          {
+            "name": "oracle",
+            "type": {
+              "defined": {
+                "name": "OracleParams"
+              }
+            }
+          },
+          {
+            "name": "pricing",
+            "type": {
+              "defined": {
+                "name": "PricingParams"
+              }
+            }
+          },
+          {
+            "name": "permissions",
+            "type": {
+              "defined": {
+                "name": "Permissions"
+              }
+            }
+          },
+          {
+            "name": "fees",
+            "type": {
+              "defined": {
+                "name": "Fees"
+              }
+            }
+          },
+          {
+            "name": "borrow_rate",
+            "type": {
+              "defined": {
+                "name": "BorrowRateParams"
+              }
+            }
+          },
+          {
+            "name": "ratios",
+            "type": {
+              "vec": {
+                "defined": {
+                  "name": "TokenRatios"
+                }
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "AddLiquidityParams",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "amount_in",
+            "type": "u64"
+          },
+          {
+            "name": "min_lp_amount_out",
+            "type": "u64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "AddPoolParams",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "name",
+            "type": "string"
+          }
+        ]
+      }
+    },
+    {
+      "name": "AmountAndFee",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "amount",
+            "type": "u64"
+          },
+          {
+            "name": "fee",
+            "type": "u64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Assets",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "collateral",
+            "type": "u64"
+          },
+          {
+            "name": "protocol_fees",
+            "type": "u64"
+          },
+          {
+            "name": "owned",
+            "type": "u64"
+          },
+          {
+            "name": "locked",
+            "type": "u64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "BorrowRateParams",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "base_rate",
+            "type": "u64"
+          },
+          {
+            "name": "slope1",
+            "type": "u64"
+          },
+          {
+            "name": "slope2",
+            "type": "u64"
+          },
+          {
+            "name": "optimal_utilization",
+            "type": "u64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "BorrowRateState",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "current_rate",
+            "type": "u64"
+          },
+          {
+            "name": "cumulative_interest",
+            "type": "u128"
+          },
+          {
+            "name": "last_update",
+            "type": "i64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "ClosePositionParams",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "price",
+            "type": "u64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Custody",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "pool",
+            "type": "pubkey"
+          },
+          {
+            "name": "mint",
+            "type": "pubkey"
+          },
+          {
+            "name": "token_account",
+            "type": "pubkey"
+          },
+          {
+            "name": "decimals",
+            "type": "u8"
+          },
+          {
+            "name": "is_stable",
+            "type": "bool"
+          },
+          {
+            "name": "oracle",
+            "type": {
+              "defined": {
+                "name": "OracleParams"
+              }
+            }
+          },
+          {
+            "name": "pricing",
+            "type": {
+              "defined": {
+                "name": "PricingParams"
+              }
+            }
+          },
+          {
+            "name": "permissions",
+            "type": {
+              "defined": {
+                "name": "Permissions"
+              }
+            }
+          },
+          {
+            "name": "fees",
+            "type": {
+              "defined": {
+                "name": "Fees"
+              }
+            }
+          },
+          {
+            "name": "borrow_rate",
+            "type": {
+              "defined": {
+                "name": "BorrowRateParams"
+              }
+            }
+          },
+          {
+            "name": "assets",
+            "type": {
+              "defined": {
+                "name": "Assets"
+              }
+            }
+          },
+          {
+            "name": "collected_fees",
+            "type": {
+              "defined": {
+                "name": "FeesStats"
+              }
+            }
+          },
+          {
+            "name": "volume_stats",
+            "type": {
+              "defined": {
+                "name": "VolumeStats"
+              }
+            }
+          },
+          {
+            "name": "trade_stats",
+            "type": {
+              "defined": {
+                "name": "TradeStats"
+              }
+            }
+          },
+          {
+            "name": "long_positions",
+            "type": {
+              "defined": {
+                "name": "PositionStats"
+              }
+            }
+          },
+          {
+            "name": "short_positions",
+            "type": {
+              "defined": {
+                "name": "PositionStats"
+              }
+            }
+          },
+          {
+            "name": "borrow_rate_state",
+            "type": {
+              "defined": {
+                "name": "BorrowRateState"
+              }
+            }
+          },
+          {
+            "name": "bump",
+            "type": "u8"
+          },
+          {
+            "name": "token_account_bump",
+            "type": "u8"
+          }
+        ]
+      }
+    },
+    {
+      "name": "EditCustodyParams",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "is_stable",
+            "type": "bool"
+          },
+          {
+            "name": "oracle",
+            "type": {
+              "defined": {
+                "name": "OracleParams"
+              }
+            }
+          },
+          {
+            "name": "pricing",
+            "type": {
+              "defined": {
+                "name": "PricingParams"
+              }
+            }
+          },
+          {
+            "name": "permissions",
+            "type": {
+              "defined": {
+                "name": "Permissions"
+              }
+            }
+          },
+          {
+            "name": "fees",
+            "type": {
+              "defined": {
+                "name": "Fees"
+              }
+            }
+          },
+          {
+            "name": "borrow_rate",
+            "type": {
+              "defined": {
+                "name": "BorrowRateParams"
+              }
+            }
+          },
+          {
+            "name": "ratios",
+            "type": {
+              "vec": {
+                "defined": {
+                  "name": "TokenRatios"
+                }
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "Fees",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "mode",
+            "type": {
+              "defined": {
+                "name": "FeesMode"
+              }
+            }
+          },
+          {
+            "name": "ratio_mult",
+            "type": "u64"
+          },
+          {
+            "name": "utilization_mult",
+            "type": "u64"
+          },
+          {
+            "name": "swap_in",
+            "type": "u64"
+          },
+          {
+            "name": "swap_out",
+            "type": "u64"
+          },
+          {
+            "name": "stable_swap_in",
+            "type": "u64"
+          },
+          {
+            "name": "stable_swap_out",
+            "type": "u64"
+          },
+          {
+            "name": "add_liquidity",
+            "type": "u64"
+          },
+          {
+            "name": "remove_liquidity",
+            "type": "u64"
+          },
+          {
+            "name": "open_position",
+            "type": "u64"
+          },
+          {
+            "name": "close_position",
+            "type": "u64"
+          },
+          {
+            "name": "liquidation",
+            "type": "u64"
+          },
+          {
+            "name": "protocol_share",
+            "type": "u64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "FeesMode",
+      "type": {
+        "kind": "enum",
+        "variants": [
+          {
+            "name": "Fixed"
+          },
+          {
+            "name": "Linear"
+          }
+        ]
+      }
+    },
+    {
+      "name": "FeesStats",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "swap_usd",
+            "type": "u64"
+          },
+          {
+            "name": "add_liquidity_usd",
+            "type": "u64"
+          },
+          {
+            "name": "remove_liquidity_usd",
+            "type": "u64"
+          },
+          {
+            "name": "open_position_usd",
+            "type": "u64"
+          },
+          {
+            "name": "close_position_usd",
+            "type": "u64"
+          },
+          {
+            "name": "liquidation_usd",
+            "type": "u64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "GetAddLiquidityAmountAndFeeParams",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "amount_in",
+            "type": "u64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "GetAssetsUnderManagementParams",
+      "type": {
+        "kind": "struct",
+        "fields": []
+      }
+    },
+    {
+      "name": "GetEntryPriceAndFeeParams",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "collateral",
+            "type": "u64"
+          },
+          {
+            "name": "size",
+            "type": "u64"
+          },
+          {
+            "name": "side",
+            "type": {
+              "defined": {
+                "name": "Side"
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "GetExitPriceAndFeeParams",
+      "type": {
+        "kind": "struct",
+        "fields": []
+      }
+    },
+    {
+      "name": "GetLiquidationPriceParams",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "add_collateral",
+            "type": "u64"
+          },
+          {
+            "name": "remove_collateral",
+            "type": "u64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "GetLiquidationStateParams",
+      "type": {
+        "kind": "struct",
+        "fields": []
+      }
+    },
+    {
+      "name": "GetOraclePriceParams",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "ema",
+            "type": "bool"
+          }
+        ]
+      }
+    },
+    {
+      "name": "GetPnlParams",
+      "type": {
+        "kind": "struct",
+        "fields": []
+      }
+    },
+    {
+      "name": "GetRemoveLiquidityAmountAndFeeParams",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "lp_amount_in",
+            "type": "u64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "GetSwapAmountAndFeesParams",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "amount_in",
+            "type": "u64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "InitParams",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "min_signatures",
+            "type": "u8"
+          },
+          {
+            "name": "allow_swap",
+            "type": "bool"
+          },
+          {
+            "name": "allow_add_liquidity",
+            "type": "bool"
+          },
+          {
+            "name": "allow_remove_liquidity",
+            "type": "bool"
+          },
+          {
+            "name": "allow_open_position",
+            "type": "bool"
+          },
+          {
+            "name": "allow_close_position",
+            "type": "bool"
+          },
+          {
+            "name": "allow_pnl_withdrawal",
+            "type": "bool"
+          },
+          {
+            "name": "allow_collateral_withdrawal",
+            "type": "bool"
+          },
+          {
+            "name": "allow_size_change",
+            "type": "bool"
+          }
+        ]
+      }
+    },
+    {
+      "name": "LiquidateParams",
+      "type": {
+        "kind": "struct",
+        "fields": []
+      }
+    },
+    {
+      "name": "Multisig",
+      "serialization": "bytemuck",
+      "repr": {
+        "kind": "c",
+        "packed": true
+      },
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "num_signers",
+            "type": "u8"
+          },
+          {
+            "name": "num_signed",
+            "type": "u8"
+          },
+          {
+            "name": "min_signatures",
+            "type": "u8"
+          },
+          {
+            "name": "instruction_accounts_len",
+            "type": "u8"
+          },
+          {
+            "name": "instruction_data_len",
+            "type": "u16"
+          },
+          {
+            "name": "instruction_hash",
+            "type": "u64"
+          },
+          {
+            "name": "signers",
+            "type": {
+              "array": [
+                "pubkey",
+                6
+              ]
+            }
+          },
+          {
+            "name": "signed",
+            "type": {
+              "array": [
+                "u8",
+                6
+              ]
+            }
+          },
+          {
+            "name": "bump",
+            "type": "u8"
+          }
+        ]
+      }
+    },
+    {
+      "name": "NewPositionPricesAndFee",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "entry_price",
+            "type": "u64"
+          },
+          {
+            "name": "liquidation_price",
+            "type": "u64"
+          },
+          {
+            "name": "fee",
+            "type": "u64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "OpenPositionParams",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "price",
+            "type": "u64"
+          },
+          {
+            "name": "collateral",
+            "type": "u64"
+          },
+          {
+            "name": "size",
+            "type": "u64"
+          },
+          {
+            "name": "side",
+            "type": {
+              "defined": {
+                "name": "Side"
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "OracleParams",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "oracle_account",
+            "type": "pubkey"
+          },
+          {
+            "name": "oracle_type",
+            "type": {
+              "defined": {
+                "name": "OracleType"
+              }
+            }
+          },
+          {
+            "name": "max_price_error",
+            "type": "u64"
+          },
+          {
+            "name": "max_price_age_sec",
+            "type": "u32"
+          }
+        ]
+      }
+    },
+    {
+      "name": "OracleType",
+      "type": {
+        "kind": "enum",
+        "variants": [
+          {
+            "name": "None"
+          },
+          {
+            "name": "Test"
+          },
+          {
+            "name": "Pyth"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Permissions",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "allow_swap",
+            "type": "bool"
+          },
+          {
+            "name": "allow_add_liquidity",
+            "type": "bool"
+          },
+          {
+            "name": "allow_remove_liquidity",
+            "type": "bool"
+          },
+          {
+            "name": "allow_open_position",
+            "type": "bool"
+          },
+          {
+            "name": "allow_close_position",
+            "type": "bool"
+          },
+          {
+            "name": "allow_pnl_withdrawal",
+            "type": "bool"
+          },
+          {
+            "name": "allow_collateral_withdrawal",
+            "type": "bool"
+          },
+          {
+            "name": "allow_size_change",
+            "type": "bool"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Perpetuals",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "permissions",
+            "type": {
+              "defined": {
+                "name": "Permissions"
+              }
+            }
+          },
+          {
+            "name": "pools",
+            "type": {
+              "vec": "pubkey"
+            }
+          },
+          {
+            "name": "transfer_authority_bump",
+            "type": "u8"
+          },
+          {
+            "name": "perpetuals_bump",
+            "type": "u8"
+          },
+          {
+            "name": "inception_time",
+            "type": "i64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Pool",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "name",
+            "type": "string"
+          },
+          {
+            "name": "custodies",
+            "type": {
+              "vec": "pubkey"
+            }
+          },
+          {
+            "name": "ratios",
+            "type": {
+              "vec": {
+                "defined": {
+                  "name": "TokenRatios"
+                }
+              }
+            }
+          },
+          {
+            "name": "aum_usd",
+            "type": "u128"
+          },
+          {
+            "name": "bump",
+            "type": "u8"
+          },
+          {
+            "name": "lp_token_bump",
+            "type": "u8"
+          },
+          {
+            "name": "inception_time",
+            "type": "i64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Position",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "owner",
+            "type": "pubkey"
+          },
+          {
+            "name": "pool",
+            "type": "pubkey"
+          },
+          {
+            "name": "custody",
+            "type": "pubkey"
+          },
+          {
+            "name": "open_time",
+            "type": "i64"
+          },
+          {
+            "name": "update_time",
+            "type": "i64"
+          },
+          {
+            "name": "side",
+            "type": {
+              "defined": {
+                "name": "Side"
+              }
+            }
+          },
+          {
+            "name": "price",
+            "type": "u64"
+          },
+          {
+            "name": "size_usd",
+            "type": "u64"
+          },
+          {
+            "name": "collateral_usd",
+            "type": "u64"
+          },
+          {
+            "name": "unrealized_profit_usd",
+            "type": "u64"
+          },
+          {
+            "name": "unrealized_loss_usd",
+            "type": "u64"
+          },
+          {
+            "name": "cumulative_interest_snapshot",
+            "type": "u128"
+          },
+          {
+            "name": "locked_amount",
+            "type": "u64"
+          },
+          {
+            "name": "collateral_amount",
+            "type": "u64"
+          },
+          {
+            "name": "bump",
+            "type": "u8"
+          }
+        ]
+      }
+    },
+    {
+      "name": "PositionStats",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "open_positions",
+            "type": "u64"
+          },
+          {
+            "name": "collateral_usd",
+            "type": "u64"
+          },
+          {
+            "name": "size_usd",
+            "type": "u64"
+          },
+          {
+            "name": "locked_amount",
+            "type": "u64"
+          },
+          {
+            "name": "weighted_price",
+            "type": "u128"
+          },
+          {
+            "name": "total_quantity",
+            "type": "u128"
+          },
+          {
+            "name": "cumulative_interest_usd",
+            "type": "u64"
+          },
+          {
+            "name": "cumulative_interest_snapshot",
+            "type": "u128"
+          }
+        ]
+      }
+    },
+    {
+      "name": "PriceAndFee",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "price",
+            "type": "u64"
+          },
+          {
+            "name": "fee",
+            "type": "u64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "PricingParams",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "use_ema",
+            "type": "bool"
+          },
+          {
+            "name": "use_unrealized_pnl_in_aum",
+            "type": "bool"
+          },
+          {
+            "name": "trade_spread_long",
+            "type": "u64"
+          },
+          {
+            "name": "trade_spread_short",
+            "type": "u64"
+          },
+          {
+            "name": "swap_spread",
+            "type": "u64"
+          },
+          {
+            "name": "min_initial_leverage",
+            "type": "u64"
+          },
+          {
+            "name": "max_initial_leverage",
+            "type": "u64"
+          },
+          {
+            "name": "max_leverage",
+            "type": "u64"
+          },
+          {
+            "name": "max_payoff_mult",
+            "type": "u64"
+          },
+          {
+            "name": "max_utilization",
+            "type": "u64"
+          },
+          {
+            "name": "max_position_locked_usd",
+            "type": "u64"
+          },
+          {
+            "name": "max_total_locked_usd",
+            "type": "u64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "ProfitAndLoss",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "profit",
+            "type": "u64"
+          },
+          {
+            "name": "loss",
+            "type": "u64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "RemoveCollateralParams",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "collateral_usd",
+            "type": "u64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "RemoveCustodyParams",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "ratios",
+            "type": {
+              "vec": {
+                "defined": {
+                  "name": "TokenRatios"
+                }
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "RemoveLiquidityParams",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "lp_amount_in",
+            "type": "u64"
+          },
+          {
+            "name": "min_amount_out",
+            "type": "u64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "RemovePoolParams",
+      "type": {
+        "kind": "struct",
+        "fields": []
+      }
+    },
+    {
+      "name": "SetAdminSignersParams",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "min_signatures",
+            "type": "u8"
+          }
+        ]
+      }
+    },
+    {
+      "name": "SetCustodyConfigParams",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "is_stable",
+            "type": "bool"
+          },
+          {
+            "name": "oracle",
+            "type": {
+              "defined": {
+                "name": "OracleParams"
+              }
+            }
+          },
+          {
+            "name": "pricing",
+            "type": {
+              "defined": {
+                "name": "PricingParams"
+              }
+            }
+          },
+          {
+            "name": "permissions",
+            "type": {
+              "defined": {
+                "name": "Permissions"
+              }
+            }
+          },
+          {
+            "name": "fees",
+            "type": {
+              "defined": {
+                "name": "Fees"
+              }
+            }
+          },
+          {
+            "name": "borrow_rate",
+            "type": {
+              "defined": {
+                "name": "BorrowRateParams"
+              }
+            }
+          },
+          {
+            "name": "ratios",
+            "type": {
+              "vec": {
+                "defined": {
+                  "name": "TokenRatios"
+                }
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "SetPermissionsParams",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "allow_swap",
+            "type": "bool"
+          },
+          {
+            "name": "allow_add_liquidity",
+            "type": "bool"
+          },
+          {
+            "name": "allow_remove_liquidity",
+            "type": "bool"
+          },
+          {
+            "name": "allow_open_position",
+            "type": "bool"
+          },
+          {
+            "name": "allow_close_position",
+            "type": "bool"
+          },
+          {
+            "name": "allow_pnl_withdrawal",
+            "type": "bool"
+          },
+          {
+            "name": "allow_collateral_withdrawal",
+            "type": "bool"
+          },
+          {
+            "name": "allow_size_change",
+            "type": "bool"
+          }
+        ]
+      }
+    },
+    {
+      "name": "SetTestOraclePriceParams",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "price",
+            "type": "u64"
+          },
+          {
+            "name": "expo",
+            "type": "i32"
+          },
+          {
+            "name": "conf",
+            "type": "u64"
+          },
+          {
+            "name": "publish_time",
+            "type": "i64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "SetTestTimeParams",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "time",
+            "type": "i64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Side",
+      "type": {
+        "kind": "enum",
+        "variants": [
+          {
+            "name": "None"
+          },
+          {
+            "name": "Long"
+          },
+          {
+            "name": "Short"
+          }
+        ]
+      }
+    },
+    {
+      "name": "SwapAmountAndFees",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "amount_out",
+            "type": "u64"
+          },
+          {
+            "name": "fee_in",
+            "type": "u64"
+          },
+          {
+            "name": "fee_out",
+            "type": "u64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "SwapParams",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "amount_in",
+            "type": "u64"
+          },
+          {
+            "name": "min_amount_out",
+            "type": "u64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "TestInitParams",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "min_signatures",
+            "type": "u8"
+          },
+          {
+            "name": "allow_swap",
+            "type": "bool"
+          },
+          {
+            "name": "allow_add_liquidity",
+            "type": "bool"
+          },
+          {
+            "name": "allow_remove_liquidity",
+            "type": "bool"
+          },
+          {
+            "name": "allow_open_position",
+            "type": "bool"
+          },
+          {
+            "name": "allow_close_position",
+            "type": "bool"
+          },
+          {
+            "name": "allow_pnl_withdrawal",
+            "type": "bool"
+          },
+          {
+            "name": "allow_collateral_withdrawal",
+            "type": "bool"
+          },
+          {
+            "name": "allow_size_change",
+            "type": "bool"
+          }
+        ]
+      }
+    },
+    {
+      "name": "TestOracle",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "price",
+            "type": "u64"
+          },
+          {
+            "name": "expo",
+            "type": "i32"
+          },
+          {
+            "name": "conf",
+            "type": "u64"
+          },
+          {
+            "name": "publish_time",
+            "type": "i64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "TokenRatios",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "target",
+            "type": "u64"
+          },
+          {
+            "name": "min",
+            "type": "u64"
+          },
+          {
+            "name": "max",
+            "type": "u64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "TradeStats",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "profit_usd",
+            "type": "u64"
+          },
+          {
+            "name": "loss_usd",
+            "type": "u64"
+          },
+          {
+            "name": "oi_long_usd",
+            "type": "u64"
+          },
+          {
+            "name": "oi_short_usd",
+            "type": "u64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "VolumeStats",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "swap_usd",
+            "type": "u64"
+          },
+          {
+            "name": "add_liquidity_usd",
+            "type": "u64"
+          },
+          {
+            "name": "remove_liquidity_usd",
+            "type": "u64"
+          },
+          {
+            "name": "open_position_usd",
+            "type": "u64"
+          },
+          {
+            "name": "close_position_usd",
+            "type": "u64"
+          },
+          {
+            "name": "liquidation_usd",
+            "type": "u64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "WithdrawFeesParams",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "amount",
+            "type": "u64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "WithdrawSolFeesParams",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "amount",
+            "type": "u64"
+          }
+        ]
+      }
+    }
+  ]
+}
