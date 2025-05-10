@@ -1,6 +1,5 @@
 import { BN } from "@coral-xyz/anchor";
 import { clsx, type ClassValue } from "clsx"
-import IDL from "@/target/idl/hakata_perpetuals.json";
 import { twMerge } from "tailwind-merge"
 
 export function cn(...inputs: ClassValue[]) {

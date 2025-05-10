@@ -1,6 +1,7 @@
 import LiquidProvideForm from "@/components/vault/LiquidProvideForm";
 import PoolStats from "@/components/vault/PoolStats";
 import TitleHeader from "@/components/vault/TitleHeader";
+import SinglePoolTokens from "@/components/vault/SinglePoolTokens";
 
 const VaultPage = () => (
   <div className="min-h-screen bg-black text-white">
@@ -9,6 +10,7 @@ const VaultPage = () => (
       <div className="lg:col-span-3 space-y-4">
         <TitleHeader iconClassName="w-10 h-10" />
         <PoolStats />
+        <SinglePoolTokens />
       </div>
       {/* Order Panel - 1/4 width on large screens */}
       <div className="lg:col-span-1 space-y-4">
