@@ -12,6 +12,7 @@
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "@coral-xyz/anchor": "^0.31.1",
+    "@pythnetwork/client": "^2.22.1",
     "@radix-ui/react-accordion": "^1.2.0",
     "@radix-ui/react-alert-dialog": "^1.1.1",
     "@radix-ui/react-aspect-ratio": "^1.1.0",
@@ -51,7 +52,8 @@
     "next": "15.3.2",
     "tailwind-animate": "^0.2.10",
     "tailwind-merge": "^3.2.0",
-    "tailwindcss-animate": "^1.0.7"
+    "tailwindcss-animate": "^1.0.7",
+    "zustand": "^5.0.4"
   },
   "devDependencies": {
     "typescript": "^5",
