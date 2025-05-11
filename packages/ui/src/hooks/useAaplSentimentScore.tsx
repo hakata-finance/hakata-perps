@@ -11,7 +11,6 @@ export const useAaplSentimentScore = () => {
       try {
         const res = await fetch('/api/news/all');
         const data = await res.json();
-        console.log(data);
 
         const aaplScores: number[] = [];
         let aaplMentions = 0;

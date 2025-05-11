@@ -4,10 +4,12 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Plus, Maximize2, Minimize2, Settings } from "lucide-react";
 import VolatilityScore from './VolatilityScore';
 import SentimentScore from './SentimentScore';
+import { usePythPrices } from '@/hooks/usePythPrices';
 
 const timeFrames = ['1m', '30m', '1h', '4h', '1d', '1w'];
 
 const ChartPanel = () => {
+  const { prices } = usePythPrices();
   const [activeTimeFrame, setActiveTimeFrame] = useState('4h');
   const tradingViewRef = useRef<HTMLDivElement>(null);
 
@@ -51,7 +53,7 @@ const ChartPanel = () => {
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-2">
           <span className="text-xl font-bold">AAPL / USD</span>
-          <span className="text-[#C8FF00] font-bold">147.0811 0.17%</span>
+          <span className="text-[#C8FF00] font-bold">{ prices }</span>
         </div>
         <div className="flex items-center gap-4 text-sm text-gray-400">
           <VolatilityScore score={65} />

@@ -47,7 +47,7 @@ export function usePythPrices() {
   const tokens = [
     {
       symbol: 'AAPL',
-      pythTicker: 'Equtity.AAPL/USD'
+      pythTicker: 'Equity.US.AAPL/USD'
     },
   ];
 
@@ -60,6 +60,7 @@ export function usePythPrices() {
     const data = await pythClient.getData();
 
     for (const token of tokens) {
+      console.log(data);
       const price = data.productPrice.get(token.pythTicker);
       setPrices(token.symbol, price?.aggregate.price!)
     }
