@@ -48,10 +48,10 @@ export default function SinglePoolTokens() {
        
         console.log("positionTokenCustody :",positionTokenCustody?.symbol, positionTokenCustody, inputTokenAmtGlobal, inputLPTokenAmtGlobal )
         // const addObj = await View.getAddLiquidityAmountAndFee( new BN(inputTokenAmtGlobal * 10**(positionTokenCustody?.decimals!)), POOL_CONFIG.poolAddress, positionTokenCustody?.custodyAccount!)
-        console.log('addObj :>> ', addObj);
+        // console.log('addObj :>> ', addObj);
 
         // const removeObj = await View.getRemoveLiquidityAmountAndFee( new BN(inputLPTokenAmtGlobal * 10**(positionTokenCustody?.decimals!)), POOL_CONFIG.poolAddress, positionTokenCustody?.custodyAccount!)
-        console.log('removeObj :>> ', removeObj);
+        // console.log('removeObj :>> ', removeObj);
 
         const obj : PoolFeeData = {
           symbol : positionTokenCustody?.symbol!,

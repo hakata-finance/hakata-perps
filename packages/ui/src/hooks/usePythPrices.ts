@@ -46,6 +46,10 @@ export function usePythPrices() {
   // TODO: Remove moke
   const tokens = [
     {
+      symbol: 'USDC',
+      pythTicker: 'Crypto.USDC/USD'
+    },
+    {
       symbol: 'AAPL',
       pythTicker: 'Equity.US.AAPL/USD'
     },

@@ -8,15 +8,15 @@ import OrderForm from '@/components/terminal/OrderForm';
 import InfoPanel from '@/components/terminal/InfoPanel';
 
 const TradePage = () => {
-  const [showBreakingNews] = useState<boolean>(true);
+  // const [showBreakingNews] = useState<boolean>(true);
 
   return (
     <div className="min-h-screen bg-black text-white">
       {/* Breaking News Banner */}
-      <BreakingNewsBanner 
+      {/* <BreakingNewsBanner 
         message="BREAKING: Federal Reserve announces unexpected 50 basis point rate cut" 
         visible={showBreakingNews} 
-      />
+      /> */}
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-4 p-4">
         {/* Main Chart Area - 3/4 width on large screens */}
         <div className="lg:col-span-3 space-y-4">

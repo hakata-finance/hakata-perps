@@ -20,6 +20,14 @@ export const [poolPDA] = PublicKey.findProgramAddressSync(
   [Buffer.from(POOL_SEED)],
   PROGRAM_ID
 );
+export const perpetualsAddress = PublicKey.findProgramAddressSync(
+  [Buffer.from("perpetuals")],
+  PROGRAM_ID
+)[0];
+export const transferAuthorityAddress = PublicKey.findProgramAddressSync(
+  [Buffer.from("transfer_authority")],
+  PROGRAM_ID
+)[0];
 
 // Internal constants
 export const PERCENTAGE_DECIMALS = 4; // stableCoinPercentage

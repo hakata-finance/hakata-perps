@@ -42,6 +42,7 @@
     "@radix-ui/react-tooltip": "^1.1.4",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
+    "react-toastify": "^9.1.1",
     "@solana/web3.js": "^1.98.2",
     "@solana/spl-token": "^0.4.13",
     "@solana/wallet-adapter-base": "^0.9.24",

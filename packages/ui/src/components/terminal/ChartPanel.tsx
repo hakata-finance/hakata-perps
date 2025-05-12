@@ -53,7 +53,7 @@ const ChartPanel = () => {
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-2">
           <span className="text-xl font-bold">AAPL / USD</span>
-          <span className="text-[#C8FF00] font-bold">{ prices }</span>
+          <span className="text-[#C8FF00] font-bold">230.54</span>
         </div>
         <div className="flex items-center gap-4 text-sm text-gray-400">
           <VolatilityScore score={65} />
