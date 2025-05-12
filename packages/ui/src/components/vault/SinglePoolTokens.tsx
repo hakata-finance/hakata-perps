@@ -72,15 +72,14 @@ export default function SinglePoolTokens() {
     return <>Loading stats</>;
   } else {
     return (
-      <div className="w-full ">
-        <div className="bg-zinc-900 p-8">
+      <div className="w-full">
+        <div className="bg-[#121212] p-4 border border-gray-800 rounded-lg">
           <table className={twMerge("table-auto", "text-white", "w-full")}>
             <thead className={twMerge("text-xs", "text-zinc-500", "p-10")}>
-              <tr className="">
-                <td className="pb-5 text-white">Pool Tokens</td>
+              <tr className="text-gray-400">
+                <td className="pb-5">Pool Tokens</td>
                 <td className="pb-5">Deposit Fee</td>
                 <td className="pb-5">Withdraw Fee</td>
-
                 <td className="pb-5">Liquidity</td>
                 <td className="pb-5">Price</td>
                 <td className="pb-5">Amount</td>
@@ -110,29 +109,36 @@ export default function SinglePoolTokens() {
                         </div>
                       </div>
                     </td>
-
-                    <td> {poolFeesObj && poolFeesObj.length ? toUiDecimals(poolFeesObj[index]!.addFee, custody.decimals,4): 0 }  </td>
-
-                    <td> {poolFeesObj && poolFeesObj.length ? toUiDecimals(poolFeesObj[index]!.removeFee, custody.decimals,4) : 0 }  </td>
-
-
-                    <td> ${  poolData.custodyDetails.find(i => i.symbol== getTokenSymbol(token))?.totalUsdAmountUi ?? 0 } </td>
-
-                    <td> ${prices.get(token)?.toFixed(2)}</td>
-
+                    <td>
+                      {
+                        poolFeesObj && poolFeesObj.length ? toUiDecimals(poolFeesObj[index]!.addFee, custody.decimals,4): 0
+                      }
+                    </td>
+                    <td>
+                      {
+                        poolFeesObj && poolFeesObj.length ? toUiDecimals(poolFeesObj[index]!.removeFee, custody.decimals,4) : 0
+                      }
+                    </td>
+                    <td>
+                      ${
+                        poolData.custodyDetails.find(i => i.symbol== getTokenSymbol(token))?.totalUsdAmountUi ?? 0
+                      }
+                    </td>
+                    <td>${prices.get(token)?.toFixed(2)}</td>
                     <td>
                       {
                         poolData.custodyDetails.find(i => i.symbol== getTokenSymbol(token))?.assetsAmountUi ?? 0
                       }
                     </td>
-
                     <td>
                     { toUiDecimals(poolData.custodyDetails.find(i => i.symbol== getTokenSymbol(token))?.currentWeight!, PERCENTAGE_DECIMALS -2 , 2) ?? 0 }%
                       {" "}/{" "}
                     { toUiDecimals(poolData.custodyDetails.find(i => i.symbol== getTokenSymbol(token))?.targetWeight!, PERCENTAGE_DECIMALS -2 , 2 ) ?? 0 }%
                     </td>
                     <td>
-                    { poolData.custodyDetails.find(i => i.symbol== getTokenSymbol(token))?.utilization.toString() ?? 0 }%
+                      {
+                        poolData.custodyDetails.find(i => i.symbol == getTokenSymbol(token))?.utilization.toString() ?? 0
+                      }%
                     </td>
                   </tr>
                 );

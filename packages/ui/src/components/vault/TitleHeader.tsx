@@ -9,17 +9,17 @@ interface Props {
 
 export default function TitleHeader(props: Props) {
   return (
-    <div className="flex flex-col space-x-1">
-      <div className="flex flex-row items-center">
+    <div className="flex flex-col">
+      <div className="flex flex-row items-center space-x-2">
         <PoolTokens
           tokens={POOL_CONFIG.tokens.map(i => i.symbol)}
           className={props.iconClassName}
         />
-        <p className="font-medium text-2xl">
+        <p className="font-medium text-2xl text-white">
           {POOL_CONFIG.poolName}
         </p>
       </div>
-      <div className="text-s mt-3 flex flex-row font-medium text-zinc-500">
+      <div className="mt-2 flex flex-row font-medium text-gray-400 text-sm">
         <p>{tokenAddressToTokenE(POOL_CONFIG.tokens[0]!.mintKey.toBase58())}</p>
 
         {POOL_CONFIG.tokens

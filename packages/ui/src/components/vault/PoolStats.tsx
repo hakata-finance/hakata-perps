@@ -100,10 +100,10 @@ export default function PoolStats(props: Props) {
           },
         ].map(({ label, value }, i) => (
           <div
-            className={twMerge("border-zinc-700", "border-t", "pt-3")}
+            className={twMerge("border-gray-800", "border-t", "pt-3")}
             key={i}
           >
-            <div className="text-sm text-zinc-400">{label}</div>
+            <div className="text-sm text-gray-400">{label}</div>
             <div className="text-sm text-white">{value}</div>
           </div>
         ))}

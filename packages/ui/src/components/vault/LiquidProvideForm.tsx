@@ -40,7 +40,7 @@ const LiquidProvideForm = () => {
   const [activeTab, setActiveTab] = useState<Tab>(Tab.Add);
 
   const [payTokenBalance, setPayTokenBalance] = useState(0);
-  const userLpTokensBalance = useGlobalStore( state => state.userLpTokensBalance);
+  const userLpTokensBalance = useGlobalStore(state => state.userLpTokensBalance);
   
   const setInputTokenAmtGlobal = useGlobalStore(state => state.setInputTokenAmt);
   const setInputLPTokenAmtGlobal = useGlobalStore(state => state.setInputLPTokenAmt);
@@ -162,7 +162,7 @@ const LiquidProvideForm = () => {
       );
       setPayTokenBalance(tokenBalance);
 
-      // TODO:: creating LP POSITION FIRST TIME MAKE SURE TO SET IN STORE 
+      // TODO: Сreating LP POSITION FIRST TIME MAKE SURE TO SET IN STORE 
       // let lpBalance = await fetchLPBalance(
       //   POOL_CONFIG.lpTokenMint,
       //   publicKey!,
@@ -195,7 +195,6 @@ const LiquidProvideForm = () => {
             Remove
           </Button>
         </div>
-        
         <div>
           <p className="mb-2 text-gray-400 flex justify-between">
             You {activeTab === Tab.Add ? 'Add' : 'Remove'}
@@ -242,7 +241,6 @@ const LiquidProvideForm = () => {
             )}
           </div>
         </div>
-        
         <div>
         <p className="mb-2 text-gray-400 flex justify-between">
             You Receive
@@ -282,7 +280,6 @@ const LiquidProvideForm = () => {
             </div>
           </div>
         </div>
-        
         {connected ? (
           <Button 
             onClick={changeLiquidity}
