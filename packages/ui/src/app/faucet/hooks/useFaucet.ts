@@ -5,7 +5,7 @@ import {
   createAssociatedTokenAccount, 
   mintTo 
 } from "@solana/spl-token";
-import { toast } from "@/components/ui/use-toast";
+import { toast } from "react-toastify";
 
 // Get mint authority key from environment variable
 const getMintAuthorityKey = () => {
@@ -39,10 +39,13 @@ export const useFaucet = () => {
       setTokenMint(mintPubkey);
     } catch (error) {
       console.error("Error initializing token mint:", error);
-      toast({
-        title: "Error with token mint",
-        description: error instanceof Error ? error.message : "Unknown error",
-        variant: "destructive",
+      toast.error(`Error with token mint: ${error instanceof Error ? error.message : "Unknown error"}`, {
+        position: "top-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
       });
     }
   }, [network]);
@@ -100,20 +103,26 @@ export const useFaucet = () => {
       );
       
       console.log("Minted tokens:", mintTx);
-      toast({
-        title: "Success!",
-        description: `${amount} test USDC has been minted to your wallet`,
-        variant: "default",
+      toast.success(`${amount} test USDC has been minted to your wallet`, {
+        position: "top-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
       });
       
       // Reset amount after successful mint
       setAmount("");
     } catch (error) {
       console.error("Error minting tokens:", error);
-      toast({
-        title: "Error minting tokens",
-        description: error instanceof Error ? error.message : "Unknown error",
-        variant: "destructive",
+      toast.error(`Error minting tokens: ${error instanceof Error ? error.message : "Unknown error"}`, {
+        position: "top-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
       });
     } finally {
       setIsLoading(false);
