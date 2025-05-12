@@ -14,7 +14,6 @@ interface PythPriceState {
 
 const usePriceStore = create<PythPriceState>()(
   devtools((set, get) => ({
-
     prices: new Map<string, number>(),
     setPrices: (symbol: string, price: number) => set((state) => {
       if(get().prices.get(symbol) === price) return {prices: get().prices}
@@ -22,7 +21,6 @@ const usePriceStore = create<PythPriceState>()(
       nprices.set(symbol, price)
       return { prices: nprices }
     }),
-
   }),
     {
       serialize: {
@@ -49,10 +47,6 @@ export function usePythPrices() {
       symbol: 'USDC',
       pythTicker: 'Crypto.USDC/USD'
     },
-    {
-      symbol: 'AAPL',
-      pythTicker: 'Equity.US.AAPL/USD'
-    },
   ];
 
   const pythConnection = new PythConnection(connection, getPythProgramKeyForCluster('devnet'))
@@ -66,7 +60,7 @@ export function usePythPrices() {
     for (const token of tokens) {
       console.log(data);
       const price = data.productPrice.get(token.pythTicker);
-      setPrices(token.symbol, price?.aggregate.price!)
+      setPrices(token.symbol, price!.aggregate.price!)
     }
     // setPrices(prices)
   }

@@ -39,7 +39,8 @@ export class PoolAccount {
     this.lpTokenInfo = lpTokenInfo
   }
 
-  getLpStats(prices : any){
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  getLpStats(prices : any) {
     let stableCoinAmount = new BN(0);
     let totalPoolValueUsd = new BN(0);
 
@@ -98,7 +99,13 @@ export class PoolAccount {
   }
 
   // handle decimal and this should accept a list of prices probs map or object
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   getCustodyDetails(prices : any) {
+    if (!this.poolData || !Array.isArray(this.poolData.tokens)) {
+      console.warn("Pool data or tokens array is missing in PoolAccount.getCustodyDetails");
+      return [];
+    }
+    
     const custodyDetails = [];
     for (const custody of this.poolConfig.custodies) {
       const token = this.poolData.tokens.find(t => t.custody.toBase58() === custody.custodyAccount.toBase58());

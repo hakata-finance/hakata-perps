@@ -1,9 +1,26 @@
+import { BN, IdlAccounts } from "@coral-xyz/anchor";
+import { PublicKey } from "@solana/web3.js";
 import { HakataPerpetuals } from "@/target/types/hakata_perpetuals";
-import { IdlAccounts } from "@coral-xyz/anchor";
 
 // Accounts
-export type Pool = IdlAccounts<HakataPerpetuals>["pool"];
+// export type Pool = IdlAccounts<HakataPerpetuals>["pool"];
 export type Custody = IdlAccounts<HakataPerpetuals>["custody"];
+
+export interface Pool {
+  name: string;
+  tokens: Token[];
+  aumUsd: BN;
+  bump: number;
+  lpTokenBump: number;
+  inceptionTime: BN;
+}
+
+export interface Token {
+  custody: PublicKey;
+  targetRatio: BN;
+  minRatio: BN;
+  maxRatio: BN;
+}
 
 // Events
 
