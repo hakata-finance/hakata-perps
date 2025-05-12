@@ -1,0 +1,50 @@
+/* Custom React Toastify styles to match theme */
+
+.Toastify__toast {
+  border-radius: var(--radius);
+  border: 1px solid var(--color-gray-800);
+  padding: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.Toastify__toast--dark {
+  background-color: hsl(var(--card));
+  color: hsl(var(--card-foreground));
+}
+
+.Toastify__toast-body {
+  font-size: 0.875rem;
+  line-height: 1.5;
+}
+
+.Toastify__progress-bar--dark {
+  background: hsl(var(--primary));
+}
+
+.Toastify__close-button--dark {
+  color: hsl(var(--muted-foreground));
+  opacity: 0.7;
+}
+
+.Toastify__close-button--dark:hover,
+.Toastify__close-button--dark:focus {
+  opacity: 1;
+  color: hsl(var(--card-foreground));
+}
+
+/* Styling for different toast types */
+.Toastify__toast--success .Toastify__progress-bar {
+  background: hsl(var(--primary));
+}
+
+.Toastify__toast--error .Toastify__progress-bar {
+  background: hsl(var(--destructive));
+}
+
+.Toastify__toast--warning .Toastify__progress-bar {
+  background: hsl(var(--accent));
+}
+
+.Toastify__toast--info .Toastify__progress-bar {
+  background: hsl(var(--primary));
+} 

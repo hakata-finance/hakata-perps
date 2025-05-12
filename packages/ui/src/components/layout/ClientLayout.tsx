@@ -1,12 +1,12 @@
 'use client';
 
-import React from "react";
+import { ToastContainer } from "react-toastify";
 import ConnectionWalletProvider from "@/context/ConnectionWalletProvider";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import Navbar from "@/components/layout/Navbar";
 import { useHydrateStore } from "@/hooks/useHydrateStore";
-import { ToastContainer } from "react-toastify";
 import 'react-toastify/dist/ReactToastify.css';
+import '@/app/toastify-custom.css';
 
 export type ClientLayoutProps = {
   children: React.ReactNode;
@@ -31,6 +31,12 @@ const ClientLayout = ({ children }: ClientLayoutProps) => {
           pauseOnFocusLoss
           draggable
           pauseOnHover
+          theme="dark"
+          toastClassName="bg-[#121212] text-white"
+          style={{
+            '--toastify-color-dark': '#121212',
+            '--toastify-text-color-dark': 'var(--color-gray-400)',
+          } as React.CSSProperties}
         />
         <Navbar />
         <StoreUpdater />
