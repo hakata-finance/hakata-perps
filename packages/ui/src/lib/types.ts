@@ -25,5 +25,10 @@ export interface Token {
 // Events
 
 // Types
+export class Side {
+  static None = { none: {} };
+  static Long = { long: {} };
+  static Short = { short: {} };
+}
 
 // Custom Frontend Types
