@@ -30,7 +30,7 @@ import { sha256 } from "js-sha256";
 import { encode } from "bs58";
 import { readFileSync } from "fs";
 import { resolveOrCreateAssociatedTokenAddress } from "@orca-so/sdk";
-import { HakataPerpetuals } from "../../core/target/types/hakata_perpetuals";
+import { HakataPerpetuals } from "../../target/types/hakata_perpetuals";
 
 export type PositionSide = "long" | "short";
 
@@ -112,6 +112,7 @@ export class PerpetualsClient {
 
   getPool = async (name: string) => {
     console.log("pool:",this.getPoolKey(name).toBase58())
+    console.log("lp_token_mint: ", this.getPoolLpTokenKey(name));
     return this.program.account.pool.fetch(this.getPoolKey(name));
   };
 

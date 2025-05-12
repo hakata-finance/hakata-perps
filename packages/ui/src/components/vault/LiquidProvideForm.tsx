@@ -36,7 +36,6 @@ const LiquidProvideForm = () => {
 
   const [inputTokenAmount, setInputTokenAmount] = useState(0);
   const [inputLpTokenAmount, setInputLpTokenAmount] = useState(0);
-  const [outputAmount] = useState<string>("0");
   const [payToken, setPayToken] = useState(TOKEN_E_LIST[0]);
   const [activeTab, setActiveTab] = useState<Tab>(Tab.Add);
 
@@ -54,6 +53,7 @@ const LiquidProvideForm = () => {
         perpetual_program,
         wallet!,
         publicKey!,
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         signTransaction as any,
         connection,
         payToken!,
@@ -67,6 +67,7 @@ const LiquidProvideForm = () => {
         perpetual_program,
         wallet!,
         publicKey!,
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         signTransaction as any,
         connection,
         payToken!,

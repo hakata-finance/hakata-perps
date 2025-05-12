@@ -13,6 +13,7 @@ import {
   getAssociatedTokenAddress,
   NATIVE_MINT,
   TOKEN_PROGRAM_ID,
+  ASSOCIATED_TOKEN_PROGRAM_ID,
 } from "@solana/spl-token";
 import { SignerWalletAdapterProps } from "@solana/wallet-adapter-base";
 import { Wallet } from "@solana/wallet-adapter-react";
@@ -42,7 +43,7 @@ export async function removeLiquidity(
 
   const payTokenCustody = POOL_CONFIG.custodies.find(i => i.mintKey.toBase58()=== getTokenAddress(payToken));
   if(!payTokenCustody){
-    throw "poolTokenCustody  not found";
+    throw "poolTokenCustody not found";
   }
 
   const userCustodyTokenAccount = await getAssociatedTokenAddress(
@@ -66,13 +67,9 @@ export async function removeLiquidity(
     });
   }
 
-
-
   let transaction = new Transaction();
 
   try {
-   
-
     if (payToken == TokenE.SOL) {
       console.log("pay token name is sol", payToken);
 
@@ -89,13 +86,14 @@ export async function removeLiquidity(
             publicKey,
             associatedTokenAccount,
             publicKey,
-            NATIVE_MINT
+            NATIVE_MINT, 
+            TOKEN_PROGRAM_ID,
+            ASSOCIATED_TOKEN_PROGRAM_ID,
           )
         );
       } else {
         console.log("sol ata exists");
       }
-
     }
 
     if (liquidityAmountIn) {
@@ -109,6 +107,7 @@ export async function removeLiquidity(
             minAmountOut : minAmountOutBN
          })
         .accounts({
+          // @ts-expect-error - owner property exists in anchor program accounts
           owner: publicKey,
           receivingAccount: userCustodyTokenAccount, // user token account for custody token account
           lpTokenAccount,

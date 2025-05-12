@@ -6,9 +6,8 @@ Monorepo for Hakata Finance’s open‑source perpetual‑trading protocol on So
 
 ```text
 packages/
-├─ cli/   # CLI tool for basic blockchain operations
 ├─ core/   # Anchor program(s) and on‑chain tests
-└─ ui/          # front‑end
+└─ ui/     # front‑end
 README.md
 ```
 

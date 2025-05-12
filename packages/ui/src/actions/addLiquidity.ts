@@ -14,6 +14,7 @@ import {
   getAssociatedTokenAddress,
   NATIVE_MINT,
   TOKEN_PROGRAM_ID,
+  ASSOCIATED_TOKEN_PROGRAM_ID,
 } from "@solana/spl-token";
 import { SignerWalletAdapterProps } from "@solana/wallet-adapter-base";
 import { Wallet } from "@solana/wallet-adapter-react";
@@ -73,18 +74,18 @@ export async function addLiquidity(
     });
   }
 
-
-
   let transaction = new Transaction();
 
-  try {
+  try {    
     if (!(await checkIfAccountExists(lpTokenAccount, connection))) {
       transaction = transaction.add(
         createAssociatedTokenAccountInstruction(
           publicKey,
           lpTokenAccount,
           publicKey,
-          POOL_CONFIG.lpTokenMint
+          POOL_CONFIG.lpTokenMint,
+          TOKEN_PROGRAM_ID,
+          ASSOCIATED_TOKEN_PROGRAM_ID,
         )
       );
     }
@@ -105,7 +106,9 @@ export async function addLiquidity(
             publicKey,
             associatedTokenAccount,
             publicKey,
-            NATIVE_MINT
+            NATIVE_MINT,
+            TOKEN_PROGRAM_ID,
+            ASSOCIATED_TOKEN_PROGRAM_ID,
           )
         );
       } else {
@@ -142,6 +145,7 @@ export async function addLiquidity(
           minLpAmountOut
          })
         .accounts({
+          // @ts-expect-error - owner property exists in anchor program accounts
           owner: publicKey,
           fundingAccount: userCustodyTokenAccount, // user token account for custody token account
           lpTokenAccount,
