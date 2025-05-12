@@ -9,46 +9,30 @@
     {
       "programId": "CkawHJw5TVjUt1ggAZtuo3hgHBMptJHtxXk6A6nY5RWg",
       "cluster": "devnet",
-      "poolName": "TestHakataPool1",
-      "poolAddress": "5Fx69UTcU5c6AzLxuHZPYyaq3as43T8iPSR5cTg5c173",
-      "lpTokenMint": "GeaajhQrCXPQLqcTxWhQX1gdM2DKyA3nY8kuYDpoyvCK",
+      "poolName": "HakataPool",
+      "poolAddress": "5WSgmB2msuLMHHVVRiDkBzoPCPhVtPVFsjfak7ktNXeV",
+      "lpTokenMint": "75ifS7rihfE5iiUdM9sVGKHVcZreuVX5RBHLskC26UWx",
       "lpDecimals": 6,
       "perpetuals": "Cp2qR9nuMFKem8KhkKyKgeqpfWUm2ssNMKrT1La5r4WK",
       "multisig" : "4amNLu1hA3WWyLDeZ1u7sUuaE5wKuycBshKCsgT8AKLU",
       "tokens": [
         {
           "symbol": "USDC",
-          "mintKey": "Gh9ZwEmdLJ8DscKNTkTqPbNwLNNBjuSzaG9Vp2KGtKJr",
+          "mintKey": "3JVVADC6XJ9ddr5mRir9wKfT8cmxisRy8R31vGcGHTDQ",
           "decimals": 6,
           "isStable": true,
           "pythTicker" : "Crypto.USDC/USD"
-        },
-        {
-          "symbol": "SOL",
-          "mintKey": "So11111111111111111111111111111111111111112",
-          "decimals": 9,
-          "isStable": false,
-          "pythTicker" : "Crypto.SOL/USD"
         }
       ],
       "custodies": [
         {
-          "custodyAccount": "ALSWCkCqhfcvnjbeKKqZGh5mvYvFyArFzbSQGqBpE7mP",
-          "tokenAccount": "BNio8Q8rjyZVs8o8eKYo6GtpdKj1cKNoyKBKmApLmy8h",
+          "custodyAccount": "9UZjRoq9ZKWo13nQu6FtQiLxjLLG5bsVqmeWt2HjhGR3",
+          "tokenAccount": "3QMbKzbz5u4cjkx7pu7obnnLmJwczMvN8TGbeCqzT4ku",
           "symbol": "USDC",
-          "mintKey": "Gh9ZwEmdLJ8DscKNTkTqPbNwLNNBjuSzaG9Vp2KGtKJr",
+          "mintKey": "3JVVADC6XJ9ddr5mRir9wKfT8cmxisRy8R31vGcGHTDQ",
           "decimals": 6,
           "isStable": true,
           "oracleAddress": "5SSkXsEKQepHHAewytPVwdej4epN1nxgLVM84L4KXgy7"
-        },
-        {
-          "custodyAccount": "EScRDbRWRssgvXf2aY3RUENxSas3L8qAiG3deXYw5qZ2",
-          "tokenAccount": "Fbt6xjL26Bm5WJtbDcgkH413KXm1z8hZZqzxG83HTofH",
-          "symbol": "SOL",
-          "mintKey": "So11111111111111111111111111111111111111112",
-          "decimals": 9,
-          "isStable": false,
-          "oracleAddress": "J83w4HKfqxwcq3BEMMkPFSppX3gqekLyLJBexebFVkix"
         }
       ]
     }
