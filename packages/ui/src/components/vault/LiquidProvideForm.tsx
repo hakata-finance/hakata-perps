@@ -260,13 +260,13 @@ const LiquidProvideForm = () => {
                 <Input 
                   value={inputLpTokenAmount} 
                   className="bg-[#1E1E1E] border-gray-700 pr-16"
-                  readOnly
+                  disabled
                 />
               ) : (
                 <Input 
                   value={inputTokenAmount} 
                   className="bg-[#1E1E1E] border-gray-700 pr-16"
-                  readOnly
+                  disabled
                 />
               )}
             </div>
