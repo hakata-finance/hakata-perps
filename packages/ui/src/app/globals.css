@@ -2,7 +2,7 @@
 @import "tailwind-animate";
 
 html {
-  background-color: #09090b;
+  background-color: black;
 }
 
 @layer base {

@@ -11,7 +11,7 @@ const TradePage = () => {
   // const [showBreakingNews] = useState<boolean>(true);
 
   return (
-    <div className="min-h-screen bg-black text-white">
+    <div className="bg-black text-white h-[calc(100vh-73px)]">
       {/* Breaking News Banner */}
       {/* <BreakingNewsBanner 
         message="BREAKING: Federal Reserve announces unexpected 50 basis point rate cut" 
