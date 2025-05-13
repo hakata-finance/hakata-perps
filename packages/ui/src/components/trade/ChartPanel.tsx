@@ -2,20 +2,31 @@
 
 import React, { useEffect, useRef } from 'react';
 // import { Settings } from "lucide-react";
-// import { usePythPrices } from '@/hooks/usePythPrices';
+import { usePythPrices } from '@/hooks/usePythPrices';
 import VolatilityScore from './VolatilityScore';
 import SentimentScore from './SentimentScore';
+import { useDailyPriceStats } from '@/hooks/useDailyPriceStats';
+import { asTokenE } from '@/lib/TokenUtils';
+import { twMerge } from 'tailwind-merge';
 
-interface ChartPanelProps {
-  pair?: string;
+function formatNumber(number: number) {
+  const formatter = Intl.NumberFormat("en", {
+    maximumFractionDigits: 4,
+    minimumFractionDigits: 0,
+  });
+  
+  return formatter.format(number);
 }
 
-const ChartPanel = ({ pair = 'AAPL-usd' }: ChartPanelProps) => {
-  // const { prices } = usePythPrices();
+interface ChartPanelProps {
+  symbol?: string;
+  currency?: string;
+}
+
+const ChartPanel = ({ symbol = 'AAPL', currency = 'usd' }: ChartPanelProps) => {
+  const stats = useDailyPriceStats(asTokenE(symbol));
+  const { prices } = usePythPrices();
   const tradingViewRef = useRef<HTMLDivElement>(null);
-  
-  // Parse the pair to get symbol and currency
-  const [symbol, currency] = pair.split('-');
 
   useEffect(() => {
     // Remove any previous widget
@@ -57,7 +68,18 @@ const ChartPanel = ({ pair = 'AAPL-usd' }: ChartPanelProps) => {
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-2">
           <span className="text-xl font-bold">{symbol} / {currency.toUpperCase()}</span>
-          <span className="text-[#C8FF00] font-bold">230.54</span>
+          {/* <span className="text-[#C8FF00] font-bold">230.54</span> */}
+          <span className="text-[#C8FF00] font-bold">{prices.get(symbol)?.toFixed(3)}</span>
+          <span
+            className={twMerge(
+              "text-sm",
+              stats.change24hr < 0 && "text-rose-400",
+              stats.change24hr === 0 && "text-white",
+              stats.change24hr > 0 && "text-emerald-400"
+            )}
+          >
+            {formatNumber(stats.change24hr)}
+          </span>
         </div>
         <div className="flex items-center gap-4 text-sm text-gray-400">
           <VolatilityScore />

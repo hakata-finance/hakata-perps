@@ -47,6 +47,10 @@ export function usePythPrices() {
       symbol: 'USDC',
       pythTicker: 'Crypto.USDC/USD'
     },
+    {
+      symbol: 'AAPL',
+      pythTicker: 'Equity.US.AAPL/USD'
+    },
   ];
 
   const pythConnection = new PythConnection(connection, getPythProgramKeyForCluster('devnet'))

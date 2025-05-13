@@ -1,19 +1,20 @@
 'use client';
 
-import React from 'react';
+import { useParams } from 'next/navigation';
 import ChartPanel from '@/components/trade/ChartPanel';
 import PositionsPanel from '@/components/trade/PositionsPanel';
 import OrderForm from '@/components/trade/OrderForm';
 import InfoPanel from '@/components/trade/InfoPanel';
 
-interface TradePageProps {
-  params: {
-    pair: string;
-  };
-}
-
-const TradePage = ({ params }: TradePageProps) => {
+const TradePage = () => {
+  const params = useParams();
   const { pair } = params;
+
+  const [symbol, currency] = 
+    Array.isArray(pair) 
+      ? pair[0].split('-') 
+      : pair?.split('-') 
+    ?? ['', ''];
 
   return (
     <div className="bg-black text-white h-[calc(100vh-73px)]">
@@ -21,14 +22,14 @@ const TradePage = ({ params }: TradePageProps) => {
         {/* Main Chart Area - 3/4 width on large screens */}
         <div className="lg:col-span-3 space-y-4">
           {/* Chart Panel */}
-          <ChartPanel pair={pair} />
+          <ChartPanel symbol={symbol} currency={currency} />
           {/* Positions/Orders/History Tabs */}
           <PositionsPanel />
         </div>
         {/* Order Panel - 1/4 width on large screens */}
         <div className="lg:col-span-1 space-y-4">
           {/* Order Form */}
-          <OrderForm pair={pair} />
+          <OrderForm symbol={symbol} />
           {/* News and Insights Panel */}
           <InfoPanel />
         </div>

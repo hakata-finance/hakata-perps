@@ -11,19 +11,16 @@ import { UsdcIconCircle } from '../vault/UsdcIconCircle';
 import { AaplIconCircle } from './AaplIconCircle';
 
 interface OrderFormProps {
-  pair?: string;
+  symbol?: string;
 }
 
-const OrderForm = ({ pair = 'AAPL-usd' }: OrderFormProps) => {
+const OrderForm = ({ symbol = 'AAPL' }: OrderFormProps) => {
   const [leverage, setLeverage] = useState<number>(50);
   const [amount, setAmount] = useState<string>("10");
   const [estimatedSize, setEstimatedSize] = useState<string>("10");
   const [activeTab, setActiveTab] = useState<string>("market");
   const [activeSideTab, setActiveSideTab] = useState<string>("buy");
   const { connected } = useWallet();
-  
-  // Parse the pair to get symbol and currency
-  const [symbol] = pair.split('-');
   
   return (
     <div className="rounded-lg bg-[#121212] p-4 border border-gray-800">
