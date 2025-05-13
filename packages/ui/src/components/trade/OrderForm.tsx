@@ -1,26 +1,74 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { WalletMultiButton } from '@solana/wallet-adapter-react-ui';
-import { useWallet } from '@solana/wallet-adapter-react';
+import { useConnection, useWallet } from '@solana/wallet-adapter-react';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Input } from "@/components/ui/input";
 import { Slider } from "@/components/ui/slider";
 import { Button } from "@/components/ui/button";
 import { UsdcIconCircle } from '../vault/UsdcIconCircle';
 import { AaplIconCircle } from './AaplIconCircle';
+import { POOL_CONFIG } from '@/lib/constants';
+import { tokenAddressToTokenE } from '@/lib/TokenUtils';
+import { fetchTokenBalance } from '@/lib/retrieveData';
 
 interface OrderFormProps {
   symbol?: string;
 }
 
+const TOKEN_E_LIST = POOL_CONFIG.tokens.map((token) => {
+  return tokenAddressToTokenE(token.mintKey.toBase58());
+});
+
+enum InputType {
+  Pay = "pay",
+  Position = "position",
+}
+
 const OrderForm = ({ symbol = 'AAPL' }: OrderFormProps) => {
-  const [leverage, setLeverage] = useState<number>(50);
-  const [amount, setAmount] = useState<string>("10");
-  const [estimatedSize, setEstimatedSize] = useState<string>("10");
+  const { publicKey, connected} = useWallet();
+  const { connection } = useConnection();
+  const [leverage, setLeverage] = useState<number>(2);
+  const [payAmount, setPayAmount] = useState(0);
   const [activeTab, setActiveTab] = useState<string>("market");
   const [activeSideTab, setActiveSideTab] = useState<string>("buy");
-  const { connected } = useWallet();
+  const [payToken] = useState(TOKEN_E_LIST[0]);
+  const [payTokenBalance, setPayTokenBalance] = useState(0);
+  const [positionAmount, setPositionAmount] = useState(0);
+  const [lastChanged, setLastChanged] = useState<InputType>(InputType.Pay);
+
+  useEffect(() => {
+    if (lastChanged === InputType.Pay) {
+      setPositionAmount(payAmount * leverage);
+    } else {
+      setPayAmount(positionAmount / leverage);
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [leverage]);
+
+  useEffect(() => {
+    async function fetchData() {
+      const tokenBalance = await fetchTokenBalance(
+        payToken!,
+        publicKey!,
+        connection
+      );
+      setPayTokenBalance(tokenBalance);
+
+      // TODO: Сreating LP POSITION FIRST TIME MAKE SURE TO SET IN STORE 
+      // let lpBalance = await fetchLPBalance(
+      //   POOL_CONFIG.lpTokenMint,
+      //   publicKey!,
+      //   connection
+      // );
+      // setUserLpTokenBalance(lpBalance);
+    }
+
+    if (publicKey && payToken) {
+      fetchData();
+    }
+  }, [connection, payToken, publicKey]);
   
   return (
     <div className="rounded-lg bg-[#121212] p-4 border border-gray-800">
@@ -49,12 +97,22 @@ const OrderForm = ({ symbol = 'AAPL' }: OrderFormProps) => {
             </Button>
           </div>
           <div>
-            <p className="mb-2 text-gray-400">Pay</p>
+            <p className="mb-2 text-gray-400 flex justify-between">
+              Pay
+              {
+                connected && <span>Balance: {payTokenBalance.toFixed(2)}</span>
+              }
+            </p>
             <div className="flex items-center space-x-2">
               <div className="relative flex-grow">
                 <Input 
-                  value={amount} 
-                  onChange={(e) => setAmount(e.target.value)}
+                  type="number"
+                  value={payAmount} 
+                  onChange={(e) => {
+                    setPayAmount(Number(e.target.value));
+                    setPositionAmount(Number(e.target.value) * leverage);
+                    setLastChanged(InputType.Pay);
+                  }}
                   className="bg-[#1E1E1E] border-gray-700 pr-16"
                 />
               </div>
@@ -69,8 +127,12 @@ const OrderForm = ({ symbol = 'AAPL' }: OrderFormProps) => {
             <div className="flex items-center space-x-2">
               <div className="relative flex-grow">
                 <Input 
-                  value={estimatedSize} 
-                  onChange={(e) => setEstimatedSize(e.target.value)}
+                  value={positionAmount} 
+                  onChange={(e) => {
+                    setPayAmount(Number(e.target.value) / leverage);
+                    setPositionAmount(Number(e.target.value));
+                    setLastChanged(InputType.Position);
+                  }}
                   className="bg-[#1E1E1E] border-gray-700 pr-16"
                 />
               </div>
@@ -150,7 +212,7 @@ const OrderForm = ({ symbol = 'AAPL' }: OrderFormProps) => {
             </div>
           )}
         </TabsContent>
-        <TabsContent value="limit">
+        {/* <TabsContent value="limit">
           <div className="text-gray-400">
             <div className="grid grid-cols-2 gap-2 mb-4">
               <Button 
@@ -208,6 +270,12 @@ const OrderForm = ({ symbol = 'AAPL' }: OrderFormProps) => {
                       onChange={(e) => {
                         const value = Number(e.target.value);
                         if (value >= 1 && value <= 100) {
+                          if (lastChanged === InputType.Pay) {
+                            setPositionAmount(payAmount * value);
+                          } else {
+                            setPayAmount(positionAmount / value);
+                          }
+
                           setLeverage(value);
                         }
                       }}
@@ -224,7 +292,17 @@ const OrderForm = ({ symbol = 'AAPL' }: OrderFormProps) => {
                   min={1} 
                   max={100}
                   step={1}
-                  onValueChange={(value) => setLeverage(value[0])}
+                  onValueChange={(value) => {
+                    const x = value[0];
+
+                    if (lastChanged === InputType.Pay) {
+                      setPositionAmount(payAmount * x);
+                    } else {
+                      setPayAmount(positionAmount / x);
+                    }
+
+                    setLeverage(x);
+                  }}
                   className="my-4"
                 />
                 <div className="grid grid-cols-6 gap-2 text-sm">
@@ -270,7 +348,7 @@ const OrderForm = ({ symbol = 'AAPL' }: OrderFormProps) => {
               )}
             </div>
           </div>
-        </TabsContent>
+        </TabsContent> */}
       </Tabs>
     </div>
   );
