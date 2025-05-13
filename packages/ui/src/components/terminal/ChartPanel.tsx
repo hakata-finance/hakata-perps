@@ -1,17 +1,21 @@
 'use client';
 
-import React, { useState, useEffect, useRef } from 'react';
-import { Plus, Maximize2, Minimize2, Settings } from "lucide-react";
+import React, { useEffect, useRef } from 'react';
+import { Settings } from "lucide-react";
+// import { usePythPrices } from '@/hooks/usePythPrices';
 import VolatilityScore from './VolatilityScore';
 import SentimentScore from './SentimentScore';
-import { usePythPrices } from '@/hooks/usePythPrices';
 
-const timeFrames = ['1m', '30m', '1h', '4h', '1d', '1w'];
+interface ChartPanelProps {
+  pair?: string;
+}
 
-const ChartPanel = () => {
-  const { prices } = usePythPrices();
-  const [activeTimeFrame, setActiveTimeFrame] = useState('4h');
+const ChartPanel = ({ pair = 'AAPL-usd' }: ChartPanelProps) => {
+  // const { prices } = usePythPrices();
   const tradingViewRef = useRef<HTMLDivElement>(null);
+  
+  // Parse the pair to get symbol and currency
+  const [symbol, currency] = pair.split('-');
 
   useEffect(() => {
     // Remove any previous widget
@@ -22,12 +26,12 @@ const ChartPanel = () => {
     script.src = 'https://s3.tradingview.com/tv.js';
     script.async = true;
     script.onload = () => {
-      // @ts-ignore
+      // @ts-expect-error Error with TradingView
       if (window.TradingView) {
-        // @ts-ignore
+        // @ts-expect-error Error with TradingView
         new window.TradingView.widget({
           autosize: true,
-          symbol: 'NASDAQ:AAPL',
+          symbol: `PYTH:${symbol}`,
           interval: '60',
           timezone: 'Etc/UTC',
           theme: 'dark',
@@ -46,17 +50,17 @@ const ChartPanel = () => {
     return () => {
       document.body.removeChild(script);
     };
-  }, []);
+  }, [symbol]);
 
   return (
     <div className="rounded-lg bg-[#121212] p-4 border border-gray-800">
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-2">
-          <span className="text-xl font-bold">AAPL / USD</span>
+          <span className="text-xl font-bold">{symbol} / {currency.toUpperCase()}</span>
           <span className="text-[#C8FF00] font-bold">230.54</span>
         </div>
         <div className="flex items-center gap-4 text-sm text-gray-400">
-          <VolatilityScore score={65} />
+          <VolatilityScore />
           <SentimentScore />
           <button className="p-2 rounded-full hover:bg-gray-800" tabIndex={0} aria-label="Info" onClick={() => {}} onKeyDown={() => {}}>
             <Settings size={20} />

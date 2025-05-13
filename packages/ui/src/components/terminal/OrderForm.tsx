@@ -1,19 +1,26 @@
 'use client';
 
-import React, { useState } from 'react';
+import { useState } from 'react';
+import { WalletMultiButton } from '@solana/wallet-adapter-react-ui';
+import { useWallet } from '@solana/wallet-adapter-react';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Input } from "@/components/ui/input";
 import { Slider } from "@/components/ui/slider";
 import { Button } from "@/components/ui/button";
-import { WalletMultiButton } from '@solana/wallet-adapter-react-ui';
-import { useWallet } from '@solana/wallet-adapter-react';
 
-const OrderForm = () => {
+interface OrderFormProps {
+  pair?: string;
+}
+
+const OrderForm = ({ pair = 'AAPL-usd' }: OrderFormProps) => {
   const [leverage, setLeverage] = useState<number>(50);
   const [amount, setAmount] = useState<string>("10");
   const [activeTab, setActiveTab] = useState<string>("market");
   const [activeSideTab, setActiveSideTab] = useState<string>("buy");
   const { connected } = useWallet();
+  
+  // Parse the pair to get symbol and currency
+  // const [symbol, currency] = pair.split('-');
   
   return (
     <div className="rounded-lg bg-[#121212] p-4 border border-gray-800">
