@@ -9,9 +9,14 @@ import { Slider } from "@/components/ui/slider";
 import { Button } from "@/components/ui/button";
 import { UsdcIconCircle } from '../vault/UsdcIconCircle';
 import { AaplIconCircle } from './AaplIconCircle';
-import { POOL_CONFIG } from '@/lib/constants';
-import { tokenAddressToTokenE } from '@/lib/TokenUtils';
+import { POOL_CONFIG, PRICE_DECIMALS } from '@/lib/constants';
+import { getTokenAddress, tokenAddressToTokenE, TokenE } from '@/lib/TokenUtils';
 import { fetchTokenBalance } from '@/lib/retrieveData';
+import { openPosition } from '@/actions/openPosition';
+import { BN } from '@coral-xyz/anchor';
+import { sleep } from '@/lib/TransactionHandlers';
+import { usePositions } from '@/hooks/usePositions';
+import { usePythPrices } from '@/hooks/usePythPrices';
 
 interface OrderFormProps {
   symbol?: string;
@@ -27,7 +32,7 @@ enum InputType {
 }
 
 const OrderForm = ({ symbol = 'AAPL' }: OrderFormProps) => {
-  const { publicKey, connected} = useWallet();
+  const { wallet, publicKey, signTransaction, connected } = useWallet();
   const { connection } = useConnection();
   const [leverage, setLeverage] = useState<number>(2);
   const [payAmount, setPayAmount] = useState(0);
@@ -37,6 +42,9 @@ const OrderForm = ({ symbol = 'AAPL' }: OrderFormProps) => {
   const [payTokenBalance, setPayTokenBalance] = useState(0);
   const [positionAmount, setPositionAmount] = useState(0);
   const [lastChanged, setLastChanged] = useState<InputType>(InputType.Pay);
+  const [positionToken] = useState(TokenE.AAPL);
+  const { fetchPositions } = usePositions();
+  const { prices } = usePythPrices();
 
   useEffect(() => {
     if (lastChanged === InputType.Pay) {
@@ -70,6 +78,31 @@ const OrderForm = ({ symbol = 'AAPL' }: OrderFormProps) => {
     }
   }, [connection, payToken, publicKey]);
   
+  async function handleOpenPosition() {
+    const positionTokenCustody = POOL_CONFIG.custodies.find(i => i.mintKey.toBase58() === getTokenAddress(positionToken));
+
+    await openPosition(
+      wallet!,
+      publicKey,
+      signTransaction,
+      connection,
+      payToken,
+      positionToken,
+      // eslint-disable-next-line @typescript-eslint/no-non-null-asserted-optional-chain
+      new BN(payAmount * 10**(positionTokenCustody?.decimals!)),
+      // eslint-disable-next-line @typescript-eslint/no-non-null-asserted-optional-chain
+      new BN(positionAmount * 10**(positionTokenCustody?.decimals!)),
+      new BN((prices.get(payToken) ?? 0) * 10 ** PRICE_DECIMALS),
+      activeSideTab
+    );
+
+    // fetch and add to store
+    console.log("sleep 5sec");
+    await sleep(5000);
+    console.log("after sleep calling fetchPositions");
+    fetchPositions();
+  }
+
   return (
     <div className="rounded-lg bg-[#121212] p-4 border border-gray-800">
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
@@ -203,8 +236,10 @@ const OrderForm = ({ symbol = 'AAPL' }: OrderFormProps) => {
               activeSideTab === 'buy' 
                 ? 'bg-[#C8FF00] hover:bg-[#BDFF00] text-black' 
                 : 'bg-[#FF6666] hover:bg-[#FF5555] text-white'
-            }`}>
-              {activeSideTab === 'buy' ? 'Buy / Long' : 'Sell / Short'}
+              }`}
+              onClick={handleOpenPosition}
+            >
+              Open Position
             </Button>
           ) : (
             <div className="orderform-wallet-btn">
