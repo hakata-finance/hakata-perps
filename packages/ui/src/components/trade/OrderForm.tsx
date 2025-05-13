@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Slider } from "@/components/ui/slider";
 import { Button } from "@/components/ui/button";
 import { UsdcIconCircle } from '../vault/UsdcIconCircle';
+import { AaplIconCircle } from './AaplIconCircle';
 
 interface OrderFormProps {
   pair?: string;
@@ -22,7 +23,7 @@ const OrderForm = ({ pair = 'AAPL-usd' }: OrderFormProps) => {
   const { connected } = useWallet();
   
   // Parse the pair to get symbol and currency
-  // const [symbol, currency] = pair.split('-');
+  const [symbol, currency] = pair.split('-');
   
   return (
     <div className="rounded-lg bg-[#121212] p-4 border border-gray-800">
@@ -77,8 +78,8 @@ const OrderForm = ({ pair = 'AAPL-usd' }: OrderFormProps) => {
                 />
               </div>
               <div className="flex items-center px-4 py-2 bg-[#1E1E1E] rounded-md">
-                <UsdcIconCircle className="h-5 w-5 mr-2" />
-                <span>USDC</span>
+                <AaplIconCircle className="h-5 w-5 mr-2" />
+                <span>{symbol}</span>
               </div>
             </div>
           </div>
