@@ -1,6 +1,6 @@
 
 import { useMemo } from 'react';
-import { NewsItemProps } from '../components/terminal/NewsItem';
+import { NewsItemProps } from '../components/trade/NewsItem';
 
 export const useNewsFiltering = (allNews: NewsItemProps[], activeTab: string) => {
   const filteredNews = useMemo(() => {

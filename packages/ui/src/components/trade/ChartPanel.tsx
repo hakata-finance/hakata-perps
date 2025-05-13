@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useEffect, useRef } from 'react';
-import { Settings } from "lucide-react";
+// import { Settings } from "lucide-react";
 // import { usePythPrices } from '@/hooks/usePythPrices';
 import VolatilityScore from './VolatilityScore';
 import SentimentScore from './SentimentScore';
@@ -62,9 +62,9 @@ const ChartPanel = ({ pair = 'AAPL-usd' }: ChartPanelProps) => {
         <div className="flex items-center gap-4 text-sm text-gray-400">
           <VolatilityScore />
           <SentimentScore />
-          <button className="p-2 rounded-full hover:bg-gray-800" tabIndex={0} aria-label="Info" onClick={() => {}} onKeyDown={() => {}}>
+          {/* <button className="p-2 rounded-full hover:bg-gray-800" tabIndex={0} aria-label="Info" onClick={() => {}} onKeyDown={() => {}}>
             <Settings size={20} />
-          </button>
+          </button> */}
         </div>
       </div>
       {/* <div className="flex items-center gap-2 mb-4 text-sm">

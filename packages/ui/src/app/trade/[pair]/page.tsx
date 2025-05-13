@@ -1,10 +1,10 @@
 'use client';
 
 import React from 'react';
-import ChartPanel from '@/components/terminal/ChartPanel';
-import PositionsPanel from '@/components/terminal/PositionsPanel';
-import OrderForm from '@/components/terminal/OrderForm';
-import InfoPanel from '@/components/terminal/InfoPanel';
+import ChartPanel from '@/components/trade/ChartPanel';
+import PositionsPanel from '@/components/trade/PositionsPanel';
+import OrderForm from '@/components/trade/OrderForm';
+import InfoPanel from '@/components/trade/InfoPanel';
 
 interface TradePageProps {
   params: {
