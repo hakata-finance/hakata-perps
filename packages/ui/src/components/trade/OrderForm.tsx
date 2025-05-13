@@ -23,7 +23,7 @@ const OrderForm = ({ pair = 'AAPL-usd' }: OrderFormProps) => {
   const { connected } = useWallet();
   
   // Parse the pair to get symbol and currency
-  const [symbol, currency] = pair.split('-');
+  const [symbol] = pair.split('-');
   
   return (
     <div className="rounded-lg bg-[#121212] p-4 border border-gray-800">
@@ -86,7 +86,23 @@ const OrderForm = ({ pair = 'AAPL-usd' }: OrderFormProps) => {
           <div>
             <div className="flex justify-between mb-2">
               <p className="text-gray-400">Leverage</p>
-              <p>{leverage}x</p>
+              <div className="w-16 relative">
+                <Input
+                  type="number"
+                  value={leverage}
+                  onChange={(e) => {
+                    const value = Number(e.target.value);
+                    if (value >= 1 && value <= 100) {
+                      setLeverage(value);
+                    }
+                  }}
+                  min={1}
+                  max={100}
+                  className="h-7 px-2 pr-6 text-center bg-[#1E1E1E] border-gray-700"
+                  aria-label="Leverage value"
+                />
+                <span className="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-400">x</span>
+              </div>
             </div>
             <Slider 
               value={[leverage]} 
@@ -97,12 +113,30 @@ const OrderForm = ({ pair = 'AAPL-usd' }: OrderFormProps) => {
               className="my-4"
             />
             <div className="grid grid-cols-6 gap-2 text-sm">
-              <button className="px-2 py-1 rounded bg-gray-800 hover:bg-gray-700">3x</button>
-              <button className="px-2 py-1 rounded bg-gray-800 hover:bg-gray-700">5x</button>
-              <button className="px-2 py-1 rounded bg-gray-800 hover:bg-gray-700">10x</button>
-              <button className="px-2 py-1 rounded bg-gray-800 hover:bg-gray-700">25x</button>
-              <button className="px-2 py-1 rounded bg-gray-800 hover:bg-gray-700">50x</button>
-              <button className="px-2 py-1 rounded bg-gray-800 hover:bg-gray-700">100x</button>
+              <button 
+                className="px-2 py-1 rounded bg-gray-800 hover:bg-gray-700"
+                onClick={() => setLeverage(3)}
+              >3x</button>
+              <button 
+                className="px-2 py-1 rounded bg-gray-800 hover:bg-gray-700"
+                onClick={() => setLeverage(5)}
+              >5x</button>
+              <button 
+                className="px-2 py-1 rounded bg-gray-800 hover:bg-gray-700"
+                onClick={() => setLeverage(10)}
+              >10x</button>
+              <button 
+                className="px-2 py-1 rounded bg-gray-800 hover:bg-gray-700"
+                onClick={() => setLeverage(25)}
+              >25x</button>
+              <button 
+                className="px-2 py-1 rounded bg-gray-800 hover:bg-gray-700"
+                onClick={() => setLeverage(50)}
+              >50x</button>
+              <button 
+                className="px-2 py-1 rounded bg-gray-800 hover:bg-gray-700"
+                onClick={() => setLeverage(100)}
+              >100x</button>
             </div>
           </div>
           {connected ? (
@@ -170,7 +204,23 @@ const OrderForm = ({ pair = 'AAPL-usd' }: OrderFormProps) => {
               <div className="pt-2">
                 <div className="flex justify-between mb-2">
                   <p className="text-gray-400">Leverage</p>
-                  <p>{leverage}x</p>
+                  <div className="w-16 relative">
+                    <Input
+                      type="number"
+                      value={leverage}
+                      onChange={(e) => {
+                        const value = Number(e.target.value);
+                        if (value >= 1 && value <= 100) {
+                          setLeverage(value);
+                        }
+                      }}
+                      min={1}
+                      max={100}
+                      className="h-7 px-2 pr-6 text-center bg-[#1E1E1E] border-gray-700"
+                      aria-label="Leverage value"
+                    />
+                    <span className="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-400">x</span>
+                  </div>
                 </div>
                 <Slider 
                   value={[leverage]} 
@@ -181,12 +231,30 @@ const OrderForm = ({ pair = 'AAPL-usd' }: OrderFormProps) => {
                   className="my-4"
                 />
                 <div className="grid grid-cols-6 gap-2 text-sm">
-                  <button className="px-1 py-1 rounded bg-gray-800 hover:bg-gray-700">3x</button>
-                  <button className="px-1 py-1 rounded bg-gray-800 hover:bg-gray-700">5x</button>
-                  <button className="px-1 py-1 rounded bg-gray-800 hover:bg-gray-700">10x</button>
-                  <button className="px-1 py-1 rounded bg-gray-800 hover:bg-gray-700">25x</button>
-                  <button className="px-1 py-1 rounded bg-gray-800 hover:bg-gray-700">50x</button>
-                  <button className="px-1 py-1 rounded bg-gray-800 hover:bg-gray-700">100x</button>
+                  <button 
+                    className="px-1 py-1 rounded bg-gray-800 hover:bg-gray-700"
+                    onClick={() => setLeverage(3)}
+                  >3x</button>
+                  <button 
+                    className="px-1 py-1 rounded bg-gray-800 hover:bg-gray-700"
+                    onClick={() => setLeverage(5)}
+                  >5x</button>
+                  <button 
+                    className="px-1 py-1 rounded bg-gray-800 hover:bg-gray-700"
+                    onClick={() => setLeverage(10)}
+                  >10x</button>
+                  <button 
+                    className="px-1 py-1 rounded bg-gray-800 hover:bg-gray-700"
+                    onClick={() => setLeverage(25)}
+                  >25x</button>
+                  <button 
+                    className="px-1 py-1 rounded bg-gray-800 hover:bg-gray-700"
+                    onClick={() => setLeverage(50)}
+                  >50x</button>
+                  <button 
+                    className="px-1 py-1 rounded bg-gray-800 hover:bg-gray-700"
+                    onClick={() => setLeverage(100)}
+                  >100x</button>
                 </div>
               </div>
               
