@@ -15,8 +15,8 @@ const TradePage = () => {
 
   const [symbol, currency] = 
     Array.isArray(pair) 
-      ? pair[0].split('-') 
-      : pair?.split('-') 
+      ? (pair[0]?.split('-') || ['', '']) 
+      : (typeof pair === 'string' ? pair.split('-') : ['', ''])
     ?? ['', ''];
 
   return (
