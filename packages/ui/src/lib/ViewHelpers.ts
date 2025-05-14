@@ -163,7 +163,7 @@ export class ViewHelper {
     // console.log("fee payer : ",DEFAULT_PERPS_USER.publicKey.toBase58())
 
     const transaction : Transaction = await program.methods
-      // @ts-ignore
+      // @ts-expect-error - Method name mismatch between IDL and actual implementation
       .getEntryPriceAndFee({
         collateral,
         size,
