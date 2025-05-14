@@ -3,6 +3,8 @@ import PoolStats from "@/components/vault/PoolStats";
 import TitleHeader from "@/components/vault/TitleHeader";
 import SinglePoolTokens from "@/components/vault/SinglePoolTokens";
 
+export const runtime = 'edge';
+
 const VaultPage = () => (
   <div className="h-[calc(100vh-73px)] bg-black text-white">
     <div className="container mx-auto grid grid-cols-1 lg:grid-cols-4 gap-4 p-4">
