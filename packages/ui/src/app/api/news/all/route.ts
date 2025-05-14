@@ -1,6 +1,8 @@
 import { NextResponse } from 'next/server';
 import { mockNews } from './mock';
 
+export const runtime = "edge";
+
 export async function GET() {
   return NextResponse.json(mockNews.feed);
 

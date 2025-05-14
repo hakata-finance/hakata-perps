@@ -1,4 +1,6 @@
 'use client';
+export const runtime = "edge";
+
 
 import { useParams } from 'next/navigation';
 import ChartPanel from '@/components/trade/ChartPanel';
