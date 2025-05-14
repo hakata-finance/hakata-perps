@@ -1,5 +1,7 @@
 'use client';
 
+export const runtime = 'edge';
+
 const LeaderboardPage = () => {
   return (
     <div className="flex flex-col items-center justify-center min-h-[calc(100vh-73px)] bg-black text-white p-4">

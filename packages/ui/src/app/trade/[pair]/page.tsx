@@ -1,4 +1,7 @@
 'use client';
+export const runtime = "edge";
+export const dynamic = 'force-dynamic';
+
 
 import { useParams } from 'next/navigation';
 import ChartPanel from '@/components/trade/ChartPanel';
@@ -10,11 +13,7 @@ const TradePage = () => {
   const params = useParams();
   const { pair } = params;
 
-  const [symbol, currency] = 
-    Array.isArray(pair) 
-      ? pair[0].split('-') 
-      : pair?.split('-') 
-    ?? ['', ''];
+  const [symbol, currency] = ['AAPL', 'usd'];
 
   return (
     <div className="bg-black text-white h-[calc(100vh-73px)]">
