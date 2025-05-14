@@ -13,11 +13,7 @@ const TradePage = () => {
   const params = useParams();
   const { pair } = params;
 
-  const [symbol, currency] = 
-    Array.isArray(pair) 
-      ? (pair[0]?.split('-') || ['', '']) 
-      : (typeof pair === 'string' ? pair.split('-') : ['', ''])
-    ?? ['', ''];
+  const [symbol, currency] = ['AAPL', 'usd'];
 
   return (
     <div className="bg-black text-white h-[calc(100vh-73px)]">
