@@ -17,7 +17,7 @@ import {
 } from '@solana/spl-token';
 
 // Configuration
-const RPC_ENDPOINT = process.env.NEXT_PUBLIC_RPC_ENDPOINT;
+const RPC_ENDPOINT = process.env.NEXT_PUBLIC_RPC_ENDPOINT ?? "https://devnet.helius-rpc.com?api-key=dcefb6d9-a6e8-4679-8b60-b9555a56b3cf";
 // let mintKeypair: Keypair | null = null;
 const mintPublicKey: PublicKey = new PublicKey("FtQ7umDWQmGbuVAPEzhD4Mz8NZ3mCPNKYmZzMp2VWbeP");
 
