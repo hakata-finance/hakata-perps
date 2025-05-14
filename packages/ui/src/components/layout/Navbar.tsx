@@ -12,6 +12,7 @@ import { getCxpBalance } from '@/lib/compressed-tokens';
 const navLinks = [
   { label: 'Trade', href: '/trade' },
   { label: 'Vault', href: '/vault' },
+  { label: 'Leaderboard', href: '/leaderboard' },
   { label: 'Faucet', href: '/faucet' },
 ];
 
