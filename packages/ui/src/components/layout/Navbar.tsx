@@ -58,7 +58,8 @@ const Navbar = () => {
       </div>
       <ul className="flex gap-4 ml-6 mr-auto">
           {navLinks.map((link) => {
-            const isSelected = pathname === link.href;
+            const isSelected = pathname.includes(link.href);
+
             return (
               <li key={link.label}>
                 <Link
