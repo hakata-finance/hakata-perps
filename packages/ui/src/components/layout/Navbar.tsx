@@ -1,8 +1,13 @@
+'use client';
+
 import Image from 'next/image';
 import { usePathname } from 'next/navigation';
 import { WalletMultiButton } from '@solana/wallet-adapter-react-ui';
 import logo from '../../../public/logo.png';
 import Link from 'next/link';
+import { useEffect, useState } from 'react';
+import { useWallet } from '@solana/wallet-adapter-react';
+import { getCxpBalance } from '@/lib/compressed-tokens';
 
 const navLinks = [
   { label: 'Trade', href: '/trade' },
@@ -12,6 +17,37 @@ const navLinks = [
 
 const Navbar = () => {
   const pathname = usePathname();
+  const { connected, publicKey } = useWallet();
+  const [cxpBalance, setCxpBalance] = useState<number | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
+
+  useEffect(() => {
+    const fetchBalance = async () => {
+      if (!publicKey) {
+        setCxpBalance(null);
+
+        return;
+      }
+      
+      setIsLoading(true);
+
+      try {
+        const balance = await getCxpBalance(publicKey);
+        setCxpBalance(balance);
+      } catch (error) {
+        console.error("Error fetching cXP balance:", error);
+        setCxpBalance(0);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    
+    fetchBalance();
+    // Set up polling every 30 seconds to update balance
+    const interval = setInterval(fetchBalance, 30000);
+    
+    return () => clearInterval(interval);
+  }, [publicKey]);
 
   return (
     <nav className="bg-[#121212] border-b border-gray-800 px-4 py-3 flex items-center  text-white">
@@ -39,7 +75,13 @@ const Navbar = () => {
           })}
         </ul>
       <div className="flex items-center space-x-4 text-sm">
-        {/* <div className="text-sm text-gray-400">Balance: <span className="text-white">$10,000.00</span></div> */}
+        {connected && (
+          <>
+            {!isLoading && (
+              <div className="text-sm text-gray-400"><span className="text-white">cXP: </span> {cxpBalance?.toFixed(2) ?? "0.00"}</div>
+            )}
+          </>
+        )}
         <WalletMultiButton />
       </div>
     </nav>

@@ -55,7 +55,9 @@
     "tailwind-animate": "^0.2.10",
     "tailwind-merge": "^3.2.0",
     "tailwindcss-animate": "^1.0.7",
-    "zustand": "^5.0.4"
+    "zustand": "^5.0.4",
+    "@lightprotocol/compressed-token": "0.21.0",
+    "@lightprotocol/stateless.js": "0.21.0"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",

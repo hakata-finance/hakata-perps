@@ -17,6 +17,8 @@ import { UsdcIconCircle } from './UsdcIconCircle';
 import { usePythPrices } from '@/hooks/usePythPrices';
 import { BN } from '@coral-xyz/anchor';
 import { usePoolData } from '@/hooks/usePoolData';
+import { useFirstTimeAirdrop } from '@/hooks/useFirstTimeAirdrop';
+import { toast } from 'react-toastify';
 
 enum Tab {
   Add,
@@ -33,11 +35,19 @@ const LiquidProvideForm = () => {
   const poolData = usePoolData();
   const { wallet, publicKey, signTransaction, connected} = useWallet();
   const { connection } = useConnection();
+  const { 
+    hasAddedLiquidity, 
+    hasRemovedLiquidity, 
+    isAirdropping, 
+    trackAddLiquidity, 
+    trackRemoveLiquidity 
+  } = useFirstTimeAirdrop();
 
   const [inputTokenAmount, setInputTokenAmount] = useState(0);
   const [inputLpTokenAmount, setInputLpTokenAmount] = useState(0);
   const [payToken] = useState(TOKEN_E_LIST[0]);
   const [activeTab, setActiveTab] = useState<Tab>(Tab.Add);
+  const [isProcessing, setIsProcessing] = useState(false);
 
   const [payTokenBalance, setPayTokenBalance] = useState(0);
   const userLpTokensBalance = useGlobalStore(state => state.userLpTokensBalance);
@@ -47,34 +57,77 @@ const LiquidProvideForm = () => {
 
   async function changeLiquidity() {
     console.log("before change", activeTab === Tab.Remove, inputLpTokenAmount);
-    const slippage = 10;
-    if(activeTab === Tab.Add){
-      await addLiquidity(
-        perpetual_program,
-        wallet!,
-        publicKey!,
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        signTransaction as any,
-        connection,
-        payToken!,
-        inputTokenAmount,
-        inputLpTokenAmount,
-        slippage
-      );
+    
+    // Prevent multiple simultaneous processing
+    if (isProcessing || isAirdropping) return;
+    
+    setIsProcessing(true);
+    
+    try {
+      const slippage = 10;
 
-    } else {
-      await removeLiquidity(
-        perpetual_program,
-        wallet!,
-        publicKey!,
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        signTransaction as any,
-        connection,
-        payToken!,
-        inputLpTokenAmount,
-        inputTokenAmount,
-        slippage
-      );
+      // Add Liquidity flow
+      if (activeTab === Tab.Add) {
+        await addLiquidity(
+          perpetual_program,
+          wallet!,
+          publicKey!,
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          signTransaction as any,
+          connection,
+          payToken!,
+          inputTokenAmount,
+          inputLpTokenAmount,
+          slippage
+        );
+        
+        // Check if this is the first time adding liquidity and airdrop cXP if so
+        if (!hasAddedLiquidity) {
+          await trackAddLiquidity();
+        }
+      } 
+      // Remove Liquidity flow
+      else {
+        await removeLiquidity(
+          perpetual_program,
+          wallet!,
+          publicKey!,
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          signTransaction as any,
+          connection,
+          payToken!,
+          inputLpTokenAmount,
+          inputTokenAmount,
+          slippage
+        );
+        
+        // Check if this is the first time removing liquidity and airdrop cXP if so
+        if (!hasRemovedLiquidity) {
+          await trackRemoveLiquidity();
+        }
+      }
+      
+      // Show success message
+      toast.success(activeTab === Tab.Add ? 'Successfully added liquidity!' : 'Successfully removed liquidity!', {
+        position: "bottom-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+      });
+    } catch (error) {
+      console.error("Error in liquidity operation:", error);
+      toast.error(activeTab === Tab.Add ? 'Failed to add liquidity' : 'Failed to remove liquidity', {
+        position: "bottom-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+      });
+    } finally {
+      setIsProcessing(false);
     }
   }
 
@@ -195,6 +248,24 @@ const LiquidProvideForm = () => {
             Remove
           </Button>
         </div>
+        
+        {/* First-time user bonus notification for liquidity operations */}
+        {connected && activeTab === Tab.Add && !hasAddedLiquidity && (
+          <div className="p-3 bg-[#1A1A1A] border border-emerald-800 rounded-lg">
+            <p className="text-emerald-400 text-sm font-medium">
+              First-time liquidity providers receive 1 cXP point as a bonus! 🎁
+            </p>
+          </div>
+        )}
+        
+        {connected && activeTab === Tab.Remove && !hasRemovedLiquidity && (
+          <div className="p-3 bg-[#1A1A1A] border border-emerald-800 rounded-lg">
+            <p className="text-emerald-400 text-sm font-medium">
+              First-time liquidity removal earns you 1 cXP point as a bonus! 🎁
+            </p>
+          </div>
+        )}
+        
         <div>
           <p className="mb-2 text-gray-400 flex justify-between">
             You {activeTab === Tab.Add ? 'Add' : 'Remove'}
@@ -283,13 +354,14 @@ const LiquidProvideForm = () => {
         {connected ? (
           <Button 
             onClick={changeLiquidity}
+            disabled={isProcessing || isAirdropping}
             className={`w-full font-bold py-6 ${
             activeTab === Tab.Add 
               ? 'bg-[#C8FF00] hover:bg-[#BDFF00] text-black' 
               : 'bg-[#FF6666] hover:bg-[#FF5555] text-white'
-            }`}
+            } disabled:opacity-50 disabled:cursor-not-allowed`}
           >
-            Confirm
+            {isProcessing || isAirdropping ? 'Processing...' : 'Confirm'}
           </Button>
         ) : (
           <div className="orderform-wallet-btn">

@@ -6,6 +6,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useFaucet } from './hooks/useFaucet';
+import { useFirstTimeAirdrop } from '@/hooks/useFirstTimeAirdrop';
+import { toast } from "react-toastify";
 
 const FaucetPage = () => {
   const { connected, publicKey } = useWallet();
@@ -20,11 +22,37 @@ const FaucetPage = () => {
     mintTokens
   } = useFaucet();
   
+  const { 
+    hasReceivedAirdrop, 
+    isAirdropping, 
+    performFirstTimeAirdrop 
+  } = useFirstTimeAirdrop();
+  
   const walletAddress = publicKey?.toBase58() || "";
   
-  const handleMint = () => {
+  const handleMint = async () => {
     if (publicKey) {
-      mintTokens(publicKey);
+      // Perform regular faucet token minting
+      await mintTokens(publicKey);
+      
+      // If it's the user's first time, perform cXP airdrop
+      if (hasReceivedAirdrop === false) {
+        try {
+          const txId = await performFirstTimeAirdrop();
+          if (txId) {
+            toast.success('Received 1 cXP for your first faucet request!', {
+              position: "bottom-right",
+              autoClose: 5000,
+              hideProgressBar: false,
+              closeOnClick: true,
+              pauseOnHover: true,
+              draggable: true,
+            });
+          }
+        } catch (error) {
+          console.error("Error performing first-time cXP airdrop:", error);
+        }
+      }
     }
   };
 
@@ -75,13 +103,23 @@ const FaucetPage = () => {
                 className="bg-[#1E1E1E] border-gray-700 w-full"
               />
             </div>
+            
+            {/* First-time user bonus notification */}
+            {connected && hasReceivedAirdrop === false && (
+              <div className="mb-4 p-3 bg-[#1A1A1A] border border-emerald-800 rounded-lg">
+                <p className="text-emerald-400 text-sm font-medium">
+                  First-time users receive 1 cXP point as a bonus! 🎁
+                </p>
+              </div>
+            )}
+            
             {connected ? (
               <Button 
-                disabled={isButtonDisabled}
+                disabled={isButtonDisabled || isAirdropping}
                 onClick={handleMint}
                 className="w-full py-6 font-bold bg-[#121212] hover:bg-[#1A1A1A] text-white border border-gray-700 disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                {isLoading ? "Processing..." : "Get Test USDC"}
+                {isLoading || isAirdropping ? "Processing..." : "Get Test USDC"}
               </Button>
             ) : (
               <div className="w-full">
