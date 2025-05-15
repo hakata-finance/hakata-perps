@@ -1,154 +1,141 @@
-# Solana Perpetuals
+# Hakata Perpetuals - Core
 
-## Introduction
+[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](../../LICENSE)
 
-Solana Perpetuals protocol is an open-source implementation of a non-custodial decentralized exchange that supports leveraged trading in a variety of assets.
+The on-chain implementation of Hakata Finance's perpetual trading protocol on Solana.
 
-## Quick start
+## Overview
 
-### Setup Environment
+Hakata Perpetuals Core is the backbone of our protocol - a non-custodial decentralized exchange that supports leveraged trading of real-world assets on Solana. It provides the foundation for secure, efficient, and transparent on-chain perpetual futures trading.
 
-1. Clone the repository from <https://github.com/askibin/perpetuals.git>.
-2. Install the latest Solana tools from <https://docs.solana.com/cli/install-solana-cli-tools>. If you already have Solana tools, run `solana-install update` to get the latest compatible version.
-3. Install the latest Rust stable from <https://rustup.rs/>. If you already have Rust, run `rustup update` to get the latest version.
-4. Install the latest Anchor framework from <https://www.anchor-lang.com/docs/installation>. If you already have Anchor, run `avm update` to get the latest version.
+## Features
 
-Rustfmt is used to format the code. It requires `nightly` features to be activated.
-5. Install `nightly` rust toolchain. <https://rust-lang.github.io/rustup/installation/index.html#installing-nightly>
-6. Execute `git config core.hooksPath .githooks` to activate pre-commit hooks
+- Non-custodial architecture ensuring asset security
+- Leveraged trading with configurable positions
+- Asset pools with customizable parameters
+- Fully on-chain settlement and liquidation mechanics
+- Oracle integration for reliable price data
+- Risk management systems to maintain protocol stability
 
-#### [Optionnal] Vscode setup
+## Tech Stack
 
-1. Install `rust-analyzer` extension
-2. If formatting doesn't work, make sure that `rust-analyzer.rustfmt.extraArgs` is set to `+nightly`
+- [Solana](https://solana.com/) - High-performance blockchain
+- [Anchor](https://www.anchor-lang.com/) - Framework for Solana program development
+- [Rust](https://www.rust-lang.org/) - Systems programming language
+- [Pyth](https://pyth.network/) - Oracle for real-time price data
 
-### Build
+## Project Structure
 
-First, generate a new key for the program address with `solana-keygen new -o <PROG_ID_JSON>`. Then replace the existing program ID with the newly generated address in Anchor.toml and `programs/perpetuals/src/lib.rs`.
+```text
+packages/core/
+├─ programs/              # Solana programs (smart contracts)
+│  └─ perpetuals/         # Main perpetuals protocol program
+│     ├─ src/             # Source code for the program
+│     └─ Cargo.toml       # Rust dependencies
+├─ app/                   # CLI and administration tools
+│  └─ src/                # TypeScript source for CLI
+├─ tests/                 # Integration and unit tests
+│  ├─ ts/                 # TypeScript tests
+│  └─ rust/               # Rust tests
+├─ Anchor.toml            # Anchor configuration
+└─ Cargo.toml             # Workspace configuration
+```
 
-Also, ensure the path to your wallet in Anchor.toml is correct. Alternatively, when running Anchor deploy or test commands, you can specify your wallet with `--provider.wallet` argument. The wallet's pubkey will be set as an upgrade authority upon initial deployment of the program. It is strongly recommended to make upgrade authority a multisig when deploying to the mainnet.
+## Getting Started
 
-To build the program run `anchor build` command from the `perpetuals` directory:
+### Prerequisites
 
-```sh
-cd perpetuals
+- [Solana CLI tools](https://docs.solana.com/cli/install-solana-cli-tools) (v2.1.0 or later)
+- [Rust](https://rustup.rs/) (latest stable version)
+- [Anchor Framework](https://www.anchor-lang.com/docs/installation) (v0.31.1 or later)
+- [Node.js](https://nodejs.org/) (v18 or later)
+
+### Installation
+
+```bash
+# Clone the repository if you haven't already
+git clone https://github.com/hakata-finance/hakata-perps.git
+cd hakata-perps/packages/core
+
+# Install dependencies
+npm install
+```
+
+### Building
+
+```bash
+# Build the program
 anchor build
 ```
 
-### Test
+### Testing
 
-Unit tests are executed with the `cargo test` command:
-
-```sh
+```bash
+# Run Rust unit tests
 cargo test -- --nocapture
-```
 
-Integration tests (Rust) can be started as follows:
+# Run integration tests (Typescript)
+anchor test
 
-```sh
+# Run integration tests (Rust)
 cargo test-bpf -- --nocapture
 ```
 
-Integration tests (Typescript) can be started as follows:
+## Deployment
 
-```sh
-anchor test -- --features test
+### Devnet Deployment
+
+```bash
+# Deploy to devnet
+anchor deploy --provider.cluster devnet
+
+# Upload IDL
+anchor idl init --provider.cluster devnet --filepath ./target/idl/perpetuals.json <PROGRAM_ID>
 ```
 
-By default, integration tests are executed on a local validator, so it won't cost you any SOL.
+### Mainnet Deployment
 
-### Deploy
+For mainnet deployments, we recommend using a multi-signature authority:
 
-To deploy the program to the devnet and upload the IDL use the following commands:
+```bash
+# Deploy to mainnet
+anchor deploy --provider.cluster mainnet-beta
 
-```sh
-anchor deploy --provider.cluster devnet --program-keypair <PROG_ID_JSON>
-anchor idl init --provider.cluster devnet --filepath ./target/idl/perpetuals.json
-<PROGRAM ID>
+# Set up authority with multi-sig
+npx ts-node app/src/cli.ts -k <ADMIN_WALLET> init --min-signatures <NUM> <ADMIN_WALLET1> <ADMIN_WALLET2> ...
 ```
 
-### Initialize
+## Protocol Administration
 
-A small CLI Typescript client is included to help you initialize and manage the program. By default script uses devnet cluster. Add `-u https://api.mainnet-beta.solana.com` to all of the commands if you plan to execute them on mainnet.
+The protocol can be administrated using the CLI tool:
 
-To initialize deployed program, run the following commands:
+```bash
+# Add a new trading pool
+npx ts-node app/src/cli.ts -k <ADMIN_WALLET> add-pool <POOL_NAME>
 
-```
-cd app
-npm install
-npm install -g npx
-npx ts-node src/cli.ts -k <ADMIN_WALLET> init --min-signatures <int> <ADMIN_WALLET1> <ADMIN_WALLET2> ...
-```
+# Add a token custody to a pool
+npx ts-node app/src/cli.ts -k <ADMIN_WALLET> add-custody <POOL_NAME> <TOKEN_MINT> <TOKEN_ORACLE> -s <IS_STABLE>
 
-Where `<ADMIN_WALLET>` is the file path to the wallet that was set as the upgrade authority of the program upon deployment. `<ADMIN_WALLET1>`, `<ADMIN_WALLET2>` etc., will be set as protocol admins, and `min-signatures` will be required to execute privileged instructions. To provide multiple signatures, just execute exactly the same command multiple times specifying different `<ADMIN_WALLET>` with `-k` option. The intermediate state is recorded on-chain so that commands can be executed on different computers.
+# View pools
+npx ts-node app/src/cli.ts -k <ADMIN_WALLET> get-pools
 
-To change protocol admins or minimum required signatures, run:
-
-```
-npx ts-node src/cli.ts -k <ADMIN_WALLET> set-authority --min-signatures <int> <ADMIN_WALLET1> <ADMIN_WALLET2> ...
+# View custodies in a pool
+npx ts-node app/src/cli.ts -k <ADMIN_WALLET> get-custodies <POOL_NAME>
 ```
 
-To validate initialized program:
+## Security Considerations
 
-```
-npx ts-node src/cli.ts -k <ADMIN_WALLET> get-multisig
-npx ts-node src/cli.ts -k <ADMIN_WALLET> get-perpetuals
-```
-
-Before the program can accept any liquidity or open a trade, you need to create a token pool and add one or more token custodies to it:
-
-```
-npx ts-node src/cli.ts -k <ADMIN_WALLET> add-pool <POOL_NAME>
-npx ts-node src/cli.ts -k <ADMIN_WALLET> add-custody <POOL_NAME> <TOKEN_MINT> <TOKEN_ORACLE> <IS_STABLE>
-```
-
-Where `<POOL_NAME>` is a random name you want to assign to the pool, `<TOKEN_MINT>` is the mint address of the token, and `<TOKEN_ORACLE>` is the corresponding Pyth price account that can be found on [this page](https://pyth.network/price-feeds?cluster=devnet). `<IS_STABLE>` specifies whether the custody is for a stablecoin. For example:
-
-```
-npx ts-node src/cli.ts -k <ADMIN_WALLET> add-pool TestPool1
-npx ts-node src/cli.ts -k <ADMIN_WALLET> add-custody TestPool1 So11111111111111111111111111111111111111112 J83w4HKfqxwcq3BEMMkPFSppX3gqekLyLJBexebFVkix false
-
-npx ts-node src/cli.ts -k /Users/aw/.config/solana/Beta-Hcik.json add-custody FlashPool1 Gh9ZwEmdLJ8DscKNTkTqPbNwLNNBjuSzaG9Vp2KGtKJr 5SSkXsEKQepHHAewytPVwdej4epN1nxgLVM84L4KXgy7 true
-```
-
-To validate added pools and custodies, run:
-
-```
-npx ts-node src/cli.ts -k <ADMIN_WALLET> get-pool <POOL_NAME>
-npx ts-node src/cli.ts -k <ADMIN_WALLET> get-custody <POOL_NAME> <TOKEN_MINT>
-```
-
-or
-
-```
-npx ts-node src/cli.ts -k <ADMIN_WALLET> get-pools
-npx ts-node src/cli.ts -k <ADMIN_WALLET> get-custodies <POOL_NAME>
-```
-
-CLI offers other useful commands. You can get the list of all of them by running the following:
-
-```
-npx ts-node src/cli.ts --help
-```
-
-### Further Steps
-
-To allow users to interact with the program, you need a UI. An open-source reference implementation is under development and will be available soon. In the meantime, you can use the test client available under the `test` directory and the CLI client under the `app/src` directory for examples of how user instructions can be built and executed. Feel free to implement your own version of the UI.
-
-## Support
-
-If you are experiencing technical difficulties while working with the Perpetuals codebase, ask your question on [StackExchange](https://solana.stackexchange.com) (tag your question with `perpetuals`).
-
-If you found a bug in the code, you can raise an issue on [Github](https://github.com/askibin/perpetuals). But if this is a security issue, please don't disclose it on Github or in public channels. Send information to solana.farms@protonmail.com instead.
+- All protocol upgrades should be carefully reviewed and tested
+- For mainnet deployments, use multi-signature authorities
+- Regular security audits are recommended
+- If you discover a security vulnerability, please report it privately to <admin@hakata.fi>
 
 ## Contributing
 
-Contributions are very welcome. Please refer to the [Contributing](https://github.com/solana-labs/solana/blob/master/CONTRIBUTING.md) guidelines for more information.
+We welcome contributions to improve the protocol:
 
-## License
-
-Solana Perpetuals codebase is released under [Apache License 2.0](LICENSE).
-
-## Disclaimer
-
-By accessing or using Solana Perpetuals or any of its components, you accept and agree with the [Disclaimer](DISCLAIMER.md).
+1. Fork the repository
+2. Create your feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'feat: Implement amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
