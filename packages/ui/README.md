@@ -20,18 +20,26 @@ This UI provides traders with a seamless interface to interact with the Hakata P
 
 ```text
 packages/ui/
-├─ app/                  # Next.js App Router structure
-│  ├─ layout.tsx         # Root layout component
-│  ├─ page.tsx           # Homepage
-│  ├─ api/               # API routes
-│  ├─ components/        # Shared UI components
-│  ├─ hooks/             # Custom React hooks
-│  └─ utils/             # Utility functions
-├─ public/               # Static assets
-├─ styles/               # Global styles
-├─ lib/                  # Library code and API wrappers
-│  └─ solana/            # Solana-specific utilities
-└─ types/                # TypeScript type definitions
+├─ src/                 # Source code
+│  ├─ app/              # Next.js App Router structure
+│  │  ├─ api/           # API routes
+│  │  ├─ trade/         # Trading pages
+│  │  ├─ vault/         # Vault pages
+│  │  ├─ leaderboard/   # Leaderboard pages
+│  │  ├─ faucet/        # Faucet page
+│  │  ├─ page.tsx       # Homepage
+│  │  ├─ layout.tsx     # Root layout component
+│  │  └─ globals.css    # Global styles
+│  ├─ components/       # Shared UI components
+│  ├─ hooks/            # Custom React hooks
+│  ├─ lib/              # Library code and API wrappers
+│  ├─ actions/          # Server actions
+│  ├─ stores/           # State management
+│  └─ context/          # React context providers
+├─ public/              # Static assets
+├─ tailwind.config.ts   # Tailwind configuration
+├─ next.config.ts       # Next.js configuration
+└─ package.json         # Dependencies and scripts
 ```
 
 ## Getting Started
