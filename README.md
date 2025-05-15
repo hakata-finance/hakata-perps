@@ -1,8 +1,8 @@
 # Hakata Finance - Perpetuals Protocol
 
-![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)
+[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](LICENSE)
 
-Monorepo for Hakata Finance’s open‑source perpetual‑trading protocol on Solana.
+Monorepo for Hakata Finance's open‑source perpetual‑trading protocol on Solana.
 
 ## Overview
 
