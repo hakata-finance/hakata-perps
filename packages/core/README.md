@@ -28,17 +28,17 @@ Hakata Perpetuals Core is the backbone of our protocol - a non-custodial decentr
 
 ```text
 packages/core/
-├─ programs/              # Solana programs (smart contracts)
-│  └─ perpetuals/         # Main perpetuals protocol program
-│     ├─ src/             # Source code for the program
-│     └─ Cargo.toml       # Rust dependencies
-├─ app/                   # CLI and administration tools
-│  └─ src/                # TypeScript source for CLI
-├─ tests/                 # Integration and unit tests
-│  ├─ ts/                 # TypeScript tests
-│  └─ rust/               # Rust tests
-├─ Anchor.toml            # Anchor configuration
-└─ Cargo.toml             # Workspace configuration
+├─ programs/                      # Solana programs (smart contracts)
+│  └─ hakata-perpetuals/          # Main protocol program
+│     ├─ src/                     # Source code for the program
+│     ├─ tests/                   # Program-specific tests
+│     └─ Cargo.toml               # Rust dependencies
+├─ cli/                           # CLI tools for administration
+│  ├─ src/                        # TypeScript source for CLI
+│  └─ package.json                # CLI dependencies
+├─ migrations/                    # Deployment migrations
+├─ Anchor.toml                    # Anchor configuration
+└─ Cargo.toml                     # Workspace configuration
 ```
 
 ## Getting Started
@@ -102,7 +102,7 @@ For mainnet deployments, we recommend using a multi-signature authority:
 anchor deploy --provider.cluster mainnet-beta
 
 # Set up authority with multi-sig
-npx ts-node app/src/cli.ts -k <ADMIN_WALLET> init --min-signatures <NUM> <ADMIN_WALLET1> <ADMIN_WALLET2> ...
+npx ts-node cli/src/cli.ts -k <ADMIN_WALLET> init --min-signatures <NUM> <ADMIN_WALLET1> <ADMIN_WALLET2> ...
 ```
 
 ## Protocol Administration
@@ -111,16 +111,16 @@ The protocol can be administrated using the CLI tool:
 
 ```bash
 # Add a new trading pool
-npx ts-node app/src/cli.ts -k <ADMIN_WALLET> add-pool <POOL_NAME>
+npx ts-node cli/src/cli.ts -k <ADMIN_WALLET> add-pool <POOL_NAME>
 
 # Add a token custody to a pool
-npx ts-node app/src/cli.ts -k <ADMIN_WALLET> add-custody <POOL_NAME> <TOKEN_MINT> <TOKEN_ORACLE> -s <IS_STABLE>
+npx ts-node cli/src/cli.ts -k <ADMIN_WALLET> add-custody <POOL_NAME> <TOKEN_MINT> <TOKEN_ORACLE> -s <IS_STABLE>
 
 # View pools
-npx ts-node app/src/cli.ts -k <ADMIN_WALLET> get-pools
+npx ts-node cli/src/cli.ts -k <ADMIN_WALLET> get-pools
 
 # View custodies in a pool
-npx ts-node app/src/cli.ts -k <ADMIN_WALLET> get-custodies <POOL_NAME>
+npx ts-node cli/src/cli.ts -k <ADMIN_WALLET> get-custodies <POOL_NAME>
 ```
 
 ## Security Considerations
