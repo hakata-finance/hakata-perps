@@ -70,7 +70,7 @@ const ChartPanel = ({ symbol = 'AAPL', currency = 'usd' }: ChartPanelProps) => {
           <span className="text-xl font-bold">{symbol} / {currency.toUpperCase()}</span>
           {/* <span className="text-[#C8FF00] font-bold">230.54</span> */}
           <span className="text-[#C8FF00] font-bold">{prices.get(symbol)?.toFixed(3)}</span>
-          <span
+          {/* <span
             className={twMerge(
               "text-sm",
               stats.change24hr < 0 && "text-rose-400",
@@ -79,7 +79,7 @@ const ChartPanel = ({ symbol = 'AAPL', currency = 'usd' }: ChartPanelProps) => {
             )}
           >
             {formatNumber(stats.change24hr)}
-          </span>
+          </span> */}
         </div>
         <div className="flex items-center gap-4 text-sm text-gray-400">
           <VolatilityScore />
