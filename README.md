@@ -10,18 +10,13 @@ Hakata Perpetuals is Core Perpetual Futures Engine for Real-World Asset Trading 
 
 ## Deployment Addresses
 
-Omniliquid is deployed on Solana Devnet.
+Hakata Finance is deployed on Solana Devnet.
 
 The following programs are deployed:
 
 | Program                | Address                                      |
 |------------------------|----------------------------------------------|
 | Registry               | CkawHJw5TVjUt1ggAZtuo3hgHBMptJHtxXk6A6nY5RWg |
-<!-- | CLOB                   | 573mPaFytnEp1y9oKtHd1aNfwcxRc4ExYY1LthCVR4sX |
-| Price Router           | HgecS9wmQf2UutfytswApHsBzddBjFYsAX9VKgcYZAVu |
-| Trading Storage        | 8jfjemcxtyZEAYzPWynEjWZPW3wD7e3suw7j2mvajY7A |
-| OMNI Token             | CiTbKMyLecpE5LWcB1TkKFPtpnKD4AK1TAedmt4PjTgB |
-| OLP Vault              | 6zLE2d1m87joeG1te75Qu19y2Y7irdHkPzToWpxkRjnL | -->
 
 ## Repository Structure
 
