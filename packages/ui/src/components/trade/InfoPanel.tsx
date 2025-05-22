@@ -4,7 +4,7 @@ import NewsFeed from './NewsFeed';
 import HighImpactNews from './HighImpactNews';
 
 const InfoPanel = () => {
-  const [activeTab, setActiveTab] = useState<string>("news");
+  const [activeTab, setActiveTab] = useState<string>("newsfeed");
 
   return (
     <div className="rounded-lg bg-[#121212] p-4 border border-gray-800">
