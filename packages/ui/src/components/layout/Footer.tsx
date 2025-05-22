@@ -1,11 +1,11 @@
 'use client';
 
-import { Github, X, MessagesSquare } from "lucide-react";
+import { Github, X } from "lucide-react";
 import Link from "next/link";
 
 const Footer = () => {
   return (
-    <footer className="fixed bottom-0 left-0 right-0 flex items-center justify-center py-2 bg-[#121212] backdrop-blur-sm z-50 border-t border-gray-800">
+    <footer className="fixed bottom-0 left-0 right-0 flex items-center justify-start px-5 py-2 bg-[#121212] backdrop-blur-sm z-50 border-t border-gray-800">
       <div className="flex items-center gap-6">
         <Link 
           href="https://x.com/HakataFinance" 
