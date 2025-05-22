@@ -4,6 +4,7 @@ import { ToastContainer } from "react-toastify";
 import ConnectionWalletProvider from "@/context/ConnectionWalletProvider";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import Navbar from "@/components/layout/Navbar";
+import Footer from "@/components/layout/Footer";
 import { useHydrateStore } from "@/hooks/useHydrateStore";
 import 'react-toastify/dist/ReactToastify.css';
 import '@/app/toastify-custom.css';
@@ -41,6 +42,7 @@ const ClientLayout = ({ children }: ClientLayoutProps) => {
         <Navbar />
         <StoreUpdater />
         {children}
+        <Footer />
       </TooltipProvider>
     </ConnectionWalletProvider>
   );

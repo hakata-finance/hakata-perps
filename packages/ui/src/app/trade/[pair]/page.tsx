@@ -16,7 +16,7 @@ const TradePage = () => {
   const [symbol, currency] = ['AAPL', 'usd'];
 
   return (
-    <div className="bg-black text-white h-[calc(100vh-73px)]">
+    <div className="bg-black text-white h-[calc(100vh-73px)] pb-5">
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-4 p-4 h-full">
         {/* Main Chart Area - 3/4 width on large screens */}
         <div className="lg:col-span-3 space-y-4">
