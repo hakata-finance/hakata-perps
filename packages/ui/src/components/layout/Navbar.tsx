@@ -52,11 +52,11 @@ const Navbar = () => {
 
   return (
     <nav className="bg-[#121212] border-b border-gray-800 px-4 py-3 flex items-center  text-white">
-      <div className="flex items-center space-x-2">
+      <Link className="flex items-center space-x-2" href="https://hakata.fi">
         <Image src={logo} alt="Hakata Finance logo" width={30} height={30} />
         <h1 className="font-bold text-xl">Hakata Finance</h1>
         <span className="text-xs bg-gray-800 text-gray-400 px-2 py-0.5 rounded">BETA</span>
-      </div>
+      </Link>
       <ul className="flex gap-4 ml-6 mr-auto">
           {navLinks.map((link) => {
             const isSelected = pathname.includes(link.href);
