@@ -281,6 +281,7 @@ const LiquidProvideForm = () => {
             <div className="relative flex-grow">
               {activeTab === Tab.Add ? (
                 <Input 
+                  type="number"
                   value={inputTokenAmount} 
                   onChange={(e) => {
                     const text = e.currentTarget.value;
@@ -290,6 +291,7 @@ const LiquidProvideForm = () => {
                 />
               ) : (
                 <Input 
+                  type="number"
                   value={inputLpTokenAmount} 
                   onChange={(e) => {
                     const text = e.currentTarget.value;
