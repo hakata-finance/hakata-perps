@@ -6,30 +6,26 @@ import {
 } from "@/lib/constants";
 import { manualSendTransaction } from "@/lib/manualTransaction";
 import { checkIfAccountExists } from "@/lib/retrieveData";
-import { BN, Program, Wallet } from "@coral-xyz/anchor";
+import { BN, Program } from "@coral-xyz/anchor";
 import {
-  createAssociatedTokenAccountInstruction,
-  createSyncNativeInstruction,
   getAssociatedTokenAddress,
-  NATIVE_MINT,
   TOKEN_PROGRAM_ID,
 } from "@solana/spl-token";
 import {
   Connection,
-  LAMPORTS_PER_SOL,
   PublicKey,
   SystemProgram,
   Transaction,
+  VersionedTransaction,
 } from "@solana/web3.js";
 import { isVariant, Side } from "@/lib/types";
 import { HakataPerpetuals } from "@/target/types/hakata_perpetuals";
 
 export async function openPosition(
   program: Program<HakataPerpetuals>,
-  wallet: Wallet,
   publicKey: PublicKey,
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  signTransaction : any,
+  signTransaction: any,
   connection: Connection,
   payToken: TokenE,
   positionToken: TokenE,
@@ -39,29 +35,27 @@ export async function openPosition(
   side: Side
 ) {
   // TODO: need to take slippage as param , this is now for testing
+  console.log('DEBUG: side parameter =', side);
+  console.log('DEBUG: typeof side =', typeof side);
+  console.log('DEBUG: side properties =', Object.keys(side || {}));
+  
   const newPrice =
   isVariant(side, 'long')
       ? price.mul(new BN(110)).div(new BN(100))
       : price.mul(new BN(90)).div(new BN(100));
-  console.log(
-    ">> openPosition inputs",
-    Number(payAmount),
-    Number(positionAmount),
-    Number(price),
-    Number(newPrice),
-    payToken,
-    side,
-    isVariant(side, 'long'),
-  );
 
-  const payTokenCustody = POOL_CONFIG.custodies.find(i => i.mintKey.toBase58()=== getTokenAddress(payToken));
+  const payTokenCustody = POOL_CONFIG.custodies.find(i => i.mintKey.toBase58() === getTokenAddress(payToken));
   if(!payTokenCustody){
-    throw "poolTokenCustody  not found";
+    throw new Error("poolTokenCustody not found");
   }
-  console.log("payTokenCustody:",payTokenCustody)
+
+  const tokenAddress = getTokenAddress(payToken);
+  if (!tokenAddress) {
+    throw new Error(`Token address not found for ${payToken}`);
+  }
 
   const userCustodyTokenAccount = await getAssociatedTokenAddress(
-    new PublicKey(getTokenAddress(payToken)),
+    new PublicKey(tokenAddress),
     publicKey
   );
 
@@ -82,52 +76,12 @@ export async function openPosition(
     program.programId
   )[0];
 
- 
-
   let transaction = new Transaction();
 
   try {
-    // wrap sol if needed
-    // if (payToken == TokenE.SOL) {
-    //   console.log("pay token name is sol", payToken);
-
-    //   const associatedTokenAccount = await getAssociatedTokenAddress(
-    //     NATIVE_MINT,
-    //     publicKey
-    //   );
-
-    //   if (!(await checkIfAccountExists(associatedTokenAccount, connection))) {
-    //     console.log("sol ata does not exist", NATIVE_MINT.toString());
-
-    //     transaction = transaction.add(
-    //       createAssociatedTokenAccountInstruction(
-    //         publicKey,
-    //         associatedTokenAccount,
-    //         publicKey,
-    //         NATIVE_MINT
-    //       )
-    //     );
-    //   }
-
-    //   // get balance of associated token account
-    //   console.log("sol ata exists");
-    //   const balance = await connection.getBalance(associatedTokenAccount);
-    //   if (balance < payAmount.toNumber()) {
-    //     console.log("balance insufficient");
-    //     transaction = transaction.add(
-    //       SystemProgram.transfer({
-    //         fromPubkey: publicKey,
-    //         toPubkey: associatedTokenAccount,
-    //         lamports: LAMPORTS_PER_SOL,
-    //       }),
-    //       createSyncNativeInstruction(associatedTokenAccount)
-    //     );
-    //   }
-    // }
-
     console.log("position account", positionAccount.toString());
 
-    const params: any = {
+    const params = {
       price: newPrice,
       collateral: payAmount,
       size: positionAmount,
@@ -135,7 +89,7 @@ export async function openPosition(
     };
     const tx = await program.methods
       .openPosition(params)
-      .accounts({
+      .accountsPartial({
         owner: publicKey,
         fundingAccount: userCustodyTokenAccount,
         transferAuthority: transferAuthorityAddress,
@@ -143,10 +97,8 @@ export async function openPosition(
         pool: POOL_CONFIG.poolAddress,
         position: positionAccount,
         custody: payTokenCustody.custodyAccount,
-        custodyOracleAccount:
-        payTokenCustody.oracleAddress,
-        custodyTokenAccount:
-        payTokenCustody.tokenAccount,
+        custodyOracleAccount: payTokenCustody.oracleAddress,
+        custodyTokenAccount: payTokenCustody.tokenAccount,
         systemProgram: SystemProgram.programId,
         tokenProgram: TOKEN_PROGRAM_ID,
       })
@@ -154,15 +106,40 @@ export async function openPosition(
     transaction = transaction.add(tx);
 
     console.log("open position tx", transaction);
-    // console.log("tx keys");
-    // for (let i = 0; i < transaction.instructions[0].keys.length; i++) {
-    //   console.log(
-    //     "key",
-    //     i,
-    //     transaction.instructions[0].keys[i]?.pubkey.toString()
-    //   );
-    // }
 
+    // Simulate the transaction first
+    console.log("🔍 Simulating transaction...");
+    try {
+      // Get recent blockhash for the versioned transaction
+      const { blockhash } = await connection.getLatestBlockhash();
+      transaction.recentBlockhash = blockhash;
+      transaction.feePayer = publicKey;
+      
+      // Create versioned transaction for simulation
+      const versionedTx = new VersionedTransaction(transaction.compileMessage());
+      
+      const simulation = await connection.simulateTransaction(versionedTx, {
+        sigVerify: false,
+        commitment: 'processed'
+      });
+      
+      console.log("✅ Transaction simulation result:", simulation);
+      
+      if (simulation.value.err) {
+        console.error("❌ Simulation failed:", simulation.value.err);
+        console.error("📋 Simulation logs:", simulation.value.logs);
+        throw new Error(`Transaction simulation failed: ${JSON.stringify(simulation.value.err)}`);
+      }
+      
+      console.log("📋 Simulation logs:", simulation.value.logs);
+      console.log("⚡ Compute units consumed:", simulation.value.unitsConsumed);
+      
+    } catch (simulationErr) {
+      console.error("❌ Simulation error:", simulationErr);
+      throw new Error(`Failed to simulate transaction: ${simulationErr}`);
+    }
+
+    console.log("🚀 Simulation successful, sending transaction...");
     await manualSendTransaction(
       transaction,
       publicKey,
