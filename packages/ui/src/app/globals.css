@@ -1,5 +1,6 @@
-@import "tailwindcss";
-@import "tailwind-animate";
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
 html {
   background-color: black;

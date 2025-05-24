@@ -115,14 +115,14 @@ const OrderForm = ({ symbol = 'AAPL' }: OrderFormProps) => {
         <TabsContent value="market" className="space-y-4">
           <div className="grid grid-cols-2 gap-2">
             <Button 
-              className={`${activeSideTab === 'buy' ? 'bg-[#18211D] text-[#C8FF00]' : 'border-gray-700 text-white'} hover:bg-[#213026]`}
+              className={`${activeSideTab === 'buy' ? 'bg-[#18211D] text-[#C8FF00]' : 'border-gray-700 text-white bg-transparent'} hover:bg-[#213026] hover:text-white`}
               variant={activeSideTab === 'buy' ? 'default' : 'outline'}
               onClick={() => setActiveSideTab('buy')}
             >
               Buy
             </Button>
             <Button 
-              className={`${activeSideTab === 'sell' ? 'bg-[#211818] text-[#FF6666]' : 'border-gray-700 text-white'} hover:bg-[#302121]`}
+              className={`${activeSideTab === 'sell' ? 'bg-[#211818] text-[#FF6666]' : 'border-gray-700 text-white bg-transparent'} hover:bg-[#302121] hover:text-white`}
               variant={activeSideTab === 'sell' ? 'default' : 'outline'}
               onClick={() => setActiveSideTab('sell')}
             >
