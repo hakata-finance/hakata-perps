@@ -83,18 +83,65 @@ const OrderForm = ({ symbol = 'AAPL' }: OrderFormProps) => {
   }, [connection, payToken, publicKey]);
   
   async function handleOpenPosition() {
-    if (!wallet || !publicKey || !signTransaction || isOpening) return;
+    console.log("🎯 handleOpenPosition called!");
+    console.log("📊 Form state:", {
+      wallet: !!wallet,
+      publicKey: publicKey?.toString(),
+      signTransaction: !!signTransaction,
+      isOpening,
+      payAmount,
+      positionAmount,
+      payToken,
+      positionToken,
+      activeSideTab,
+      leverage
+    });
+    
+    if (!wallet || !publicKey || !signTransaction || isOpening) {
+      console.log("❌ Early return from handleOpenPosition:", {
+        wallet: !!wallet,
+        publicKey: !!publicKey,
+        signTransaction: !!signTransaction,
+        isOpening
+      });
+      return;
+    }
     
     setIsOpening(true);
     
     try {
-      const positionTokenCustody = POOL_CONFIG.custodies.find(i => i.mintKey.toBase58() === getTokenAddress(positionToken));
+      console.log("🔍 Looking for positionTokenCustody...");
+      // const positionTokenCustody = POOL_CONFIG.custodies.find(i => i.mintKey.toBase58() === getTokenAddress(positionToken));
+      const positionTokenCustody = POOL_CONFIG.custodies[0]; // TODO: fix
+      
+      if (!positionTokenCustody) {
+        throw new Error(`Position token custody not found for ${positionToken}`);
+      }
+      
+      console.log("✅ Found positionTokenCustody:", {
+        decimals: positionTokenCustody.decimals,
+        custodyAccount: positionTokenCustody.custodyAccount.toString()
+      });
       
       // Convert activeSideTab to Side enum
       const side: Side = activeSideTab === 'buy' 
         ? { long: {} }
         : { short: {} };
+      
+      console.log("🎲 Created side enum:", side);
+      
+      const payAmountBN = new BN(payAmount * 10**(positionTokenCustody.decimals));
+      const positionAmountBN = new BN(positionAmount * 10**(positionTokenCustody.decimals));
+      const priceBN = new BN((prices.get(payToken) ?? 0) * 10 ** PRICE_DECIMALS);
+      
+      console.log("💰 BN amounts:", {
+        payAmountBN: payAmountBN.toString(),
+        positionAmountBN: positionAmountBN.toString(),
+        priceBN: priceBN.toString(),
+        price: prices.get(payToken) ?? 0
+      });
 
+      console.log("🚀 About to call openPosition...");
       await openPosition(
         program,
         publicKey,
@@ -102,11 +149,9 @@ const OrderForm = ({ symbol = 'AAPL' }: OrderFormProps) => {
         connection,
         payToken,
         positionToken,
-        // eslint-disable-next-line @typescript-eslint/no-non-null-asserted-optional-chain
-        new BN(payAmount * 10**(positionTokenCustody?.decimals!)),
-        // eslint-disable-next-line @typescript-eslint/no-non-null-asserted-optional-chain
-        new BN(positionAmount * 10**(positionTokenCustody?.decimals!)),
-        new BN((prices.get(payToken) ?? 0) * 10 ** PRICE_DECIMALS),
+        payAmountBN,
+        positionAmountBN,
+        priceBN,
         side
       );
 
