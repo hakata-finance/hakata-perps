@@ -22,6 +22,13 @@
           "decimals": 6,
           "isStable": true,
           "pythTicker" : "Crypto.USDC/USD"
+        },
+        {
+          "symbol": "AAPL",
+          "mintKey": "TeXcTQPzuFEuWoCdWdFu8ZUT4YEtxiHtyvsGFB4z1mX",
+          "decimals": 8,
+          "isStable": false,
+          "pythTicker" : "Equity.US.AAPL/USD"
         }
       ],
       "custodies": [
@@ -33,6 +40,15 @@
           "decimals": 6,
           "isStable": true,
           "oracleAddress": "5SSkXsEKQepHHAewytPVwdej4epN1nxgLVM84L4KXgy7"
+        },
+        {
+          "custodyAccount": "6kdTRJueNUJ89B2QS6BW72WxChkuwpZmfBLUfDwy4m5i",
+          "tokenAccount": "ALvkGeVGDnu2JAfowCGUikTMbrAiYuZTnKkMNpUPw2pK",
+          "symbol": "AAPL",
+          "mintKey": "TeXcTQPzuFEuWoCdWdFu8ZUT4YEtxiHtyvsGFB4z1mX",
+          "decimals": 8,
+          "isStable": false,
+          "oracleAddress": "3mkwqdkawySvAm1VjD4f2THN5mmXzb76fvft2hWpAANo"
         }
       ]
     }
