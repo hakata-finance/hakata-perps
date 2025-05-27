@@ -2,6 +2,9 @@ import { NextRequest, NextResponse } from 'next/server';
 import { Connection, PublicKey } from '@solana/web3.js';
 import { getAccount } from '@solana/spl-token';
 
+// Configure for Edge Runtime (required for Cloudflare Pages)
+export const runtime = 'edge';
+
 interface SplTokenAccount {
   address: string;
   amount: string;
