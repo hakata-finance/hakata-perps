@@ -26,7 +26,8 @@ export async function GET(request: NextRequest) {
     const limit = parseInt(searchParams.get('limit') || '10');
 
     // Get API key from server environment
-    const apiKey = process.env.HELIUS_API_KEY;
+    // const apiKey = process.env.HELIUS_API_KEY;
+    const apiKey = 'dcefb6d9-a6e8-4679-8b60-b9555a56b3cf';
     
     if (!apiKey) {
       return NextResponse.json(
