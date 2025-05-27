@@ -1,5 +1,5 @@
 import { UsdcIconCircle } from "@/components/vault/UsdcIconCircle";
-import { USDC_MINT_ADDRESS } from "./constants";
+import { AAPL_MINT_ADDRESS, USDC_MINT_ADDRESS } from "./constants";
 import { AaplIconCircle } from "@/components/trade/AaplIconCircle";
 
 //rename to TokenE
@@ -84,6 +84,8 @@ export function tokenAddressToTokenE(address: string): TokenE {
   switch (address) {
     case USDC_MINT_ADDRESS:
       return TokenE.USDC;
+    case AAPL_MINT_ADDRESS:
+      return TokenE.AAPL;
     default:
       throw new Error("Not a valid token string");
   }

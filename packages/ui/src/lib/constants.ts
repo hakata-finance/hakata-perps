@@ -38,6 +38,7 @@ export const POOL_CONFIG = PoolConfig.fromIdsByName(DEFAULT_POOL, CLUSTER);
 // Addresses
 export const SOL_MINT_ADDRESS =  POOL_CONFIG.tokens.find(i => i.symbol=='SOL')?.mintKey?.toBase58() ?? "NOT_FOUND_IN_CONFIG";
 export const USDC_MINT_ADDRESS = POOL_CONFIG.tokens.find(i => i.symbol=='USDC')?.mintKey?.toBase58() ?? "NOT_FOUND_IN_CONFIG";
+export const AAPL_MINT_ADDRESS = POOL_CONFIG.tokens.find(i => i.symbol=='AAPL')?.mintKey?.toBase58() ?? "NOT_FOUND_IN_CONFIG";
 
 // TODO: Remove
 // default user to launch show basic pool data, etc
