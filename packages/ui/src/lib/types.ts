@@ -2,6 +2,12 @@ import { BN, IdlAccounts } from "@coral-xyz/anchor";
 import { PublicKey } from "@solana/web3.js";
 import { HakataPerpetuals } from "@/target/types/hakata_perpetuals";
 
+// Side enum matching Anchor's generated format
+export type Side = 
+  | { none: unknown }
+  | { long: unknown }
+  | { short: unknown };
+
 // Accounts
 // export type Pool = IdlAccounts<HakataPerpetuals>["pool"];
 export type Custody = IdlAccounts<HakataPerpetuals>["custody"];
@@ -25,12 +31,6 @@ export interface Token {
 // Events
 
 // Types
-export class Side {
-  static None = { none: {} };
-  static Long = { long: {} };
-  static Short = { short: {} };
-}
-
 export interface Position {
   owner: PublicKey,
   pool: PublicKey,
@@ -54,6 +54,18 @@ export interface Position {
 //  taken from drift 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function isVariant(object: any, type: string) {
+	if (!object) {
+		return false;
+	}
+	
+	if (typeof object !== 'object') {
+		return false;
+	}
+	
+	if (!object.hasOwnProperty) {
+		return false;
+	}
+	
 	return object.hasOwnProperty(type);
 }
 

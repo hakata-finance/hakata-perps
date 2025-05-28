@@ -1,15 +1,17 @@
 import { UsdcIconCircle } from "@/components/vault/UsdcIconCircle";
-import { USDC_MINT_ADDRESS } from "./constants";
+import { AAPL_MINT_ADDRESS, USDC_MINT_ADDRESS } from "./constants";
 import { AaplIconCircle } from "@/components/trade/AaplIconCircle";
 
 //rename to TokenE
 export enum TokenE {
   USDC = "USDC",
   AAPL = "AAPL",
+  SOL = "SOL",
 }
 export const TOKEN_LIST = [
   TokenE.USDC,
   TokenE.AAPL,
+  TokenE.SOL,
 ];
 
 export function asTokenE(tokenStr: string): TokenE {
@@ -18,7 +20,8 @@ export function asTokenE(tokenStr: string): TokenE {
       return TokenE.USDC; 
     case "AAPL":
       return TokenE.AAPL;
-
+    case "SOL":
+      return TokenE.SOL;
     default:
       throw new Error("Not a valid token string");
   }
@@ -30,6 +33,8 @@ export function getTokenELabel(token: TokenE) {
       return "UDC Coin"; 
     case TokenE.AAPL:
       return "AAPL";
+    case TokenE.SOL:
+      return "SOL";
   }
 }
 
@@ -39,6 +44,8 @@ export function getTokenSymbol(token: TokenE) {
       return "USDC";
     case TokenE.AAPL:
       return "AAPL";   
+    case TokenE.SOL:
+      return "SOL";
   }
 }
 
@@ -48,6 +55,8 @@ export function getSymbol(token: TokenE) {
       return "USDCUSD";
     case TokenE.AAPL:
       return "AAPLUSD";
+    case TokenE.SOL:
+      return "SOLUSD";
   }
 }
 
@@ -57,7 +66,6 @@ export function getTokenEIcon(token: string) {
       return <UsdcIconCircle />;
     case TokenE.AAPL:
       return <AaplIconCircle />;
-      
       default:
         return <></>;
   }
@@ -76,6 +84,8 @@ export function tokenAddressToTokenE(address: string): TokenE {
   switch (address) {
     case USDC_MINT_ADDRESS:
       return TokenE.USDC;
+    case AAPL_MINT_ADDRESS:
+      return TokenE.AAPL;
     default:
       throw new Error("Not a valid token string");
   }

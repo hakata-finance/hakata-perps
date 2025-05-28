@@ -234,14 +234,14 @@ const LiquidProvideForm = () => {
       <div className="space-y-4">
         <div className="grid grid-cols-2 gap-2">
           <Button 
-            className={`${activeTab === Tab.Add ? 'bg-[#18211D] text-[#C8FF00]' : 'border-gray-700 text-white'} hover:bg-[#213026]`}
+            className={`${activeTab === Tab.Add ? 'bg-[#18211D] text-[#C8FF00]' : 'border-gray-700 text-white bg-transparent'} hover:bg-[#213026] hover:text-white`}
             variant={activeTab === Tab.Add ? 'default' : 'outline'}
             onClick={() => setActiveTab(Tab.Add)}
           >
             Add
           </Button>
           <Button 
-            className={`${activeTab === Tab.Remove ? 'bg-[#211818] text-[#FF6666]' : 'border-gray-700 text-white'} hover:bg-[#302121]`}
+            className={`${activeTab === Tab.Remove ? 'bg-[#211818] text-[#FF6666]' : 'border-gray-700 text-white bg-transparent'} hover:bg-[#302121] hover:text-white`}
             variant={activeTab === Tab.Remove ? 'default' : 'outline'}
             onClick={() => setActiveTab(Tab.Remove)}
           >

@@ -38,9 +38,11 @@ const fetchAllStats = (() => {
         const allStats = TOKEN_LIST.reduce((acc, token) => {
           const tokenData = data[getTokenEId(token)];
 
+          console.log("tokenData", tokenData);
+
           acc[token] = {
-            change24hr: tokenData.usd_24h_change,
-            currentPrice: tokenData.usd,
+            change24hr: tokenData.usd_24h_change || 0,
+            currentPrice: tokenData.usd || 0,
             high24hr: 0,
             low24hr: 0,
           };

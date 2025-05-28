@@ -17,6 +17,8 @@ import { BN } from '@coral-xyz/anchor';
 import { sleep } from '@/lib/TransactionHandlers';
 import { usePositions } from '@/hooks/usePositions';
 import { usePythPrices } from '@/hooks/usePythPrices';
+import { useProgram } from '@/hooks/useProgram';
+import { Side } from '@/lib/types';
 
 interface OrderFormProps {
   symbol?: string;
@@ -34,6 +36,7 @@ enum InputType {
 const OrderForm = ({ symbol = 'AAPL' }: OrderFormProps) => {
   const { wallet, publicKey, signTransaction, connected } = useWallet();
   const { connection } = useConnection();
+  const program = useProgram();
   const [leverage, setLeverage] = useState<number>(2);
   const [payAmount, setPayAmount] = useState(0);
   const [activeTab, setActiveTab] = useState<string>("market");
@@ -43,6 +46,7 @@ const OrderForm = ({ symbol = 'AAPL' }: OrderFormProps) => {
   const [positionAmount, setPositionAmount] = useState(0);
   const [lastChanged, setLastChanged] = useState<InputType>(InputType.Pay);
   const [positionToken] = useState(TokenE.AAPL);
+  const [isOpening, setIsOpening] = useState(false);
   const { fetchPositions } = usePositions();
   const { prices } = usePythPrices();
 
@@ -79,29 +83,95 @@ const OrderForm = ({ symbol = 'AAPL' }: OrderFormProps) => {
   }, [connection, payToken, publicKey]);
   
   async function handleOpenPosition() {
-    const positionTokenCustody = POOL_CONFIG.custodies.find(i => i.mintKey.toBase58() === getTokenAddress(positionToken));
-
-    await openPosition(
-      wallet!,
-      publicKey,
-      signTransaction,
-      connection,
+    console.log("🎯 handleOpenPosition called!");
+    console.log("📊 Form state:", {
+      wallet: !!wallet,
+      publicKey: publicKey?.toString(),
+      signTransaction: !!signTransaction,
+      isOpening,
+      payAmount,
+      positionAmount,
       payToken,
       positionToken,
-      // eslint-disable-next-line @typescript-eslint/no-non-null-asserted-optional-chain
-      new BN(payAmount * 10**(positionTokenCustody?.decimals!)),
-      // eslint-disable-next-line @typescript-eslint/no-non-null-asserted-optional-chain
-      new BN(positionAmount * 10**(positionTokenCustody?.decimals!)),
-      new BN((prices.get(payToken) ?? 0) * 10 ** PRICE_DECIMALS),
-      activeSideTab
-    );
+      activeSideTab,
+      leverage
+    });
+    
+    if (!wallet || !publicKey || !signTransaction || isOpening) {
+      console.log("❌ Early return from handleOpenPosition:", {
+        wallet: !!wallet,
+        publicKey: !!publicKey,
+        signTransaction: !!signTransaction,
+        isOpening
+      });
+      return;
+    }
+    
+    setIsOpening(true);
+    
+    try {
+      console.log("🔍 Looking for positionTokenCustody...");
+      // const positionTokenCustody = POOL_CONFIG.custodies.find(i => i.mintKey.toBase58() === getTokenAddress(positionToken));
+      const positionTokenCustody = POOL_CONFIG.custodies[0]; // TODO: fix
+      
+      if (!positionTokenCustody) {
+        throw new Error(`Position token custody not found for ${positionToken}`);
+      }
+      
+      console.log("✅ Found positionTokenCustody:", {
+        decimals: positionTokenCustody.decimals,
+        custodyAccount: positionTokenCustody.custodyAccount.toString()
+      });
+      
+      // Convert activeSideTab to Side enum
+      const side: Side = activeSideTab === 'buy' 
+        ? { long: {} }
+        : { short: {} };
+      
+      console.log("🎲 Created side enum:", side);
+      
+      const payAmountBN = new BN(payAmount * 10**(positionTokenCustody.decimals));
+      const positionAmountBN = new BN(positionAmount * 10**(positionTokenCustody.decimals));
+      const priceBN = new BN((prices.get(payToken) ?? 0) * 10 ** PRICE_DECIMALS);
+      
+      console.log("💰 BN amounts:", {
+        payAmountBN: payAmountBN.toString(),
+        positionAmountBN: positionAmountBN.toString(),
+        priceBN: priceBN.toString(),
+        price: prices.get(payToken) ?? 0
+      });
 
-    // fetch and add to store
-    console.log("sleep 5sec");
-    await sleep(5000);
-    console.log("after sleep calling fetchPositions");
-    fetchPositions();
+      console.log("🚀 About to call openPosition...");
+      await openPosition(
+        program,
+        publicKey,
+        signTransaction,
+        connection,
+        payToken,
+        positionToken,
+        payAmountBN,
+        positionAmountBN,
+        priceBN,
+        side
+      );
+
+      // Reset form
+      setPayAmount(0);
+      setPositionAmount(0);
+
+      // fetch and add to store
+      console.log("sleep 5sec");
+      await sleep(5000);
+      console.log("after sleep calling fetchPositions");
+      fetchPositions();
+    } catch (error) {
+      console.error('Failed to open position:', error);
+    } finally {
+      setIsOpening(false);
+    }
   }
+
+  const isFormValid = payAmount > 0 && positionAmount > 0 && connected;
 
   return (
     <div className="rounded-lg bg-[#121212] p-4 border border-gray-800">
@@ -115,14 +185,14 @@ const OrderForm = ({ symbol = 'AAPL' }: OrderFormProps) => {
         <TabsContent value="market" className="space-y-4">
           <div className="grid grid-cols-2 gap-2">
             <Button 
-              className={`${activeSideTab === 'buy' ? 'bg-[#18211D] text-[#C8FF00]' : 'border-gray-700 text-white'} hover:bg-[#213026]`}
+              className={`${activeSideTab === 'buy' ? 'bg-[#18211D] text-[#C8FF00]' : 'border-gray-700 text-white bg-transparent'} hover:bg-[#213026] hover:text-white cursor-pointer`}
               variant={activeSideTab === 'buy' ? 'default' : 'outline'}
               onClick={() => setActiveSideTab('buy')}
             >
               Buy
             </Button>
             <Button 
-              className={`${activeSideTab === 'sell' ? 'bg-[#211818] text-[#FF6666]' : 'border-gray-700 text-white'} hover:bg-[#302121]`}
+              className={`${activeSideTab === 'sell' ? 'bg-[#211818] text-[#FF6666]' : 'border-gray-700 text-white bg-transparent'} hover:bg-[#302121] hover:text-white cursor-pointer`}
               variant={activeSideTab === 'sell' ? 'default' : 'outline'}
               onClick={() => setActiveSideTab('sell')}
             >
@@ -147,6 +217,7 @@ const OrderForm = ({ symbol = 'AAPL' }: OrderFormProps) => {
                     setLastChanged(InputType.Pay);
                   }}
                   className="bg-[#1E1E1E] border-gray-700 pr-16"
+                  placeholder="0.00"
                 />
               </div>
               <div className="flex items-center px-4 py-2 bg-[#1E1E1E] rounded-md">
@@ -167,6 +238,7 @@ const OrderForm = ({ symbol = 'AAPL' }: OrderFormProps) => {
                     setLastChanged(InputType.Position);
                   }}
                   className="bg-[#1E1E1E] border-gray-700 pr-16"
+                  placeholder="0.00"
                 />
               </div>
               <div className="flex items-center px-4 py-2 bg-[#1E1E1E] rounded-md">
@@ -206,44 +278,46 @@ const OrderForm = ({ symbol = 'AAPL' }: OrderFormProps) => {
             />
             <div className="grid grid-cols-6 gap-2 text-sm">
               <button 
-                className="px-2 py-1 rounded bg-gray-800 hover:bg-gray-700"
+                className="px-2 py-1 rounded bg-gray-800 hover:bg-gray-700 cursor-pointer"
                 onClick={() => setLeverage(3)}
               >3x</button>
               <button 
-                className="px-2 py-1 rounded bg-gray-800 hover:bg-gray-700"
+                className="px-2 py-1 rounded bg-gray-800 hover:bg-gray-700 cursor-pointer"
                 onClick={() => setLeverage(5)}
               >5x</button>
               <button 
-                className="px-2 py-1 rounded bg-gray-800 hover:bg-gray-700"
+                className="px-2 py-1 rounded bg-gray-800 hover:bg-gray-700 cursor-pointer"
                 onClick={() => setLeverage(10)}
               >10x</button>
               <button 
-                className="px-2 py-1 rounded bg-gray-800 hover:bg-gray-700"
+                className="px-2 py-1 rounded bg-gray-800 hover:bg-gray-700 cursor-pointer"
                 onClick={() => setLeverage(25)}
               >25x</button>
               <button 
-                className="px-2 py-1 rounded bg-gray-800 hover:bg-gray-700"
+                className="px-2 py-1 rounded bg-gray-800 hover:bg-gray-700 cursor-pointer"
                 onClick={() => setLeverage(50)}
               >50x</button>
               <button 
-                className="px-2 py-1 rounded bg-gray-800 hover:bg-gray-700"
+                className="px-2 py-1 rounded bg-gray-800 hover:bg-gray-700 cursor-pointer"
                 onClick={() => setLeverage(100)}
               >100x</button>
             </div>
           </div>
           {connected ? (
-            <Button className={`w-full font-bold py-6 ${
-              activeSideTab === 'buy' 
-                ? 'bg-[#C8FF00] hover:bg-[#BDFF00] text-black' 
-                : 'bg-[#FF6666] hover:bg-[#FF5555] text-white'
-              }`}
+            <Button 
+              className={`w-full font-bold py-6 cursor-pointer transition-all duration-200 ${
+                activeSideTab === 'buy' 
+                  ? 'bg-[#C8FF00] hover:bg-[#BDFF00] text-black' 
+                  : 'bg-[#FF6666] hover:bg-[#FF5555] text-white'
+              } ${!isFormValid || isOpening ? 'opacity-50 cursor-not-allowed' : ''}`}
               onClick={handleOpenPosition}
+              disabled={!isFormValid || isOpening}
             >
-              Open Position
+              {isOpening ? 'Opening Position...' : 'Open Position'}
             </Button>
           ) : (
             <div className="orderform-wallet-btn">
-              <WalletMultiButton className="w-full font-bold py-6 !bg-[#23262B] !text-white !rounded-lg" />
+              <WalletMultiButton className="w-full font-bold py-6 !bg-[#23262B] !text-white !rounded-lg cursor-pointer" />
             </div>
           )}
         </TabsContent>
