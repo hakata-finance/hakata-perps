@@ -68,7 +68,7 @@ export default function LeaderboardPage() {
           <div className="bg-gray-800 rounded-lg overflow-hidden shadow-xl">
             <div className="bg-gray-700 px-6 py-4">
               <h2 className="text-xl font-semibold">
-                Top Holders ({leaderboard.length} found)
+                Top Holders
               </h2>
             </div>
             
