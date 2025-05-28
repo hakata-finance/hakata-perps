@@ -40,7 +40,11 @@ export const useLeaderboard = (
   const [error, setError] = useState<string | null>(null);
 
   // Use the same RPC endpoint as the compressed tokens
-  const RPC_ENDPOINT = process.env.NEXT_PUBLIC_RPC_ENDPOINT ?? "https://devnet.helius-rpc.com?api-key=dcefb6d9-a6e8-4679-8b60-b9555a56b3cf";
+  const RPC_ENDPOINT = process.env.NEXT_PUBLIC_RPC_ENDPOINT;
+
+  if (!RPC_ENDPOINT) {
+    throw new Error('RPC_ENDPOINT is not set');
+  }
 
   const fetchLeaderboard = useCallback(async () => {
     setLoading(true);

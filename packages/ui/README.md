@@ -99,7 +99,7 @@ The UI can be configured to connect to different environments:
 - Devnet
 - Mainnet
 
-Environment variables can be set in `.env.local` file:
+Environment variables can be set in `.env` file:
 
 ```text
 NEXT_PUBLIC_SOLANA_NETWORK=mainnet-beta
