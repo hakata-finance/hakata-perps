@@ -6,6 +6,7 @@ export interface LeaderboardData {
   owner: string;
   balance: number;
   rank: number;
+  isCurrentUser?: boolean;
 }
 
 interface SplTokenAccount {
@@ -23,9 +24,16 @@ interface UseLeaderboardReturn {
   refetch: () => Promise<void>;
 }
 
+const WALLETS_TO_EXCLUDE = [
+  '46AwppJA9ubSP2L7uSZuJseRAhXiQbvC2KhQKQzY5FhP', // DAN
+  'FRGumQszUGLTtfgH3gDwzG256pL4P8Cj3DDGAPCmBFka', // MISHA
+  '3QqvWSASQBdBh8AgopfTCZJytPxYYqGc45Qam71jTQSc' // IHOR
+]
+
 export const useLeaderboard = (
   tokenMint: string = 'FtQ7umDWQmGbuVAPEzhD4Mz8NZ3mCPNKYmZzMp2VWbeP',
-  limit: number = 10
+  limit: number = 10,
+  currentUserWallet?: string
 ): UseLeaderboardReturn => {
   const [leaderboard, setLeaderboard] = useState<LeaderboardData[]>([]);
   const [loading, setLoading] = useState(true);
@@ -93,7 +101,8 @@ export const useLeaderboard = (
           holders.push({
             owner: tokenAccount.owner.toString(),
             balance: account.uiAmount,
-            rank: 0
+            rank: 0,
+            isCurrentUser: currentUserWallet ? tokenAccount.owner.toString() === currentUserWallet : false
           });
           
           console.log(`✅ ATA ${account.address} -> Owner ${tokenAccount.owner.toString()} (${account.uiAmount} tokens)`);
@@ -107,13 +116,15 @@ export const useLeaderboard = (
           holders.push({
             owner: `${account.address} (ATA)`,
             balance: account.uiAmount,
-            rank: 0
+            rank: 0,
+            isCurrentUser: currentUserWallet ? account.address === currentUserWallet : false
           });
         }
       }
       
       // Sort by balance and assign ranks
       const sortedHolders = holders
+        .filter(holder => !WALLETS_TO_EXCLUDE.includes(holder.owner))
         .sort((a, b) => b.balance - a.balance)
         .slice(0, limit)
         .map((holder, index) => ({
@@ -130,7 +141,7 @@ export const useLeaderboard = (
     } finally {
       setLoading(false);
     }
-  }, [tokenMint, limit, RPC_ENDPOINT]);
+  }, [tokenMint, limit, RPC_ENDPOINT, currentUserWallet]);
 
   useEffect(() => {
     fetchLeaderboard();

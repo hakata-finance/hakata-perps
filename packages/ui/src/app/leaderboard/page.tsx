@@ -1,13 +1,16 @@
 'use client';
 
 import React from 'react';
+import { useWallet } from '@solana/wallet-adapter-react';
 import { useLeaderboard } from '../../hooks/useLeaderboard';
 import { formatBalance, formatAddress } from '../../utils/compressionUtils';
 
 export default function LeaderboardPage() {
+  const { publicKey } = useWallet();
   const { leaderboard, loading, error, refetch } = useLeaderboard(
     'FtQ7umDWQmGbuVAPEzhD4Mz8NZ3mCPNKYmZzMp2VWbeP', // cXP token mint
-    10 // limit
+    10, // limit
+    publicKey?.toBase58() // current user's wallet address
   );
 
   const getRankIcon = (rank: number): string => {
@@ -74,12 +77,17 @@ export default function LeaderboardPage() {
                 <div
                   key={entry.owner}
                   className={`px-6 py-4 flex items-center justify-between hover:bg-gray-750 transition-colors ${
-                    entry.rank <= 3 ? 'bg-gradient-to-r from-yellow-900/20 to-transparent' : ''
+                    entry.isCurrentUser 
+                      ? 'bg-gradient-to-r from-blue-900/40 to-blue-800/20 border-l-4 border-blue-500' 
+                      : entry.rank <= 3 
+                        ? 'bg-gradient-to-r from-yellow-900/20 to-transparent' 
+                        : ''
                   }`}
                 >
                   <div className="flex items-center space-x-4">
                     <div className="text-2xl font-bold min-w-[60px]">
                       {getRankIcon(entry.rank)}
+                      {entry.isCurrentUser && <span className="ml-1 text-blue-400">👑</span>}
                     </div>
                     <div>
                       <div className="font-mono text-sm text-gray-300">
