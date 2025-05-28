@@ -1,38 +1,14 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
-import { 
-  fetchCxpLeaderboard, 
-  formatBalance, 
-  formatAddress,
-  LeaderboardData 
-} from '../../utils/compressionUtils';
+import React from 'react';
+import { useLeaderboard } from '../../hooks/useLeaderboard';
+import { formatBalance, formatAddress } from '../../utils/compressionUtils';
 
 export default function LeaderboardPage() {
-  const [leaderboard, setLeaderboard] = useState<LeaderboardData[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-
-  const fetchLeaderboard = async () => {
-    setLoading(true);
-    setError(null);
-    
-    try {
-      console.log("Fetching leaderboard data...");
-      const data = await fetchCxpLeaderboard(10);
-      setLeaderboard(data);
-      console.log("Leaderboard data loaded:", data.length, "entries");
-    } catch (err) {
-      console.error("Failed to fetch leaderboard data:", err);
-      setError(err instanceof Error ? err.message : 'Failed to load leaderboard data');
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    fetchLeaderboard();
-  }, []);
+  const { leaderboard, loading, error, refetch } = useLeaderboard(
+    'FtQ7umDWQmGbuVAPEzhD4Mz8NZ3mCPNKYmZzMp2VWbeP', // cXP token mint
+    10 // limit
+  );
 
   const getRankIcon = (rank: number): string => {
     switch (rank) {
@@ -62,9 +38,6 @@ export default function LeaderboardPage() {
       <div className="max-w-4xl mx-auto">
         <div className="text-center mb-8">
           <h1 className="text-4xl font-bold mb-4">cXP Token Leaderboard</h1>
-          <p className="text-gray-400 mb-6">
-            Top cXP Token Holders on Devnet
-          </p>
           
           {error && (
             <div className="bg-red-900/20 border border-red-500 rounded-lg p-4 mb-6">
@@ -73,7 +46,7 @@ export default function LeaderboardPage() {
           )}
           
           <button
-            onClick={fetchLeaderboard}
+            onClick={refetch}
             className="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded-lg transition-colors"
             disabled={loading}
           >
@@ -85,7 +58,7 @@ export default function LeaderboardPage() {
           <div className="text-center py-12">
             <p className="text-gray-400 text-lg">No cXP token holders found</p>
             <p className="text-gray-500 text-sm mt-2">
-              Make sure the HELIUS_API_KEY is configured on the server
+              Make sure you have cXP tokens in your wallet
             </p>
           </div>
         ) : (
@@ -131,21 +104,6 @@ export default function LeaderboardPage() {
             </div>
           </div>
         )}
-
-        <div className="mt-8 text-center text-sm text-gray-500">
-          <p>Real-time cXP Token Holders • Powered by Helius RPC</p>
-          <p className="mt-2">
-            Data fetched from Solana devnet using{' '}
-            <a
-              href="https://docs.helius.dev/"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-blue-400 hover:text-blue-300 underline"
-            >
-              Helius API
-            </a>
-          </p>
-        </div>
       </div>
     </div>
   );
