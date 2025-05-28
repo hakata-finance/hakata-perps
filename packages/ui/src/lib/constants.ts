@@ -3,8 +3,8 @@ import IDL from "@/target/idl/hakata_perpetuals.json";
 import { PoolConfig } from "./PoolConfig";
 
 export const RPC_URL: string = process.env.NEXT_PUBLIC_RPC_URL || 'https://api.devnet.solana.com';
-export const CLUSTER: Cluster = process.env.NEXT_CLUSTER as Cluster || 'devnet';
-export const DEFAULT_POOL: string = process.env.NEXT_DEFAULT_POOL || 'HakataPool';
+export const CLUSTER: Cluster = (process.env.NEXT_PUBLIC_CLUSTER as Cluster) || 'devnet';
+export const DEFAULT_POOL: string = process.env.NEXT_PUBLIC_DEFAULT_POOL || 'HakataPool';
 
 // Program ID
 export const PROGRAM_ID = new PublicKey(IDL.address);
