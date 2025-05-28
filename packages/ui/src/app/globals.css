@@ -8,6 +8,10 @@ html {
   background-color: black;
 }
 
+button {
+  cursor: pointer;
+}
+
 @layer base {
   :root {
     --background: 240 50% 99%;
