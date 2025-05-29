@@ -25,9 +25,13 @@ interface UseLeaderboardReturn {
 }
 
 const WALLETS_TO_EXCLUDE = [
-  '46AwppJA9ubSP2L7uSZuJseRAhXiQbvC2KhQKQzY5FhP', // DAN
-  'FRGumQszUGLTtfgH3gDwzG256pL4P8Cj3DDGAPCmBFka', // MISHA
-  '3QqvWSASQBdBh8AgopfTCZJytPxYYqGc45Qam71jTQSc' // IHOR
+  'FRGumQszUGLTtfgH3gDwzG256pL4P8Cj3DDGAPCmBFka',
+  '3QqvWSASQBdBh8AgopfTCZJytPxYYqGc45Qam71jTQSc',
+  '46AwppJA9ubSP2L7uSZuJseRAhXiQbvC2KhQKQzY5FhP',
+  'D94DYjWwgaZ3eH6VCWuwhfQs4hhKQEPrLDK7VZxJSss4',
+  'HVDy1CG9b4b9khm2PPttesCBP71uAfCfsYf77WhaF2Kd',
+  'BPvWuD1L73riKRnfyCqEYucxd2u3mebYP1hpMUDncRhA',
+  'AbHofCyTTLTrTqszBji59mLbiFZnaeRpWyzLjKUCpMGM'
 ]
 
 export const useLeaderboard = (

@@ -103,9 +103,6 @@ export default function LeaderboardPage() {
                     <div className="text-xl font-bold text-green-400">
                       {formatBalance(entry.balance)} cXP
                     </div>
-                    <div className="text-xs text-gray-500">
-                      {entry.balance.toLocaleString()} tokens
-                    </div>
                   </div>
                 </div>
               ))}
