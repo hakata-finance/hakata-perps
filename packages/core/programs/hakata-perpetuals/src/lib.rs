@@ -1,7 +1,6 @@
-//! Perpetuals program entrypoint
-
 #![allow(unexpected_cfgs)]
 
+pub mod constants;
 pub mod error;
 pub mod instructions;
 pub mod math;
