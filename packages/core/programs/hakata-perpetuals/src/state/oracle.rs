@@ -13,7 +13,7 @@ const ORACLE_MAX_PRICE: u64 = (1 << 28) - 1;
 #[derive(Copy, Clone, PartialEq, AnchorSerialize, AnchorDeserialize, Debug)]
 pub enum OracleType {
     None,
-    Test,
+    Custom,
     Pyth,
 }
 
@@ -29,17 +29,36 @@ pub struct OraclePrice {
     pub exponent: i32,
 }
 
+#[derive(Copy, Clone, PartialEq, AnchorSerialize, AnchorDeserialize, Default, Debug)]
+pub struct OracleParams {
+    pub oracle_account: Pubkey,
+    pub oracle_type: OracleType,
+    // The oracle_authority pubkey is allowed to sign permissionless off-chain price updates.
+    pub oracle_authority: Pubkey,
+    pub max_price_error: u64,
+    pub max_price_age_sec: u32,
+}
+
 #[account]
 #[derive(Default, Debug)]
-pub struct TestOracle {
+pub struct CustomOracle {
     pub price: u64,
     pub expo: i32,
     pub conf: u64,
+    pub ema: u64,
     pub publish_time: i64,
 }
 
-impl TestOracle {
-    pub const LEN: usize = 8 + std::mem::size_of::<TestOracle>();
+impl CustomOracle {
+    pub const LEN: usize = 8 + std::mem::size_of::<CustomOracle>();
+
+    pub fn set(&mut self, price: u64, expo: i32, conf: u64, ema: u64, publish_time: i64) {
+        self.price = price;
+        self.expo = expo;
+        self.conf = conf;
+        self.ema = ema;
+        self.publish_time = publish_time;
+    }
 }
 
 impl PartialOrd for OraclePrice {
@@ -75,46 +94,27 @@ impl OraclePrice {
     }
 
     pub fn new_from_oracle(
-        oracle_type: OracleType,
         oracle_account: &AccountInfo,
-        max_price_error: u64,
-        max_price_age_sec: u32,
+        oracle_params: &OracleParams,
         current_time: i64,
         use_ema: bool,
     ) -> Result<Self> {
-        match oracle_type {
-            OracleType::Test => Self::get_test_price(
+        match oracle_params.oracle_type {
+            OracleType::Custom => Self::get_custom_price(
                 oracle_account,
-                max_price_error,
-                max_price_age_sec,
+                oracle_params.max_price_error,
+                oracle_params.max_price_age_sec,
                 current_time,
+                use_ema,
             ),
             OracleType::Pyth => Self::get_pyth_price(
                 oracle_account,
-                max_price_error,
-                max_price_age_sec,
+                oracle_params.max_price_error,
+                oracle_params.max_price_age_sec,
                 current_time,
                 use_ema,
             ),
             _ => err!(PerpetualsError::UnsupportedOracle),
-        }
-    }
-
-    // Converts token amount to USD using oracle price
-    pub fn get_asset_value_usd(&self, token_amount: u64, token_decimals: u8) -> Result<f64> {
-        if token_amount == 0 || self.price == 0 {
-            return Ok(0.0);
-        }
-        let res = token_amount as f64
-            * self.price as f64
-            * math::checked_powi(
-                10.0,
-                math::checked_sub(self.exponent, token_decimals as i32)?,
-            )?;
-        if res.is_finite() {
-            Ok(res)
-        } else {
-            err!(PerpetualsError::MathOverflow)
         }
     }
 
@@ -204,42 +204,78 @@ impl OraclePrice {
     }
 
     pub fn checked_as_f64(&self) -> Result<f64> {
-        math::checked_float_mul(self.price as f64, math::checked_powi(10.0, self.exponent)?)
+        math::checked_float_mul(
+            math::checked_as_f64(self.price)?,
+            math::checked_powi(10.0, self.exponent)?,
+        )
+    }
+
+    pub fn get_min_price(&self, other: &OraclePrice, is_stable: bool) -> Result<OraclePrice> {
+        let min_price = if self < other { self } else { other };
+        if is_stable {
+            if min_price.exponent > 0 {
+                if min_price.price == 0 {
+                    return Ok(*min_price);
+                } else {
+                    return Ok(OraclePrice {
+                        price: 1000000u64,
+                        exponent: -6,
+                    });
+                }
+            }
+            let one_usd = math::checked_pow(10u64, (-min_price.exponent) as usize)?;
+            if min_price.price > one_usd {
+                Ok(OraclePrice {
+                    price: one_usd,
+                    exponent: min_price.exponent,
+                })
+            } else {
+                Ok(*min_price)
+            }
+        } else {
+            Ok(*min_price)
+        }
     }
 
     // private helpers
-    fn get_test_price(
-        test_price_info: &AccountInfo,
+    fn get_custom_price(
+        custom_price_info: &AccountInfo,
         max_price_error: u64,
         max_price_age_sec: u32,
         current_time: i64,
+        use_ema: bool,
     ) -> Result<OraclePrice> {
         require!(
-            !Perpetuals::is_empty_account(test_price_info)?,
+            !Perpetuals::is_empty_account(custom_price_info)?,
             PerpetualsError::InvalidOracleAccount
         );
 
-        let oracle_acc = try_from!(Account<TestOracle>, test_price_info)?;
+        let oracle_acc = try_from!(Account<CustomOracle>, custom_price_info)?;
 
         let last_update_age_sec = math::checked_sub(current_time, oracle_acc.publish_time)?;
         if last_update_age_sec > max_price_age_sec as i64 {
-            msg!("Error: Test oracle price is stale");
+            msg!("Error: Custom oracle price is stale");
             return err!(PerpetualsError::StaleOraclePrice);
         }
+        let price = if use_ema {
+            oracle_acc.ema
+        } else {
+            oracle_acc.price
+        };
 
-        if oracle_acc.price == 0
+        if price == 0
             || math::checked_div(
                 math::checked_mul(oracle_acc.conf as u128, Perpetuals::BPS_POWER)?,
-                oracle_acc.price as u128,
+                price as u128,
             )? > max_price_error as u128
         {
-            msg!("Error: Test oracle price is out of bounds");
+            msg!("Error: Custom oracle price is out of bounds");
             return err!(PerpetualsError::InvalidOraclePrice);
         }
 
         Ok(OraclePrice {
             // price is i64 and > 0 per check above
-            price: oracle_acc.price,
+            price,
             exponent: oracle_acc.expo,
         })
     }
@@ -255,7 +291,6 @@ impl OraclePrice {
             !Perpetuals::is_empty_account(pyth_price_info)?,
             PerpetualsError::InvalidOracleAccount
         );
-        // TODO: Update deprecated load_price_feed_from_account_info
         let price_feed = pyth_sdk_solana::load_price_feed_from_account_info(pyth_price_info)
             .map_err(|_| PerpetualsError::InvalidOracleAccount)?;
         let pyth_price = if use_ema {

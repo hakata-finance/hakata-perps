@@ -1,3 +1,5 @@
+//! Perpetuals program entrypoint
+
 #![allow(unexpected_cfgs)]
 
 pub mod error;
@@ -12,6 +14,14 @@ use {
         AmountAndFee, NewPositionPricesAndFee, PriceAndFee, ProfitAndLoss, SwapAmountAndFees,
     },
 };
+
+solana_security_txt::security_txt! {
+    name: "Hakata Perps",
+    project_url: "https://github.com/hakata-finance/hakata-perps",
+    contacts: "email:admin@hakata.fi",
+    policy: "",
+    preferred_languages: "en"
+}
 
 declare_id!("CkawHJw5TVjUt1ggAZtuo3hgHBMptJHtxXk6A6nY5RWg");
 
@@ -115,13 +125,6 @@ pub mod hakata_perpetuals {
         instructions::test_init(ctx, &params)
     }
 
-    pub fn set_test_oracle_price<'info>(
-        ctx: Context<'_, '_, '_, 'info, SetTestOraclePrice<'info>>,
-        params: SetTestOraclePriceParams,
-    ) -> Result<u8> {
-        instructions::set_test_oracle_price(ctx, &params)
-    }
-
     pub fn set_test_time<'info>(
         ctx: Context<'_, '_, '_, 'info, SetTestTime<'info>>,
         params: SetTestTimeParams,
@@ -167,6 +170,10 @@ pub mod hakata_perpetuals {
 
     pub fn liquidate(ctx: Context<Liquidate>, params: LiquidateParams) -> Result<()> {
         instructions::liquidate(ctx, &params)
+    }
+
+    pub fn update_pool_aum(ctx: Context<UpdatePoolAum>) -> Result<u128> {
+        instructions::update_pool_aum(ctx)
     }
 
     pub fn get_add_liquidity_amount_and_fee(
@@ -234,5 +241,21 @@ pub mod hakata_perpetuals {
         params: GetAssetsUnderManagementParams,
     ) -> Result<u128> {
         instructions::get_assets_under_management(ctx, &params)
+    }
+
+    pub fn get_lp_token_price(
+        ctx: Context<GetLpTokenPrice>,
+        params: GetLpTokenPriceParams,
+    ) -> Result<u64> {
+        instructions::get_lp_token_price(ctx, &params)
+    }
+
+    // This instruction must be part of a larger transaction where the **first** instruction
+    // is an ed25519 verification of the serialized oracle price update params.
+    pub fn set_custom_oracle_price_permissionless(
+        ctx: Context<SetCustomOraclePricePermissionless>,
+        params: SetCustomOraclePricePermissionlessParams,
+    ) -> Result<()> {
+        instructions::set_custom_oracle_price_permissionless(ctx, &params)
     }
 }

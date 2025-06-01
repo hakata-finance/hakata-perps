@@ -1,4 +1,5 @@
 use {
+    crate::try_from,
     anchor_lang::{prelude::*, solana_program::clock},
     anchor_spl::token::{Burn, MintTo, Transfer},
 };
@@ -68,12 +69,12 @@ impl anchor_lang::Id for Perpetuals {
 impl Perpetuals {
     pub const LEN: usize = 8 + std::mem::size_of::<Perpetuals>();
     pub const BPS_DECIMALS: u8 = 4;
-    pub const BPS_POWER: u128 = 10i64.pow(Self::BPS_DECIMALS as u32) as u128;
+    pub const BPS_POWER: u128 = 10u64.pow(Self::BPS_DECIMALS as u32) as u128;
     pub const PRICE_DECIMALS: u8 = 6;
     pub const USD_DECIMALS: u8 = 6;
     pub const LP_DECIMALS: u8 = Self::USD_DECIMALS;
     pub const RATE_DECIMALS: u8 = 9;
-    pub const RATE_POWER: u128 = 10i64.pow(Self::RATE_DECIMALS as u32) as u128;
+    pub const RATE_POWER: u128 = 10u64.pow(Self::RATE_DECIMALS as u32) as u128;
 
     pub fn validate(&self) -> bool {
         true
@@ -92,6 +93,32 @@ impl Perpetuals {
         } else {
             Err(ProgramError::InvalidAccountData.into())
         }
+    }
+
+    pub fn validate_upgrade_authority(
+        expected_upgrade_authority: Pubkey,
+        program_data: &AccountInfo,
+        program: &Program<crate::program::HakataPerpetuals>,
+    ) -> Result<()> {
+        if let Some(programdata_address) = program.programdata_address()? {
+            require_keys_eq!(
+                programdata_address,
+                program_data.key(),
+                ErrorCode::InvalidProgramExecutable
+            );
+            let program_data: Account<ProgramData> = try_from!(Account<ProgramData>, program_data)?;
+            if let Some(current_upgrade_authority) = program_data.upgrade_authority_address {
+                if current_upgrade_authority != Pubkey::default() {
+                    require_keys_eq!(
+                        current_upgrade_authority,
+                        expected_upgrade_authority,
+                        ErrorCode::ConstraintOwner
+                    );
+                }
+            }
+        } // otherwise not upgradeable
+
+        Ok(())
     }
 
     pub fn transfer_tokens<'info>(

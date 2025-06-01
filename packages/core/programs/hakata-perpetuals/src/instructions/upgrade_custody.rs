@@ -4,13 +4,14 @@ use {
     crate::{
         error::PerpetualsError,
         state::{
-            custody::{Custody, DeprecatedCustody, PositionStats, PricingParams},
+            custody::{Custody, DeprecatedCustody},
             multisig::{AdminInstruction, Multisig},
             perpetuals::Perpetuals,
             pool::Pool,
         },
     },
-    anchor_lang::{prelude::*, solana_program::program_memory::sol_memcpy},
+    anchor_lang::prelude::*,
+    solana_program::program_memory::sol_memcpy,
     std::{
         cmp,
         io::{self, Write},
@@ -90,8 +91,8 @@ pub struct UpgradeCustody<'info> {
 #[derive(AnchorSerialize, AnchorDeserialize)]
 pub struct UpgradeCustodyParams {}
 
-pub fn upgrade_custody<'a, 'b, 'c, 'info>(
-    ctx: Context<'a, 'b, 'c, 'info, UpgradeCustody<'info>>,
+pub fn upgrade_custody<'info>(
+    ctx: Context<'_, '_, '_, 'info, UpgradeCustody<'info>>,
     params: &UpgradeCustodyParams,
 ) -> Result<u8> {
     // validate signatures
@@ -112,36 +113,14 @@ pub fn upgrade_custody<'a, 'b, 'c, 'info>(
 
     // load deprecated custody data
     msg!("Load deprecated custody");
-    let custody_account  = &ctx.accounts.custody;
+    let custody_account = &ctx.accounts.custody;
     if custody_account.owner != &crate::ID {
         return Err(ProgramError::IllegalOwner.into());
     }
     if custody_account.try_data_len()? != DeprecatedCustody::LEN {
         return Err(ProgramError::InvalidAccountData.into());
     }
-    // // Use a different approach to deserialize the account data
-    // let data = custody_account.try_borrow_data()?;
-    // let mut lamports = custody_account.lamports();
-    // let owner = *custody_account.owner;
-    
-    // // Create the deprecated custody account directly
-    // let deprecated_custody = DeprecatedCustody::try_deserialize(&mut &data[8..])?;
     let deprecated_custody = Account::<DeprecatedCustody>::try_from_unchecked(custody_account)?;
-
-    let pricing = PricingParams {
-        use_ema: deprecated_custody.pricing.use_ema,
-        use_unrealized_pnl_in_aum: deprecated_custody.pricing.use_unrealized_pnl_in_aum,
-        trade_spread_long: deprecated_custody.pricing.trade_spread_long,
-        trade_spread_short: deprecated_custody.pricing.trade_spread_short,
-        swap_spread: deprecated_custody.pricing.swap_spread,
-        min_initial_leverage: deprecated_custody.pricing.min_initial_leverage,
-        max_initial_leverage: deprecated_custody.pricing.max_leverage,
-        max_leverage: deprecated_custody.pricing.max_leverage,
-        max_payoff_mult: deprecated_custody.pricing.max_payoff_mult,
-        max_utilization: 0,
-        max_position_locked_usd: 0,
-        max_total_locked_usd: 0,
-    };
 
     // update custody data
     let custody_data = Custody {
@@ -150,8 +129,9 @@ pub fn upgrade_custody<'a, 'b, 'c, 'info>(
         token_account: deprecated_custody.token_account,
         decimals: deprecated_custody.decimals,
         is_stable: deprecated_custody.is_stable,
+        is_virtual: false,
         oracle: deprecated_custody.oracle,
-        pricing,
+        pricing: deprecated_custody.pricing,
         permissions: deprecated_custody.permissions,
         fees: deprecated_custody.fees,
         borrow_rate: deprecated_custody.borrow_rate,
@@ -159,8 +139,8 @@ pub fn upgrade_custody<'a, 'b, 'c, 'info>(
         collected_fees: deprecated_custody.collected_fees,
         volume_stats: deprecated_custody.volume_stats,
         trade_stats: deprecated_custody.trade_stats,
-        long_positions: PositionStats::default(),
-        short_positions: PositionStats::default(),
+        long_positions: deprecated_custody.long_positions,
+        short_positions: deprecated_custody.short_positions,
         borrow_rate_state: deprecated_custody.borrow_rate_state,
         bump: deprecated_custody.bump,
         token_account_bump: deprecated_custody.token_account_bump,

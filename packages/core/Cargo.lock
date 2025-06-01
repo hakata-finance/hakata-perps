@@ -1883,8 +1883,10 @@ dependencies = [
  "num 0.4.3",
  "num-traits",
  "pyth-sdk-solana",
+ "solana-program",
  "solana-program-test",
  "solana-sdk",
+ "solana-security-txt",
  "tokio",
 ]
 

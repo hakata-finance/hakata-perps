@@ -4,7 +4,8 @@ use {
     crate::{
         error::PerpetualsError,
         state::{
-            custody::{BorrowRateParams, Custody, Fees, OracleParams, PricingParams},
+            oracle::OracleParams,
+            custody::{BorrowRateParams, Custody, Fees, PricingParams},
             multisig::{AdminInstruction, Multisig},
             perpetuals::{Permissions, Perpetuals},
             pool::{Pool, TokenRatios},

@@ -11,8 +11,9 @@ use {
             pool::{AumCalcMode, Pool},
         },
     },
-    anchor_lang::{prelude::*, solana_program::program_error::ProgramError},
+    anchor_lang::prelude::*,
     anchor_spl::token::{Mint, Token, TokenAccount},
+    solana_program::program_error::ProgramError,
 };
 
 #[derive(Accounts)]
@@ -109,7 +110,9 @@ pub fn remove_liquidity(
     let perpetuals = ctx.accounts.perpetuals.as_mut();
     let custody = ctx.accounts.custody.as_mut();
     require!(
-        perpetuals.permissions.allow_remove_liquidity && custody.permissions.allow_remove_liquidity,
+        perpetuals.permissions.allow_remove_liquidity
+            && custody.permissions.allow_remove_liquidity
+            && !custody.is_virtual,
         PerpetualsError::InstructionNotAllowed
     );
 
@@ -125,20 +128,20 @@ pub fn remove_liquidity(
     msg!("Compute assets under management");
     let curtime = perpetuals.get_time()?;
 
+    // Refresh pool.aum_usm to adapt to token price change
+    pool.aum_usd =
+        pool.get_assets_under_management_usd(AumCalcMode::EMA, ctx.remaining_accounts, curtime)?;
+
     let token_price = OraclePrice::new_from_oracle(
-        custody.oracle.oracle_type,
         &ctx.accounts.custody_oracle_account.to_account_info(),
-        custody.oracle.max_price_error,
-        custody.oracle.max_price_age_sec,
+        &custody.oracle,
         curtime,
         false,
     )?;
 
     let token_ema_price = OraclePrice::new_from_oracle(
-        custody.oracle.oracle_type,
         &ctx.accounts.custody_oracle_account.to_account_info(),
-        custody.oracle.max_price_error,
-        custody.oracle.max_price_age_sec,
+        &custody.oracle,
         curtime,
         custody.pricing.use_ema,
     )?;
