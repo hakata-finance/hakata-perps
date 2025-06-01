@@ -1,9 +1,11 @@
-//! UpdatePoolAum instruction handler
-
 use {
-    crate::state::{
-        perpetuals::Perpetuals,
-        pool::{AumCalcMode, Pool},
+    crate::{
+        constants::{PERPETUALS_SEED, POOL_SEED},
+        helpers::AccountMap,
+        state::{
+            perpetuals::Perpetuals,
+            pool::{AumCalcMode, Pool},
+        },
     },
     anchor_lang::prelude::*,
 };
@@ -14,14 +16,14 @@ pub struct UpdatePoolAum<'info> {
     pub payer: Signer<'info>,
 
     #[account(
-        seeds = [b"perpetuals"],
+        seeds = [PERPETUALS_SEED.as_bytes()],
         bump = perpetuals.perpetuals_bump
     )]
     pub perpetuals: Box<Account<'info, Perpetuals>>,
 
     #[account(
         mut,
-        seeds = [b"pool",
+        seeds = [POOL_SEED.as_bytes(),
                  pool.name.as_bytes()],
         bump = pool.bump
     )]
@@ -32,18 +34,17 @@ pub struct UpdatePoolAum<'info> {
 }
 
 pub fn update_pool_aum(ctx: Context<UpdatePoolAum>) -> Result<u128> {
-    let perpetuals: &Account<'_, Perpetuals> = ctx.accounts.perpetuals.as_ref();
     let pool = ctx.accounts.pool.as_mut();
 
-    let curtime: i64 = perpetuals.get_time()?;
+    let clock = Clock::get()?;
 
     // update pool stats
     msg!("Update pool asset under management");
 
     msg!("Previous value: {}", pool.aum_usd);
 
-    pool.aum_usd =
-        pool.get_assets_under_management_usd(AumCalcMode::EMA, ctx.remaining_accounts, curtime)?;
+    let accounts_map = AccountMap::from_remaining_accounts(ctx.remaining_accounts);
+    pool.aum_usd = pool.get_assets_under_management_usd(AumCalcMode::EMA, &accounts_map, &clock)?;
 
     msg!("Updated value: {}", pool.aum_usd);
 

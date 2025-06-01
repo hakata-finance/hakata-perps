@@ -1,5 +1,3 @@
-//! Error types
-
 use anchor_lang::prelude::*;
 
 #[error_code]
@@ -64,4 +62,12 @@ pub enum PerpetualsError {
     PermissionlessOracleSignerMismatch,
     #[msg("Signed message does not match instruction params")]
     PermissionlessOracleMessageMismatch,
+    #[msg("PriceError")]
+    PriceError,
+    #[msg("AccountMapMissingEntry")]
+    AccountMapMissingEntry,
+    #[msg("Invalid EMA oracle")]
+    InvalidEmaOracle,
+    #[msg("EMA oracle is required")]
+    EmaOracleRequired,
 }

@@ -1,5 +1,3 @@
-//! Multisig state and routines
-
 use {
     crate::{error::PerpetualsError, math},
     ahash::AHasher,

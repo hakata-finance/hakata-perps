@@ -1,11 +1,11 @@
-//! GetRemoveLiquidityAmountAndFee instruction handler
-
 use {
     crate::{
+        constants::{CUSTODY_SEED, LP_TOKEN_MINT_SEED, PERPETUALS_SEED, POOL_SEED},
+        helpers::AccountMap,
         math,
+        oracle::OraclePrice,
         state::{
             custody::Custody,
-            oracle::OraclePrice,
             perpetuals::{AmountAndFee, Perpetuals},
             pool::{AumCalcMode, Pool},
         },
@@ -18,20 +18,20 @@ use {
 #[derive(Accounts)]
 pub struct GetRemoveLiquidityAmountAndFee<'info> {
     #[account(
-        seeds = [b"perpetuals"],
+        seeds = [PERPETUALS_SEED.as_bytes()],
         bump = perpetuals.perpetuals_bump
     )]
     pub perpetuals: Box<Account<'info, Perpetuals>>,
 
     #[account(
-        seeds = [b"pool",
+        seeds = [POOL_SEED.as_bytes(),
                  pool.name.as_bytes()],
         bump = pool.bump
     )]
     pub pool: Box<Account<'info, Pool>>,
 
     #[account(
-        seeds = [b"custody",
+        seeds = [CUSTODY_SEED.as_bytes(),
                  pool.key().as_ref(),
                  custody.mint.as_ref()],
         bump = custody.bump
@@ -40,12 +40,12 @@ pub struct GetRemoveLiquidityAmountAndFee<'info> {
 
     /// CHECK: oracle account for the collateral token
     #[account(
-        constraint = custody_oracle_account.key() == custody.oracle.oracle_account
+        constraint = custody_oracle_account.key() == custody.oracle.key()
     )]
     pub custody_oracle_account: AccountInfo<'info>,
 
     #[account(
-        seeds = [b"lp_token_mint",
+        seeds = [LP_TOKEN_MINT_SEED.as_bytes(),
                  pool.key().as_ref()],
         bump = pool.lp_token_bump
     )]
@@ -70,24 +70,26 @@ pub fn get_remove_liquidity_amount_and_fee(
     let token_id = pool.get_token_id(&custody.key())?;
 
     // compute position price
-    let curtime = ctx.accounts.perpetuals.get_time()?;
+    let clock = Clock::get()?;
 
     let token_price = OraclePrice::new_from_oracle(
         &ctx.accounts.custody_oracle_account.to_account_info(),
-        &custody.oracle,
-        curtime,
+        &clock,
+        custody.oracle,
         false,
     )?;
 
     let token_ema_price = OraclePrice::new_from_oracle(
         &ctx.accounts.custody_oracle_account.to_account_info(),
-        &custody.oracle,
-        curtime,
+        &clock,
+        custody.oracle,
         custody.pricing.use_ema,
     )?;
 
+    let accounts_map = AccountMap::from_remaining_accounts(ctx.remaining_accounts);
+
     let pool_amount_usd =
-        pool.get_assets_under_management_usd(AumCalcMode::Min, ctx.remaining_accounts, curtime)?;
+        pool.get_assets_under_management_usd(AumCalcMode::Min, &accounts_map, &clock)?;
 
     let remove_amount_usd = math::checked_as_u64(math::checked_div(
         math::checked_mul(pool_amount_usd, params.lp_amount_in as u128)?,

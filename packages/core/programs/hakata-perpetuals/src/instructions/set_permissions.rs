@@ -1,10 +1,9 @@
-//! SetPermissions instruction handler
-
 use {
     crate::{
+        constants::PERPETUALS_SEED,
         error::PerpetualsError,
         state::{
-            multisig::{AdminInstruction, Multisig},
+            admin::{Admin, Permissions},
             perpetuals::Perpetuals,
         },
     },
@@ -14,18 +13,18 @@ use {
 #[derive(Accounts)]
 pub struct SetPermissions<'info> {
     #[account()]
-    pub admin: Signer<'info>,
+    pub signer: Signer<'info>,
 
     #[account(
-        mut,
-        seeds = [b"multisig"],
-        bump = multisig.load()?.bump
+        constraint = admin.has_permissions(Permissions::ChangePermissions)
     )]
-    pub multisig: AccountLoader<'info, Multisig>,
+    pub admin: Account<'info, Admin>,
 
     #[account(
         mut,
-        seeds = [b"perpetuals"],
+        seeds = [
+            PERPETUALS_SEED.as_bytes()
+        ],
         bump = perpetuals.perpetuals_bump
     )]
     pub perpetuals: Box<Account<'info, Perpetuals>>,
@@ -47,22 +46,6 @@ pub fn set_permissions<'info>(
     ctx: Context<'_, '_, '_, 'info, SetPermissions<'info>>,
     params: &SetPermissionsParams,
 ) -> Result<u8> {
-    // validate signatures
-    let mut multisig = ctx.accounts.multisig.load_mut()?;
-
-    let signatures_left = multisig.sign_multisig(
-        &ctx.accounts.admin,
-        &Multisig::get_account_infos(&ctx)[1..],
-        &Multisig::get_instruction_data(AdminInstruction::SetPermissions, params)?,
-    )?;
-    if signatures_left > 0 {
-        msg!(
-            "Instruction has been signed but more signatures are required: {}",
-            signatures_left
-        );
-        return Ok(signatures_left);
-    }
-
     // update permissions
     let perpetuals = ctx.accounts.perpetuals.as_mut();
     perpetuals.permissions.allow_swap = params.allow_swap;

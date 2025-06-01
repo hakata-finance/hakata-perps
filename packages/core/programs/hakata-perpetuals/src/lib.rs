@@ -4,7 +4,9 @@ pub mod constants;
 pub mod error;
 pub mod instructions;
 pub mod math;
+pub mod oracle;
 pub mod state;
+pub mod helpers;
 
 use {
     anchor_lang::prelude::*,
@@ -48,39 +50,19 @@ pub mod hakata_perpetuals {
         instructions::add_pool(ctx, &params)
     }
 
-    pub fn remove_pool<'info>(
-        ctx: Context<'_, '_, '_, 'info, RemovePool<'info>>,
-        params: RemovePoolParams,
-    ) -> Result<u8> {
-        instructions::remove_pool(ctx, &params)
-    }
+    // Pools should never be removed from the protocol.
+    // pub fn remove_pool<'info>(
+    //     ctx: Context<'_, '_, '_, 'info, RemovePool<'info>>,
+    //     params: RemovePoolParams,
+    // ) -> Result<u8> {
+    //     instructions::remove_pool(ctx, &params)
+    // }
 
     pub fn add_custody<'info>(
         ctx: Context<'_, '_, '_, 'info, AddCustody<'info>>,
         params: AddCustodyParams,
     ) -> Result<u8> {
         instructions::add_custody(ctx, &params)
-    }
-
-    pub fn testing_edit_custody<'info>(
-        ctx: Context<'_, '_, '_, 'info, TestingEditCustody<'info>>,
-        params: EditCustodyParams,
-    ) -> Result<u8> {
-        instructions::testing_edit_custody(ctx, &params)
-    }
-
-    pub fn remove_custody<'info>(
-        ctx: Context<'_, '_, '_, 'info, RemoveCustody<'info>>,
-        params: RemoveCustodyParams,
-    ) -> Result<u8> {
-        instructions::remove_custody(ctx, &params)
-    }
-
-    pub fn set_admin_signers<'info>(
-        ctx: Context<'_, '_, '_, 'info, SetAdminSigners<'info>>,
-        params: SetAdminSignersParams,
-    ) -> Result<u8> {
-        instructions::set_admin_signers(ctx, &params)
     }
 
     pub fn set_custody_config<'info>(
@@ -111,18 +93,7 @@ pub mod hakata_perpetuals {
         instructions::withdraw_sol_fees(ctx, &params)
     }
 
-    // pub fn upgrade_custody<'a, 'b, 'c, 'info>(
-    //     ctx: Context<'a, 'b, 'c, 'info, UpgradeCustody<'info>>,
-    //     params: UpgradeCustodyParams,
-    // ) -> Result<u8> {
-    //     instructions::upgrade_custody(ctx, &params)
-    // }
-
-    // test instructions    
-
-    pub fn test_init(ctx: Context<TestInit>, params: TestInitParams) -> Result<()> {
-        instructions::test_init(ctx, &params)
-    }
+    // test instructions
 
     pub fn set_test_time<'info>(
         ctx: Context<'_, '_, '_, 'info, SetTestTime<'info>>,
@@ -133,6 +104,7 @@ pub mod hakata_perpetuals {
 
     // public instructions
 
+    // Should swaps even be enabled?
     pub fn swap(ctx: Context<Swap>, params: SwapParams) -> Result<()> {
         instructions::swap(ctx, &params)
     }
@@ -221,13 +193,6 @@ pub mod hakata_perpetuals {
         instructions::get_liquidation_state(ctx, &params)
     }
 
-    pub fn get_oracle_price(
-        ctx: Context<GetOraclePrice>,
-        params: GetOraclePriceParams,
-    ) -> Result<u64> {
-        instructions::get_oracle_price(ctx, &params)
-    }
-
     pub fn get_swap_amount_and_fees(
         ctx: Context<GetSwapAmountAndFees>,
         params: GetSwapAmountAndFeesParams,
@@ -247,14 +212,5 @@ pub mod hakata_perpetuals {
         params: GetLpTokenPriceParams,
     ) -> Result<u64> {
         instructions::get_lp_token_price(ctx, &params)
-    }
-
-    // This instruction must be part of a larger transaction where the **first** instruction
-    // is an ed25519 verification of the serialized oracle price update params.
-    pub fn set_custom_oracle_price_permissionless(
-        ctx: Context<SetCustomOraclePricePermissionless>,
-        params: SetCustomOraclePricePermissionlessParams,
-    ) -> Result<()> {
-        instructions::set_custom_oracle_price_permissionless(ctx, &params)
     }
 }

@@ -1,5 +1,3 @@
-//! Common math routines.
-
 #![allow(dead_code)]
 
 use {crate::error::PerpetualsError, anchor_lang::prelude::*, std::fmt::Display};

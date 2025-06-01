@@ -1,7 +1,6 @@
-//! WithdrawSolFees instruction handler
-
 use {
     crate::{
+        constants::PERPETUALS_SEED,
         math,
         state::{
             multisig::{AdminInstruction, Multisig},
@@ -9,6 +8,7 @@ use {
         },
     },
     anchor_lang::prelude::*,
+    solana_program::sysvar,
 };
 
 #[derive(Accounts)]
@@ -31,7 +31,7 @@ pub struct WithdrawSolFees<'info> {
     pub transfer_authority: AccountInfo<'info>,
 
     #[account(
-        seeds = [b"perpetuals"],
+        seeds = [PERPETUALS_SEED.as_bytes()],
         bump = perpetuals.perpetuals_bump
     )]
     pub perpetuals: Box<Account<'info, Perpetuals>>,
@@ -76,7 +76,7 @@ pub fn withdraw_sol_fees<'info>(
 
     // transfer sol fees from the custody to the receiver
     let balance = ctx.accounts.transfer_authority.try_lamports()?;
-    let min_balance = Rent::get()?.minimum_balance(0);
+    let min_balance = sysvar::rent::Rent::get()?.minimum_balance(0);
     let available_balance = if balance > min_balance {
         math::checked_sub(balance, min_balance)?
     } else {

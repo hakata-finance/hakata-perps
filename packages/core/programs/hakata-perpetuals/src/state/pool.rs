@@ -1,10 +1,11 @@
 use {
     crate::{
         error::PerpetualsError,
+        helpers::AccountMap,
         math,
+        oracle::OraclePrice,
         state::{
             custody::{Custody, FeesMode},
-            oracle::OraclePrice,
             perpetuals::Perpetuals,
             position::{Position, Side},
         },
@@ -710,32 +711,30 @@ impl Pool {
     pub fn get_assets_under_management_usd(
         &self,
         aum_calc_mode: AumCalcMode,
-        accounts: &[AccountInfo],
-        curtime: i64,
+        accounts: &AccountMap,
+        clock: &Clock,
     ) -> Result<u128> {
+        let curtime = clock.unix_timestamp;
         let mut pool_amount_usd: u128 = 0;
-        for (idx, &custody) in self.custodies.iter().enumerate() {
-            let oracle_idx = idx + self.custodies.len();
-            if oracle_idx >= accounts.len() {
-                return Err(ProgramError::NotEnoughAccountKeys.into());
-            }
 
-            require_keys_eq!(accounts[idx].key(), custody);
-            let custody = try_from!(Account<Custody>, &accounts[idx])?;
+        for custody in self.custodies.iter() {
+            let custody_account_data = accounts.get_account(custody)?;
+            let custody = Account::<Custody>::try_from(custody_account_data)?;
 
-            require_keys_eq!(accounts[oracle_idx].key(), custody.oracle.oracle_account);
+            let oracle = custody.oracle;
+            // unwrap is safe here
+            let ema_oracle = custody.ema_oracle.unwrap_or(oracle);
 
-            let token_price = OraclePrice::new_from_oracle(
-                &accounts[oracle_idx],
-                &custody.oracle,
-                curtime,
-                false,
-            )?;
+            let oracle_account = accounts.get_account(&oracle.key())?;
+            let ema_oracle_account = accounts.get_account(&ema_oracle.key())?;
+
+            let token_price: OraclePrice =
+                OraclePrice::new_from_oracle(oracle_account, clock, custody.oracle, false)?;
 
             let token_ema_price = OraclePrice::new_from_oracle(
-                &accounts[oracle_idx],
-                &custody.oracle,
-                curtime,
+                ema_oracle_account,
+                clock,
+                custody.oracle,
                 custody.pricing.use_ema,
             )?;
 

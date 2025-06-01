@@ -2,10 +2,14 @@ use {
     crate::{
         constants::{ADMIN_SEED, PERPETUALS_SEED},
         error::PerpetualsError,
-        state::{admin::{Admin, Permissions}, multisig::Multisig, perpetuals::Perpetuals},
+        state::{
+            admin::{Admin, Permissions},
+            perpetuals::Perpetuals,
+        },
     },
     anchor_lang::prelude::*,
     anchor_spl::token::Token,
+    solana_program::program_error::ProgramError,
 };
 
 #[derive(Accounts)]
@@ -51,10 +55,7 @@ pub struct InitParams {
     pub allow_size_change: bool,
 }
 
-pub fn init(
-    ctx: Context<Init>, 
-    params: &InitParams
-) -> Result<()> {
+pub fn init(ctx: Context<Init>, params: &InitParams) -> Result<()> {
     let signer = &ctx.accounts.signer;
     let perpetuals = &mut ctx.accounts.perpetuals;
     let superadmin = &mut ctx.accounts.superadmin;
