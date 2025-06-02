@@ -1,20 +1,8 @@
 import { useState, useEffect } from 'react';
 import { useWallet } from '@solana/wallet-adapter-react';
-import { Keypair } from '@solana/web3.js';
 import { getCxpBalance, initializeMint, airdropCxp } from '@/lib/compressed-tokens';
+import { getAdminKeypair } from '@/utils/mintAuthority';
 import { toast } from 'react-toastify';
-
-// Get mint authority key from environment variable
-const getMintAuthorityKey = () => {
-  return new Uint8Array(
-    "34,140,74,225,253,56,106,213,217,181,158,200,102,92,191,1,38,26,160,38,250,82,242,102,76,117,207,117,86,60,216,31,53,57,100,255,25,82,249,2,162,238,10,227,149,155,254,143,54,209,102,174,233,42,132,165,100,37,219,171,64,163,121,201".split(',').map(num => parseInt(num.trim(), 10))
-  );
-};
-
-// We're declaring this but it's potentially unused - that's OK as we know we need it for the airdrop function
-const getAdminKeypair = (): Keypair => {
-  return Keypair.fromSecretKey(getMintAuthorityKey());
-};
 
 export const useFirstTimeAirdrop = () => {
   const { publicKey } = useWallet();

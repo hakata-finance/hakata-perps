@@ -8,6 +8,7 @@ import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { useWallet } from '@solana/wallet-adapter-react';
 import { getCxpBalance } from '@/lib/compressed-tokens';
+import { useIsAdmin } from '@/hooks/useIsAdmin';
 
 const navLinks = [
   { label: 'Trade', href: '/trade' },
@@ -19,6 +20,7 @@ const navLinks = [
 const Navbar = () => {
   const pathname = usePathname();
   const { connected, publicKey } = useWallet();
+  const isAdmin = useIsAdmin();
   const [cxpBalance, setCxpBalance] = useState<number | null>(null);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -75,6 +77,20 @@ const Navbar = () => {
               </li>
             );
           })}
+          {/* Admin link - only visible to admin users */}
+          {isAdmin && (
+            <li>
+              <Link
+                href="/admin"
+                className={`text-[#949FA6] hover:text-white transition-colors px-2 py-1 relative${pathname.includes('/admin') ? ' text-white before:content-["" ] before:absolute before:bottom-[-22px] before:left-0 before:w-full before:h-[1px] before:bg-white' : ''}`}
+                tabIndex={0}
+                aria-label="Admin"
+                aria-current={pathname.includes('/admin') ? 'page' : undefined}
+              >
+                Admin
+              </Link>
+            </li>
+          )}
         </ul>
       <div className="flex items-center space-x-4 text-sm">
         {connected && (
