@@ -8,7 +8,7 @@ import { useWallet } from '@solana/wallet-adapter-react';
  */
 const getAdminPublicKeys = (): string[] => {
   // Try to get admin keys from environment variable first
-  const envAdminKeys = process.env.NEXT_PUBLIC_ADMIN_PUBLIC_KEYS;
+  const envAdminKeys = process.env.NEXT_PUBLIC_ADMIN_KEYS;
   
   if (envAdminKeys) {
     // Split comma-separated values and trim whitespace
