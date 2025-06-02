@@ -1,18 +1,12 @@
 import { useState, useEffect } from "react";
-import { PublicKey, Connection, Keypair, clusterApiUrl, Cluster } from "@solana/web3.js";
+import { PublicKey, Connection, clusterApiUrl, Cluster } from "@solana/web3.js";
+import { toast } from "react-toastify";
 import { 
   getAssociatedTokenAddress, 
   createAssociatedTokenAccount, 
   mintTo 
 } from "@solana/spl-token";
-import { toast } from "react-toastify";
-
-// Get mint authority key from environment variable
-const getMintAuthorityKey = () => {
-  return new Uint8Array(
-    "34,140,74,225,253,56,106,213,217,181,158,200,102,92,191,1,38,26,160,38,250,82,242,102,76,117,207,117,86,60,216,31,53,57,100,255,25,82,249,2,162,238,10,227,149,155,254,143,54,209,102,174,233,42,132,165,100,37,219,171,64,163,121,201".split(',').map(num => parseInt(num.trim(), 10))
-  );
-};
+import { getAdminKeypair } from "@/utils/mintAuthority";
 
 // Get token mint address from environment variable with fallback
 const getTokenMintAddress = () => {
@@ -65,8 +59,12 @@ export const useFaucet = () => {
       setIsLoading(true);
       const connection = getConnection(network);
       
-      // Use mint authority keypair
-      const mintAuthority = Keypair.fromSecretKey(getMintAuthorityKey());
+      // Use mint authority keypair from utility function
+      const mintAuthority = getAdminKeypair();
+      if (!mintAuthority) {
+        toast.error("Admin keypair not available. Cannot perform mint.");
+        return;
+      }
       
       // Get or create associated token account for the user
       const associatedTokenAddress = await getAssociatedTokenAddress(

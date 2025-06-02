@@ -15,6 +15,7 @@ import {
   createTransferInstruction,
   TOKEN_PROGRAM_ID
 } from '@solana/spl-token';
+import { getAdminKeypair } from '@/utils/mintAuthority';
 
 // Configuration
 const RPC_ENDPOINT = process.env.NEXT_PUBLIC_RPC_ENDPOINT ?? "https://devnet.helius-rpc.com?api-key=dcefb6d9-a6e8-4679-8b60-b9555a56b3cf";
@@ -29,15 +30,11 @@ export const getMintPublicKey = (): PublicKey => {
   return mintPublicKey;
 };
 
-// Get mint authority key from environment variable
-const getMintAuthorityKey = () => {
-  return new Uint8Array(
-    "34,140,74,225,253,56,106,213,217,181,158,200,102,92,191,1,38,26,160,38,250,82,242,102,76,117,207,117,86,60,216,31,53,57,100,255,25,82,249,2,162,238,10,227,149,155,254,143,54,209,102,174,233,42,132,165,100,37,219,171,64,163,121,201".split(',').map(num => parseInt(num.trim(), 10))
-  );
-};
-
-// We're declaring this but it's potentially unused - that's OK as we know we need it for the airdrop function
-const adminKeypair = Keypair.fromSecretKey(getMintAuthorityKey());
+// Get the admin keypair using the utility function
+const adminKeypair = getAdminKeypair();
+if (!adminKeypair) {
+  throw new Error("Admin keypair not available");
+}
 
 // Initialize mint function - now just returns the existing mint
 export const initializeMint = async (): Promise<PublicKey> => {
