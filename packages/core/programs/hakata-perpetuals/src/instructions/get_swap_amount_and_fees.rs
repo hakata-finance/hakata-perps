@@ -1,32 +1,34 @@
-//! GetSwapAmountAndFees instruction handler
-
 use {
-    crate::state::{
-        custody::Custody,
+    crate::{
+        constants::{CUSTODY_SEED, PERPETUALS_SEED, POOL_SEED},
         oracle::OraclePrice,
-        perpetuals::{Perpetuals, SwapAmountAndFees},
-        pool::Pool,
+        state::{
+            custody::Custody,
+            perpetuals::{Perpetuals, SwapAmountAndFees},
+            pool::Pool,
+        },
     },
-    anchor_lang::{prelude::*, solana_program::program_error::ProgramError},
+    anchor_lang::prelude::*,
+    solana_program::program_error::ProgramError,
 };
 
 #[derive(Accounts)]
 pub struct GetSwapAmountAndFees<'info> {
     #[account(
-        seeds = [b"perpetuals"],
+        seeds = [PERPETUALS_SEED.as_bytes()],
         bump = perpetuals.perpetuals_bump
     )]
     pub perpetuals: Box<Account<'info, Perpetuals>>,
 
     #[account(
-        seeds = [b"pool",
+        seeds = [POOL_SEED.as_bytes(),
                  pool.name.as_bytes()],
         bump = pool.bump
     )]
     pub pool: Box<Account<'info, Pool>>,
 
     #[account(
-        seeds = [b"custody",
+        seeds = [CUSTODY_SEED.as_bytes(),
                  pool.key().as_ref(),
                  receiving_custody.mint.as_ref()],
         bump = receiving_custody.bump
@@ -35,12 +37,12 @@ pub struct GetSwapAmountAndFees<'info> {
 
     /// CHECK: oracle account for the received token
     #[account(
-        constraint = receiving_custody_oracle_account.key() == receiving_custody.oracle.oracle_account
+        constraint = receiving_custody_oracle_account.key() == receiving_custody.oracle.key()
     )]
     pub receiving_custody_oracle_account: AccountInfo<'info>,
 
     #[account(
-        seeds = [b"custody",
+        seeds = [CUSTODY_SEED.as_bytes(),
                  pool.key().as_ref(),
                  dispensing_custody.mint.as_ref()],
         bump = dispensing_custody.bump
@@ -49,7 +51,7 @@ pub struct GetSwapAmountAndFees<'info> {
 
     /// CHECK: oracle account for the returned token
     #[account(
-        constraint = dispensing_custody_oracle_account.key() == dispensing_custody.oracle.oracle_account
+        constraint = dispensing_custody_oracle_account.key() == dispensing_custody.oracle.key()
     )]
     pub dispensing_custody_oracle_account: AccountInfo<'info>,
 }
@@ -74,54 +76,46 @@ pub fn get_swap_amount_and_fees(
     );
 
     // compute token amount returned to the user
-    let curtime = ctx.accounts.perpetuals.get_time()?;
-    let pool = ctx.accounts.pool.as_mut();
+    let clock = Clock::get()?;
+    let pool = &ctx.accounts.pool;
     let token_id_in = pool.get_token_id(&ctx.accounts.receiving_custody.key())?;
     let token_id_out = pool.get_token_id(&ctx.accounts.dispensing_custody.key())?;
-    let receiving_custody = ctx.accounts.receiving_custody.as_mut();
-    let dispensing_custody = ctx.accounts.dispensing_custody.as_mut();
+    let receiving_custody = &ctx.accounts.receiving_custody;
+    let dispensing_custody = &ctx.accounts.dispensing_custody;
 
     let received_token_price = OraclePrice::new_from_oracle(
-        receiving_custody.oracle.oracle_type,
         &ctx.accounts
             .receiving_custody_oracle_account
             .to_account_info(),
-        receiving_custody.oracle.max_price_error,
-        receiving_custody.oracle.max_price_age_sec,
-        curtime,
+        &clock,
+        receiving_custody.oracle,
         false,
     )?;
 
     let received_token_ema_price = OraclePrice::new_from_oracle(
-        receiving_custody.oracle.oracle_type,
         &ctx.accounts
             .receiving_custody_oracle_account
             .to_account_info(),
-        receiving_custody.oracle.max_price_error,
-        receiving_custody.oracle.max_price_age_sec,
-        curtime,
+        &clock,
+        receiving_custody.oracle,
         receiving_custody.pricing.use_ema,
     )?;
 
     let dispensed_token_price = OraclePrice::new_from_oracle(
-        dispensing_custody.oracle.oracle_type,
         &ctx.accounts
             .dispensing_custody_oracle_account
             .to_account_info(),
-        dispensing_custody.oracle.max_price_error,
-        dispensing_custody.oracle.max_price_age_sec,
-        curtime,
+        &clock,
+        dispensing_custody.oracle,
         false,
     )?;
 
     let dispensed_token_ema_price = OraclePrice::new_from_oracle(
-        dispensing_custody.oracle.oracle_type,
         &ctx.accounts
             .dispensing_custody_oracle_account
             .to_account_info(),
-        dispensing_custody.oracle.max_price_error,
-        dispensing_custody.oracle.max_price_age_sec,
-        curtime,
+        &clock,
+        dispensing_custody.oracle,
         dispensing_custody.pricing.use_ema,
     )?;
 

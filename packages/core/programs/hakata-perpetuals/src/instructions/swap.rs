@@ -1,19 +1,20 @@
-//! Swap instruction handler
-
 use {
     crate::{
+        constants::{CUSTODY_SEED, CUSTODY_TOKEN_ACCOUNT_SEED, PERPETUALS_SEED, POOL_SEED},
         error::PerpetualsError,
         math,
-        state::{custody::Custody, oracle::OraclePrice, perpetuals::Perpetuals, pool::Pool},
+        oracle::OraclePrice,
+        state::{custody::Custody, perpetuals::Perpetuals, pool::Pool},
     },
-    anchor_lang::{prelude::*, solana_program::program_error::ProgramError},
+    anchor_lang::prelude::*,
     anchor_spl::token::{Token, TokenAccount},
+    solana_program::program_error::ProgramError,
 };
 
 #[derive(Accounts)]
 #[instruction(params: SwapParams)]
 pub struct Swap<'info> {
-    #[account(mut)]
+    #[account()]
     pub owner: Signer<'info>,
 
     #[account(
@@ -38,14 +39,14 @@ pub struct Swap<'info> {
     pub transfer_authority: AccountInfo<'info>,
 
     #[account(
-        seeds = [b"perpetuals"],
+        seeds = [PERPETUALS_SEED.as_bytes()],
         bump = perpetuals.perpetuals_bump
     )]
     pub perpetuals: Box<Account<'info, Perpetuals>>,
 
     #[account(
         mut,
-        seeds = [b"pool",
+        seeds = [POOL_SEED.as_bytes(),
                  pool.name.as_bytes()],
         bump = pool.bump
     )]
@@ -53,7 +54,7 @@ pub struct Swap<'info> {
 
     #[account(
         mut,
-        seeds = [b"custody",
+        seeds = [CUSTODY_SEED.as_bytes(),
                  pool.key().as_ref(),
                  receiving_custody.mint.as_ref()],
         bump = receiving_custody.bump
@@ -62,13 +63,13 @@ pub struct Swap<'info> {
 
     /// CHECK: oracle account for the received token
     #[account(
-        constraint = receiving_custody_oracle_account.key() == receiving_custody.oracle.oracle_account
+        constraint = receiving_custody_oracle_account.key() == receiving_custody.oracle.key()
     )]
     pub receiving_custody_oracle_account: AccountInfo<'info>,
 
     #[account(
         mut,
-        seeds = [b"custody_token_account",
+        seeds = [CUSTODY_TOKEN_ACCOUNT_SEED.as_bytes(),
                  pool.key().as_ref(),
                  receiving_custody.mint.as_ref()],
         bump = receiving_custody.token_account_bump
@@ -77,7 +78,7 @@ pub struct Swap<'info> {
 
     #[account(
         mut,
-        seeds = [b"custody",
+        seeds = [CUSTODY_SEED.as_bytes(),
                  pool.key().as_ref(),
                  dispensing_custody.mint.as_ref()],
         bump = dispensing_custody.bump
@@ -86,13 +87,13 @@ pub struct Swap<'info> {
 
     /// CHECK: oracle account for the returned token
     #[account(
-        constraint = dispensing_custody_oracle_account.key() == dispensing_custody.oracle.oracle_account
+        constraint = dispensing_custody_oracle_account.key() == dispensing_custody.oracle.key()
     )]
     pub dispensing_custody_oracle_account: AccountInfo<'info>,
 
     #[account(
         mut,
-        seeds = [b"custody_token_account",
+        seeds = [CUSTODY_TOKEN_ACCOUNT_SEED.as_bytes(),
                  pool.key().as_ref(),
                  dispensing_custody.mint.as_ref()],
         bump = dispensing_custody.token_account_bump
@@ -117,7 +118,9 @@ pub fn swap(ctx: Context<Swap>, params: &SwapParams) -> Result<()> {
     require!(
         perpetuals.permissions.allow_swap
             && receiving_custody.permissions.allow_swap
-            && dispensing_custody.permissions.allow_swap,
+            && dispensing_custody.permissions.allow_swap
+            && !receiving_custody.is_virtual
+            && !dispensing_custody.is_virtual,
         PerpetualsError::InstructionNotAllowed
     );
 
@@ -131,50 +134,43 @@ pub fn swap(ctx: Context<Swap>, params: &SwapParams) -> Result<()> {
     // compute token amount returned to the user
     let pool = ctx.accounts.pool.as_mut();
     let curtime = perpetuals.get_time()?;
+    let clock = Clock::get()?;
     let token_id_in = pool.get_token_id(&receiving_custody.key())?;
     let token_id_out = pool.get_token_id(&dispensing_custody.key())?;
 
     let received_token_price = OraclePrice::new_from_oracle(
-        receiving_custody.oracle.oracle_type,
         &ctx.accounts
             .receiving_custody_oracle_account
             .to_account_info(),
-        receiving_custody.oracle.max_price_error,
-        receiving_custody.oracle.max_price_age_sec,
-        curtime,
+        &clock,
+        receiving_custody.oracle,
         false,
     )?;
 
     let received_token_ema_price = OraclePrice::new_from_oracle(
-        receiving_custody.oracle.oracle_type,
         &ctx.accounts
             .receiving_custody_oracle_account
             .to_account_info(),
-        receiving_custody.oracle.max_price_error,
-        receiving_custody.oracle.max_price_age_sec,
-        curtime,
+        &clock,
+        receiving_custody.oracle,
         receiving_custody.pricing.use_ema,
     )?;
 
     let dispensed_token_price = OraclePrice::new_from_oracle(
-        dispensing_custody.oracle.oracle_type,
         &ctx.accounts
             .dispensing_custody_oracle_account
             .to_account_info(),
-        dispensing_custody.oracle.max_price_error,
-        dispensing_custody.oracle.max_price_age_sec,
-        curtime,
+        &clock,
+        dispensing_custody.oracle,
         false,
     )?;
 
     let dispensed_token_ema_price = OraclePrice::new_from_oracle(
-        dispensing_custody.oracle.oracle_type,
         &ctx.accounts
             .dispensing_custody_oracle_account
             .to_account_info(),
-        dispensing_custody.oracle.max_price_error,
-        dispensing_custody.oracle.max_price_age_sec,
-        curtime,
+        &clock,
+        dispensing_custody.oracle,
         dispensing_custody.pricing.use_ema,
     )?;
 
@@ -272,7 +268,7 @@ pub fn swap(ctx: Context<Swap>, params: &SwapParams) -> Result<()> {
 
     receiving_custody.collected_fees.swap_usd =
         receiving_custody.collected_fees.swap_usd.wrapping_add(
-            dispensed_token_price.get_asset_amount_usd(fees.0, dispensing_custody.decimals)?,
+            received_token_price.get_asset_amount_usd(fees.0, receiving_custody.decimals)?,
         );
 
     receiving_custody.assets.owned =
