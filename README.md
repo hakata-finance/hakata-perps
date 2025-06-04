@@ -8,6 +8,18 @@ Monorepo for Hakata Finance's open‑source perpetual‑trading protocol on Sola
 
 Hakata Perpetuals is Core Perpetual Futures Engine for Real-World Asset Trading on Solana
 
+## Architecture Foundation
+
+Hakata Finance is built on the proven foundation of [solana-labs/perpetuals](https://github.com/solana-labs/perpetuals), Solana's reference implementation for perpetual futures trading. We've extended this battle-tested infrastructure specifically for Real-World Asset (RWA) trading.
+
+**Key Extensions:**
+- RWA oracle integration with traditional market hours handling  
+- Custom synthetic asset mechanisms for stocks/forex/commodities
+- Enhanced risk management for TradFi asset volatility patterns
+- Simplified UX layer optimized for cross-ecosystem trading
+
+This approach allows us to focus innovation on the RWA layer while leveraging Solana's most robust perpetuals infrastructure.
+
 ## Deployment Addresses
 
 Hakata Finance is deployed on Solana Devnet.
@@ -63,6 +75,7 @@ hakata-perps/
 3. See the individual READMEs in each package for specific setup instructions:
    - [Core README](packages/core/README.md)
    - [UI README](packages/ui/README.md)
+   - [Architecture Documentation](packages/core/ARCHITECTURE.md)
 
 ## Development
 
@@ -101,3 +114,7 @@ This project is licensed under the [Apache License 2.0](LICENSE).
 ## Security
 
 If you discover a security vulnerability in this project, please report it privately to <admin@hakata.fi> instead of opening a public issue.
+
+## Acknowledgments
+
+This project builds upon [solana-labs/perpetuals](https://github.com/solana-labs/perpetuals) under the Apache 2.0 License.
