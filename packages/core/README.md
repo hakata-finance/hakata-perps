@@ -8,6 +8,22 @@ The on-chain implementation of Hakata Finance's perpetual trading protocol on So
 
 Hakata Perpetuals Core is the backbone of our protocol - a non-custodial decentralized exchange that supports leveraged trading of real-world assets on Solana. It provides the foundation for secure, efficient, and transparent on-chain perpetual futures trading.
 
+## Architecture Foundation
+
+Built on [solana-labs/perpetuals](https://github.com/solana-labs/perpetuals), Solana's official reference implementation for perpetual futures trading. This strategic decision allows us to leverage battle-tested infrastructure while focusing innovation on RWA-specific challenges.
+
+**Why solana-labs/perpetuals:**
+- Official Solana Labs implementation with extensive testing
+- Proven handling of complex perpetual mechanics (funding rates, liquidations, margin)
+- Reduces security surface area vs. custom implementation
+- Allows rapid iteration on RWA-specific features
+
+**Our RWA Extensions:**
+- Custom oracle integration for traditional market hours
+- Enhanced position management for TradFi asset volatility
+- Synthetic asset mechanisms for stocks/forex/commodities
+- Market hours handling logic for global asset classes
+
 ## Features
 
 - Non-custodial architecture ensuring asset security
@@ -37,9 +53,12 @@ packages/core/
 │  ├─ src/                        # TypeScript source for CLI
 │  └─ package.json                # CLI dependencies
 ├─ migrations/                    # Deployment migrations
+├─ ARCHITECTURE.md                # Technical architecture documentation
 ├─ Anchor.toml                    # Anchor configuration
 └─ Cargo.toml                     # Workspace configuration
 ```
+
+For detailed information about our architecture decisions and how we extend solana-labs/perpetuals, see [ARCHITECTURE.md](ARCHITECTURE.md).
 
 ## Getting Started
 
