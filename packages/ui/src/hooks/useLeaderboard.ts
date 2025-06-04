@@ -31,7 +31,8 @@ const WALLETS_TO_EXCLUDE = [
   'D94DYjWwgaZ3eH6VCWuwhfQs4hhKQEPrLDK7VZxJSss4',
   'HVDy1CG9b4b9khm2PPttesCBP71uAfCfsYf77WhaF2Kd',
   'BPvWuD1L73riKRnfyCqEYucxd2u3mebYP1hpMUDncRhA',
-  'AbHofCyTTLTrTqszBji59mLbiFZnaeRpWyzLjKUCpMGM'
+  'AbHofCyTTLTrTqszBji59mLbiFZnaeRpWyzLjKUCpMGM',
+  '2PLrwDEpJDjTybxFj7vYVwUKsaYmdvYxLuDM3xkHr5RC'
 ]
 
 export const useLeaderboard = (
