@@ -300,7 +300,7 @@ const LiquidProvideForm = () => {
                   onChange={(e) => {
                     handleAddLiqUpdate(e.currentTarget.value); // on changeing here set in setTokenAmt() hook
                   }}
-                  className="bg-[#1E1E1E] border-gray-700 pr-16"
+                  className="bg-[#1E1E1E] border-gray-700"
                 />
               ) : (
                 <Input 
@@ -311,7 +311,7 @@ const LiquidProvideForm = () => {
                   onChange={(e) => {
                     handleRemoveLiqUpdate(e.currentTarget.value); // on changeing here set in setTokenAmt() hook
                   }}
-                  className="bg-[#1E1E1E] border-gray-700 pr-16"
+                  className="bg-[#1E1E1E] border-gray-700"
                 />
               )}
             </div>
