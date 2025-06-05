@@ -4,6 +4,7 @@ import React from 'react';
 import { useWallet } from '@solana/wallet-adapter-react';
 import { useLeaderboard } from '../../hooks/useLeaderboard';
 import { formatBalance, formatAddress } from '../../utils/compressionUtils';
+import { Button } from '@/components/ui/button';
 
 export default function LeaderboardPage() {
   const { publicKey } = useWallet();
@@ -24,7 +25,7 @@ export default function LeaderboardPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-900 text-white p-8">
+      <div className="min-h-screen bg-black text-white p-8">
         <div className="max-w-4xl mx-auto">
           <h1 className="text-4xl font-bold mb-8 text-center">cXP Token Leaderboard</h1>
           <div className="flex justify-center items-center h-64">
@@ -37,7 +38,7 @@ export default function LeaderboardPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-900 text-white p-8">
+    <div className="overflow-y-scroll h-[calc(100vh-73px)] bg-black text-white pt-8">
       <div className="max-w-4xl mx-auto">
         <div className="text-center mb-8">
           <h1 className="text-4xl font-bold mb-4">cXP Token Leaderboard</h1>
@@ -48,16 +49,16 @@ export default function LeaderboardPage() {
             </div>
           )}
           
-          <button
+          <Button
             onClick={refetch}
-            className="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded-lg transition-colors"
+            className="py-6 font-bold bg-[#121212] hover:bg-[#1A1A1A] text-white border border-gray-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
             disabled={loading}
           >
             {loading ? "Loading..." : "Refresh"}
-          </button>
+          </Button>
         </div>
 
-        {leaderboard.length === 0 && !loading ? (
+        {leaderboard.length == 0 && !loading ? (
           <div className="text-center py-12">
             <p className="text-gray-400 text-lg">No cXP token holders found</p>
             <p className="text-gray-500 text-sm mt-2">
@@ -65,14 +66,14 @@ export default function LeaderboardPage() {
             </p>
           </div>
         ) : (
-          <div className="bg-gray-800 rounded-lg overflow-hidden shadow-xl">
-            <div className="bg-gray-700 px-6 py-4">
+          <div className="border-gray-800 border-1 bg-[#121212] rounded-lg overflow-hidden shadow-xl">
+            <div className="bg-[#121212] px-6 py-4">
               <h2 className="text-xl font-semibold">
                 Top Holders
               </h2>
             </div>
             
-            <div className="divide-y divide-gray-700">
+            <div className="divide-y divide-zinc-700">
               {leaderboard.map((entry) => (
                 <div
                   key={entry.owner}
