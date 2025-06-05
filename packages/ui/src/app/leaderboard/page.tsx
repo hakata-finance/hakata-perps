@@ -38,7 +38,7 @@ export default function LeaderboardPage() {
   }
 
   return (
-    <div className="overflow-y-scroll h-[calc(100vh-73px)] bg-black text-white pt-8">
+    <div className="overflow-y-scroll h-[calc(100vh-120px)] bg-black text-white pt-8">
       <div className="max-w-4xl mx-auto">
         <div className="text-center mb-8">
           <h1 className="text-4xl font-bold mb-4">cXP Token Leaderboard</h1>

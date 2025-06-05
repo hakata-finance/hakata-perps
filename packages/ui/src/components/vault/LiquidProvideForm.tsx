@@ -76,8 +76,8 @@ const LiquidProvideForm = () => {
           signTransaction as any,
           connection,
           payToken!,
-          inputTokenAmount,
-          inputLpTokenAmount,
+          parseFloat(inputTokenAmount),
+          parseFloat(inputLpTokenAmount),
           slippage
         );
         
@@ -96,8 +96,8 @@ const LiquidProvideForm = () => {
           signTransaction as any,
           connection,
           payToken!,
-          inputLpTokenAmount,
-          inputTokenAmount,
+          parseFloat(inputLpTokenAmount),
+          parseFloat(inputTokenAmount),
           slippage
         );
         
@@ -343,13 +343,15 @@ const LiquidProvideForm = () => {
             <div className="relative flex-grow">
               { activeTab === Tab.Add ? (
                 <Input 
-                  value={inputLpTokenAmount} 
+                  placeholder="0.00"
+                  value={inputTokenAmount} 
                   className="bg-[#1E1E1E] border-gray-700 pr-16"
                   disabled
                 />
               ) : (
                 <Input 
-                  value={inputTokenAmount} 
+                  placeholder="0.00"
+                  value={inputLpTokenAmount} 
                   className="bg-[#1E1E1E] border-gray-700 pr-16"
                   disabled
                 />
