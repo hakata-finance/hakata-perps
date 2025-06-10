@@ -10,6 +10,11 @@ import { PoolConfig } from '@/lib/PoolConfig';
 import { checkIfAccountExists } from '@/lib/retrieveData';
 import { useProgram } from './useProgram';
 
+/**
+ * Hook to hydrate the global store with data from the blockchain
+ * Sets up listeners for account changes and updates store state accordingly
+ * Manages pool data, LP token data, custody accounts, and user LP token balances
+ */
 export const useHydrateStore = () => {
   const { connection } = useConnection();
   const program = useProgram();
@@ -23,164 +28,191 @@ export const useHydrateStore = () => {
 
   const setUserLpTokensBalance = useGlobalStore(state => state.setUserLpTokensBalance);
 
-
+  // Set up pool data and subscription
   useEffect(() => {
     const pool = PoolConfig.fromIdsByName(DEFAULT_POOL, CLUSTER);
     const subIds: number[] = [];
+
+    // Fetch initial pool data and set up subscription
     (async () => {
-      const accountInfo = await connection.getAccountInfo(pool.poolAddress)
-      if (accountInfo) {
-        const poolData = program.coder.accounts.decode<Pool>('pool', accountInfo.data);
-        setPoolData(poolData)
-      }
-      const subId = connection.onAccountChange(new PublicKey(pool.poolAddress), (accountInfo) => {
-        const poolData = program.coder.accounts.decode<Pool>('pool', accountInfo.data);
-        setPoolData(poolData)
-      })
-
-      subIds.push(subId)
-    })()
-  
-    return () => {
-      subIds.forEach(subId => {
-        connection.removeAccountChangeListener(subId);
-      });
-    }
-  }, [])
-
-  useEffect(() => {
-    const pool = PoolConfig.fromIdsByName(DEFAULT_POOL, CLUSTER);
-    const subIds: number[] = [];
-    (async () => {
-
-      // let { perpetual_program } = await getPerpetualProgramAndProvider();
-      const accountInfo = await connection.getAccountInfo(pool.lpTokenMint)
-      if (accountInfo) {
-       
-        const lpMintData =  await getMint(connection, pool.lpTokenMint)
-        setLpMintData(lpMintData)
-      }
-      const subId = connection.onAccountChange(new PublicKey(pool.lpTokenMint), (accountInfo) => {
-        const rawMint = MintLayout.decode(accountInfo.data);
+      try {
+        console.log('Fetching pool data for address:', pool.poolAddress.toString());
+        const accountInfo = await connection.getAccountInfo(pool.poolAddress);
         
-        setLpMintData({
-          address: pool.lpTokenMint,
-          mintAuthority: rawMint.mintAuthorityOption ? rawMint.mintAuthority : null,
-          supply: rawMint.supply,
-          decimals: rawMint.decimals,
-          isInitialized: rawMint.isInitialized,
-          freezeAuthority: rawMint.freezeAuthorityOption ? rawMint.freezeAuthority : null,
-      })
-      })
+        if (accountInfo) {
+          const poolData = program.coder.accounts.decode<Pool>('pool', accountInfo.data);
+          console.log('Pool data fetched successfully');
+          setPoolData(poolData);
+        } else {
+          console.warn('No pool account found at address:', pool.poolAddress.toString());
+        }
+        
+        // Subscribe to account changes
+        const subId = connection.onAccountChange(new PublicKey(pool.poolAddress), (accountInfo) => {
+          console.log('Pool data updated');
+          const poolData = program.coder.accounts.decode<Pool>('pool', accountInfo.data);
+          setPoolData(poolData);
+        });
 
-      subIds.push(subId)
-    })()
+        subIds.push(subId);
+      } catch (error) {
+        console.error('Error fetching pool data:', error);
+      }
+    })();
   
+    // Cleanup subscriptions on unmount
     return () => {
+      console.log('Cleaning up pool data subscriptions');
       subIds.forEach(subId => {
         connection.removeAccountChangeListener(subId);
       });
     }
-  }, [])
+  }, [connection, program, setPoolData]);
 
+  // Set up LP token mint data and subscription
+  useEffect(() => {
+    const pool = PoolConfig.fromIdsByName(DEFAULT_POOL, CLUSTER);
+    const subIds: number[] = [];
+    
+    (async () => {
+      try {
+        console.log('Fetching LP token mint data for address:', pool.lpTokenMint.toString());
+        const accountInfo = await connection.getAccountInfo(pool.lpTokenMint);
+        
+        if (accountInfo) {
+          const lpMintData = await getMint(connection, pool.lpTokenMint);
+          console.log('LP token mint data fetched successfully');
+          setLpMintData(lpMintData);
+        } else {
+          console.warn('No LP token mint account found at address:', pool.lpTokenMint.toString());
+        }
+        
+        // Subscribe to account changes
+        const subId = connection.onAccountChange(new PublicKey(pool.lpTokenMint), (accountInfo) => {
+          console.log('LP token mint data updated');
+          const rawMint = MintLayout.decode(accountInfo.data);
+          
+          setLpMintData({
+            address: pool.lpTokenMint,
+            mintAuthority: rawMint.mintAuthorityOption ? rawMint.mintAuthority : null,
+            supply: rawMint.supply,
+            decimals: rawMint.decimals,
+            isInitialized: rawMint.isInitialized,
+            freezeAuthority: rawMint.freezeAuthorityOption ? rawMint.freezeAuthority : null,
+          });
+        });
+
+        subIds.push(subId);
+      } catch (error) {
+        console.error('Error fetching LP token mint data:', error);
+      }
+    })();
+  
+    // Cleanup subscriptions on unmount
+    return () => {
+      console.log('Cleaning up LP token mint data subscriptions');
+      subIds.forEach(subId => {
+        connection.removeAccountChangeListener(subId);
+      });
+    }
+  }, [connection, setLpMintData]);
+
+  // Set up custody accounts and subscriptions
   useEffect(() => {
     const custodies = PoolConfig.fromIdsByName(DEFAULT_POOL, CLUSTER).custodies;
-    // const custodies = pools.map(t => t.custodies).flat();
     const subIds: number[] = [];
 
     (async () => {
-      // if(!wallet) return
-      for (const custody of custodies) {
-        const accountInfo = await connection.getAccountInfo(custody.custodyAccount)
-        if(accountInfo) {
-          const custodyData = program.coder.accounts.decode<Custody>('custody', accountInfo.data);
-          addCustody(custody.custodyAccount.toBase58(), custodyData)
+      try {
+        for (const custody of custodies) {
+          console.log('Fetching custody data for address:', custody.custodyAccount.toString());
+          const accountInfo = await connection.getAccountInfo(custody.custodyAccount);
+          
+          if (accountInfo) {
+            const custodyData = program.coder.accounts.decode<Custody>('custody', accountInfo.data);
+            console.log('Custody data fetched successfully for:', custody.custodyAccount.toString());
+            addCustody(custody.custodyAccount.toBase58(), custodyData);
+          } else {
+            console.warn('No custody account found at address:', custody.custodyAccount.toString());
+          }
+          
+          // Subscribe to account changes
+          const subId = connection.onAccountChange(custody.custodyAccount, (accountInfo) => {
+            console.log('Custody data updated for:', custody.custodyAccount.toString());
+            const custodyData = program.coder.accounts.decode<Custody>('custody', accountInfo.data);
+            addCustody(custody.custodyAccount.toBase58(), custodyData);
+          });
+          
+          subIds.push(subId);
         }
-        const subId = connection.onAccountChange(custody.custodyAccount, (accountInfo) => {
-          const custodyData = program.coder.accounts.decode<Custody>('custody', accountInfo.data);
-          addCustody(custody.custodyAccount.toBase58(), custodyData)
-        })
-        subIds.push(subId)
+      } catch (error) {
+        console.error('Error fetching custody data:', error);
       }
-    })()
+    })();
 
+    // Cleanup subscriptions on unmount
     return () => {
+      console.log('Cleaning up custody data subscriptions');
       subIds.forEach(subId => {
         connection.removeAccountChangeListener(subId);
       });
     }
-  }, [])
+  }, [connection, program, addCustody]);
 
-// for now NO store positions just usePositions
-  // useEffect(() => {
-  //   // const subIds: number[] = [];
-  //   (async () => {
-  //     if(!wallet || !wallet.publicKey) return;
-
-  //     let { perpetual_program } = await getPerpetualProgramAndProvider();
-  //     let fetchedPositions = await perpetual_program.account.position.all([
-  //       {
-  //         memcmp: {
-  //           offset: 8,
-  //           bytes: wallet.publicKey.toBase58(),
-  //         },
-  //       },
-  //     ]);
-
-  //     for (const position of fetchedPositions) {
-  //         addPosition(position.publicKey.toBase58(), position.account as unknown as Position)
-  //       const subId = connection.onAccountChange(position.publicKey, (accountInfo) => {
-  //         const positionData = perpetual_program.coder.accounts.decode<Custody>('position', accountInfo.data);
-  //         addCustody(position.publicKey.toBase58(), positionData)
-  //       })
-  //       subIds.push(subId)
-  //     }
-  //   })()
-  //   return () => {
-  //     subIds.forEach(subId => {
-  //       connection.removeAccountChangeListener(subId);
-  //     });
-  //   }
-  // }, [])
-
+  // Set up user's LP token balance and subscription
   useEffect(() => {
     const subIds: number[] = [];
+    
     (async () => {
-      if(!wallet || !wallet.publicKey) return;
-
-      // let { perpetual_program } = await getPerpetualProgramAndProvider();
-
-      const lpTokenAccount = await getAssociatedTokenAddress(POOL_CONFIG.lpTokenMint, wallet.publicKey);
-      if (!(await checkIfAccountExists(lpTokenAccount, connection))) {
-        setUserLpTokensBalance(new BN(0));
-      } else {
-        const accountInfo = await connection.getAccountInfo(lpTokenAccount);
-        const decodedTokenAccountInfo = AccountLayout.decode(accountInfo!.data);
-        setUserLpTokensBalance(new BN(decodedTokenAccountInfo.amount.toString()));
-
-        const subId = connection.onAccountChange(lpTokenAccount, (accountInfo) => {
-          // const data = perpetual_program.coder.accounts.decode<TokenAccountBalancePair>('TokenAmount', accountInfo.data);
-          // setUserLpTokensBalance(balance.value.uiAmount!);
-          // need to REDO here ????? 
-          // let balance = await connection.getTokenAccountBalance(lpTokenAccount);
-          const decodedTokenAccountInfo = AccountLayout.decode(accountInfo!.data);
-          setUserLpTokensBalance(new BN(decodedTokenAccountInfo.amount.toString()));
-
-        })
-        subIds.push(subId)
-
+      // Only proceed if wallet is connected
+      if (!wallet || !wallet.publicKey) {
+        console.log('Wallet not connected, skipping LP token balance fetch');
+        return;
       }
-    })()
 
+      try {
+        console.log('Fetching user LP token balance');
+        
+        // Get the user's associated token account for LP tokens
+        const lpTokenAccount = await getAssociatedTokenAddress(POOL_CONFIG.lpTokenMint, wallet.publicKey);
+        
+        // Check if the account exists
+        if (!(await checkIfAccountExists(lpTokenAccount, connection))) {
+          console.log('User LP token account does not exist yet');
+          setUserLpTokensBalance(new BN(0));
+        } else {
+          // Fetch account info and decode token balance
+          const accountInfo = await connection.getAccountInfo(lpTokenAccount);
+          const decodedTokenAccountInfo = AccountLayout.decode(accountInfo!.data);
+          const balance = new BN(decodedTokenAccountInfo.amount.toString());
+          
+          console.log('User LP token balance fetched:', balance.toString());
+          setUserLpTokensBalance(balance);
+
+          // Subscribe to account changes
+          const subId = connection.onAccountChange(lpTokenAccount, (accountInfo) => {
+            console.log('User LP token balance updated');
+            const decodedTokenAccountInfo = AccountLayout.decode(accountInfo!.data);
+            const newBalance = new BN(decodedTokenAccountInfo.amount.toString());
+            setUserLpTokensBalance(newBalance);
+          });
+          
+          subIds.push(subId);
+        }
+      } catch (error) {
+        console.error('Error fetching user LP token balance:', error);
+      }
+    })();
+
+    // Cleanup subscriptions on unmount
     return () => {
+      console.log('Cleaning up LP token balance subscriptions');
       subIds.forEach(subId => {
         connection.removeAccountChangeListener(subId);
       });
     }
-  }, [wallet])
+  }, [wallet, connection, setUserLpTokensBalance]);
 
-
-  return (
-    <div>useHyderateStore</div>
-  )
+  // This component doesn't render anything visible
+  return null;
 }
