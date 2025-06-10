@@ -3,7 +3,7 @@ use {
         constants::{CUSTODY_SEED, PERPETUALS_SEED, POOL_SEED, POSITION_SEED},
         math,
         oracle::OraclePrice,
-        state::{custody::Custody, perpetuals::Perpetuals, pool::Pool, position::Position},
+        state::{custody::{Custody, Oracle}, perpetuals::Perpetuals, pool::Pool, position::Position},
     },
     anchor_lang::prelude::*,
 };
@@ -66,6 +66,27 @@ pub struct GetLiquidationPriceParams {
     remove_collateral: u64,
 }
 
+/// Helper function to fetch oracle price based on provided parameters
+/// 
+/// @param oracle_account - Account info for the oracle
+/// @param clock - System clock for timestamp
+/// @param oracle_pubkey - Public key of the oracle
+/// @param use_ema - Whether to use EMA price
+/// @return Result containing the OraclePrice
+fn fetch_oracle_price<'a>(
+    oracle_account: &AccountInfo<'a>,
+    clock: &Clock,
+    oracle_pubkey: Oracle,
+    use_ema: bool,
+) -> Result<OraclePrice> {
+    OraclePrice::new_from_oracle(
+        oracle_account,
+        clock,
+        oracle_pubkey,
+        use_ema,
+    )
+}
+
 pub fn get_liquidation_price(
     ctx: Context<GetLiquidationPrice>,
     params: &GetLiquidationPriceParams,
@@ -75,26 +96,23 @@ pub fn get_liquidation_price(
     let curtime = ctx.accounts.perpetuals.get_time()?;
     let clock = Clock::get()?;
 
-    let token_ema_price = OraclePrice::new_from_oracle(
+    // Fetch oracle prices using the helper function
+    let token_ema_price = fetch_oracle_price(
         &ctx.accounts.custody_oracle_account.to_account_info(),
         &clock,
         custody.oracle,
         custody.pricing.use_ema,
     )?;
 
-    let collateral_token_price = OraclePrice::new_from_oracle(
-        &ctx.accounts
-            .collateral_custody_oracle_account
-            .to_account_info(),
+    let collateral_token_price = fetch_oracle_price(
+        &ctx.accounts.collateral_custody_oracle_account.to_account_info(),
         &clock,
         collateral_custody.oracle,
         false,
     )?;
 
-    let collateral_token_ema_price = OraclePrice::new_from_oracle(
-        &ctx.accounts
-            .collateral_custody_oracle_account
-            .to_account_info(),
+    let collateral_token_ema_price = fetch_oracle_price(
+        &ctx.accounts.collateral_custody_oracle_account.to_account_info(),
         &clock,
         collateral_custody.oracle,
         collateral_custody.pricing.use_ema,
