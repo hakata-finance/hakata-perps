@@ -1,5 +1,3 @@
-//! AddPool instruction handler
-
 use {
     crate::{
         error::PerpetualsError,
