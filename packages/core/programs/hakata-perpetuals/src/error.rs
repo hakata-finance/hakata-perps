@@ -54,4 +54,8 @@ pub enum PerpetualsError {
     InstructionNotAllowed,
     #[msg("Token utilization limit exceeded")]
     MaxUtilization,
+    #[msg("Market is closed for trading")]
+    MarketClosed,
+    #[msg("Invalid trading hours configuration")]
+    InvalidTradingHours,
 }

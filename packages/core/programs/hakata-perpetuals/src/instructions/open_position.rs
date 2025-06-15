@@ -111,6 +111,11 @@ pub fn open_position(ctx: Context<OpenPosition>, params: &OpenPositionParams) ->
         PerpetualsError::InstructionNotAllowed
     );
 
+    // validate market hours for opening positions
+    msg!("Check market hours");
+    let curtime = perpetuals.get_time()?;
+    custody.validate_market_hours(curtime, crate::state::market_hours::TradingOperation::OpenPosition)?;
+
     // validate inputs
     msg!("Validate inputs");
     if params.price == 0 || params.collateral == 0 || params.size == 0 || params.side == Side::None
