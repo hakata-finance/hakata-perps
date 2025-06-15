@@ -1,65 +1,50 @@
-//! Init instruction handler
-
 use {
     crate::{
+        constants::{ADMIN_SEED, PERPETUALS_SEED},
         error::PerpetualsError,
-        state::{multisig::Multisig, perpetuals::Perpetuals},
+        state::{
+            admin::{Admin, Permissions},
+            perpetuals::Perpetuals,
+        },
     },
     anchor_lang::prelude::*,
     anchor_spl::token::Token,
+    solana_program::program_error::ProgramError,
 };
 
 #[derive(Accounts)]
 pub struct Init<'info> {
     #[account(mut)]
-    pub upgrade_authority: Signer<'info>,
+    pub signer: Signer<'info>,
 
     #[account(
         init,
-        payer = upgrade_authority,
-        space = Multisig::LEN,
-        seeds = [b"multisig"],
+        payer = signer,
+        space = Admin::SIZE,
+        seeds = [
+            ADMIN_SEED.as_bytes(),
+            signer.key().as_ref(),
+        ],
         bump
     )]
-    pub multisig: AccountLoader<'info, Multisig>,
-
-    /// CHECK: empty PDA, will be set as authority for token accounts
-    #[account(
-        init,
-        payer = upgrade_authority,
-        space = 0,
-        seeds = [b"transfer_authority"],
-        bump
-    )]
-    pub transfer_authority: AccountInfo<'info>,
+    pub superadmin: Account<'info, Admin>,
 
     #[account(
         init,
-        payer = upgrade_authority,
+        payer = signer,
         space = Perpetuals::LEN,
-        seeds = [b"perpetuals"],
+        seeds = [
+            PERPETUALS_SEED.as_bytes()
+        ],
         bump
     )]
     pub perpetuals: Box<Account<'info, Perpetuals>>,
-
-    #[account(
-        constraint = perpetuals_program.programdata_address()? == Some(perpetuals_program_data.key())
-    )]
-    pub perpetuals_program: Program<'info, Perpetuals>,
-
-    #[account(
-        constraint = perpetuals_program_data.upgrade_authority_address == Some(upgrade_authority.key())
-    )]
-    pub perpetuals_program_data: Account<'info, ProgramData>,
-
     system_program: Program<'info, System>,
     token_program: Program<'info, Token>,
-    // remaining accounts: 1 to Multisig::MAX_SIGNERS admin signers (read-only, unsigned)
 }
 
 #[derive(AnchorSerialize, AnchorDeserialize, Copy, Clone)]
 pub struct InitParams {
-    pub min_signatures: u8,
     pub allow_swap: bool,
     pub allow_add_liquidity: bool,
     pub allow_remove_liquidity: bool,
@@ -71,16 +56,13 @@ pub struct InitParams {
 }
 
 pub fn init(ctx: Context<Init>, params: &InitParams) -> Result<()> {
-    // initialize multisig, this will fail if account is already initialized
-    let mut multisig = ctx.accounts.multisig.load_init()?;
+    let signer = &ctx.accounts.signer;
+    let perpetuals = &mut ctx.accounts.perpetuals;
+    let superadmin = &mut ctx.accounts.superadmin;
 
-    multisig.set_signers(ctx.remaining_accounts, params.min_signatures)?;
+    superadmin.permissions = Permissions::Superadmin;
+    superadmin.address = signer.key();
 
-    // record multisig PDA bump
-    multisig.bump = ctx.bumps.multisig;
-
-    // record perpetuals
-    let perpetuals = ctx.accounts.perpetuals.as_mut();
     perpetuals.permissions.allow_swap = params.allow_swap;
     perpetuals.permissions.allow_add_liquidity = params.allow_add_liquidity;
     perpetuals.permissions.allow_remove_liquidity = params.allow_remove_liquidity;
@@ -89,7 +71,6 @@ pub fn init(ctx: Context<Init>, params: &InitParams) -> Result<()> {
     perpetuals.permissions.allow_pnl_withdrawal = params.allow_pnl_withdrawal;
     perpetuals.permissions.allow_collateral_withdrawal = params.allow_collateral_withdrawal;
     perpetuals.permissions.allow_size_change = params.allow_size_change;
-    perpetuals.transfer_authority_bump = ctx.bumps.transfer_authority;
     perpetuals.perpetuals_bump = ctx.bumps.perpetuals;
     perpetuals.inception_time = perpetuals.get_time()?;
 

@@ -1,5 +1,3 @@
-//! Error types
-
 use anchor_lang::prelude::*;
 
 #[error_code]
@@ -28,6 +26,8 @@ pub enum PerpetualsError {
     InvalidPoolState,
     #[msg("Invalid custody state")]
     InvalidCustodyState,
+    #[msg("Invalid collateral custody")]
+    InvalidCollateralCustody,
     #[msg("Invalid position state")]
     InvalidPositionState,
     #[msg("Invalid perpetuals config")]
@@ -54,4 +54,24 @@ pub enum PerpetualsError {
     InstructionNotAllowed,
     #[msg("Token utilization limit exceeded")]
     MaxUtilization,
+    #[msg("Market is closed for trading")]
+    MarketClosed,
+    #[msg("Invalid trading hours configuration")]
+    InvalidTradingHours,
+    #[msg("Permissionless oracle update must be preceded by Ed25519 signature verification instruction")]
+    PermissionlessOracleMissingSignature,
+    #[msg("Ed25519 signature verification data does not match expected format")]
+    PermissionlessOracleMalformedEd25519Data,
+    #[msg("Ed25519 signature was not signed by the oracle authority")]
+    PermissionlessOracleSignerMismatch,
+    #[msg("Signed message does not match instruction params")]
+    PermissionlessOracleMessageMismatch,
+    #[msg("PriceError")]
+    PriceError,
+    #[msg("AccountMapMissingEntry")]
+    AccountMapMissingEntry,
+    #[msg("Invalid EMA oracle")]
+    InvalidEmaOracle,
+    #[msg("EMA oracle is required")]
+    EmaOracleRequired,
 }
