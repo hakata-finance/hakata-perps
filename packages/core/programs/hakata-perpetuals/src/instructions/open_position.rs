@@ -156,6 +156,11 @@ pub fn open_position(ctx: Context<OpenPosition>, params: &OpenPositionParams) ->
         PerpetualsError::InstructionNotAllowed
     );
 
+    // validate market hours for opening positions
+    msg!("Check market hours");
+    let curtime = perpetuals.get_time()?;
+    custody.validate_market_hours(curtime, crate::state::market_hours::TradingOperation::OpenPosition)?;
+
     // Validate ema oracle
     if custody.needs_ema_oracle() {
         let custody_ema_oracle = &ctx.accounts.custody_ema_oracle_account;

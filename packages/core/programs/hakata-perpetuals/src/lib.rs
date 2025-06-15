@@ -11,8 +11,11 @@ pub mod helpers;
 use {
     anchor_lang::prelude::*,
     instructions::*,
-    state::perpetuals::{
-        AmountAndFee, NewPositionPricesAndFee, PriceAndFee, ProfitAndLoss, SwapAmountAndFees,
+    state::{
+        market_hours::MarketStatus,
+        perpetuals::{
+            AmountAndFee, NewPositionPricesAndFee, PriceAndFee, ProfitAndLoss, SwapAmountAndFees,
+        },
     },
 };
 
@@ -191,6 +194,20 @@ pub mod hakata_perpetuals {
         params: GetLiquidationStateParams,
     ) -> Result<u8> {
         instructions::get_liquidation_state(ctx, &params)
+    }
+
+    pub fn get_oracle_price(
+        ctx: Context<GetOraclePrice>,
+        params: GetOraclePriceParams,
+    ) -> Result<u64> {
+        instructions::get_oracle_price(ctx, &params)
+    }
+
+    pub fn get_market_status(
+        ctx: Context<GetMarketStatus>,
+        params: GetMarketStatusParams,
+    ) -> Result<MarketStatus> {
+        instructions::get_market_status(ctx, &params)
     }
 
     pub fn get_swap_amount_and_fees(

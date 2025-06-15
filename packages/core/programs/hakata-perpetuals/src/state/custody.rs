@@ -7,6 +7,8 @@ use {
             get_price_from_pyth, get_prices_from_pyth, OraclePrice,
         },
         state::{
+            market_hours::TradingHours,
+            oracle::{OraclePrice, OracleType},
             perpetuals::{Permissions, Perpetuals},
             position::{Position, Side},
         },
@@ -191,6 +193,7 @@ pub struct Custody {
     pub permissions: Permissions,
     pub fees: Fees,
     pub borrow_rate: BorrowRateParams,
+    pub trading_hours: TradingHours,
 
     // dynamic variables
     pub assets: Assets,
@@ -259,6 +262,16 @@ impl Custody {
             && self.pricing.validate()
             && self.fees.validate()
             && self.borrow_rate.validate()
+    }
+
+    /// Validate if a trading operation is allowed based on market hours
+    pub fn validate_market_hours(&self, current_time: i64, operation: crate::state::market_hours::TradingOperation) -> Result<()> {
+        self.trading_hours.validate_trading_operation(current_time, operation)
+    }
+
+    /// Get current market status for this custody's asset
+    pub fn get_market_status(&self, current_time: i64) -> Result<crate::state::market_hours::MarketStatus> {
+        self.trading_hours.get_market_status(current_time)
     }
 
     pub fn lock_funds(&mut self, amount: u64) -> Result<()> {

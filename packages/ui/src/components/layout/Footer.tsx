@@ -1,6 +1,6 @@
 'use client';
 
-import { Github, X } from "lucide-react";
+import { Github, TwitterIcon } from "lucide-react";
 import Link from "next/link";
 
 const Footer = () => {
@@ -14,7 +14,7 @@ const Footer = () => {
           aria-label="X (Twitter)"
           className="text-gray-400 hover:text-white transition-colors"
         >
-          <X size={14} />
+          <TwitterIcon size={14} />
         </Link>
         <Link 
           href="https://hakata.fi/discord-app" 

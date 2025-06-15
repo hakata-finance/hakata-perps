@@ -43,8 +43,8 @@ const LiquidProvideForm = () => {
     trackRemoveLiquidity 
   } = useFirstTimeAirdrop();
 
-  const [inputTokenAmount, setInputTokenAmount] = useState(0);
-  const [inputLpTokenAmount, setInputLpTokenAmount] = useState(0);
+  const [inputTokenAmount, setInputTokenAmount] = useState('');
+  const [inputLpTokenAmount, setInputLpTokenAmount] = useState('');
   const [payToken] = useState(TOKEN_E_LIST[0]);
   const [activeTab, setActiveTab] = useState<Tab>(Tab.Add);
   const [isProcessing, setIsProcessing] = useState(false);
@@ -76,8 +76,8 @@ const LiquidProvideForm = () => {
           signTransaction as any,
           connection,
           payToken!,
-          inputTokenAmount,
-          inputLpTokenAmount,
+          parseFloat(inputTokenAmount),
+          parseFloat(inputLpTokenAmount),
           slippage
         );
         
@@ -96,8 +96,8 @@ const LiquidProvideForm = () => {
           signTransaction as any,
           connection,
           payToken!,
-          inputLpTokenAmount,
-          inputTokenAmount,
+          parseFloat(inputLpTokenAmount),
+          parseFloat(inputTokenAmount),
           slippage
         );
         
@@ -131,7 +131,7 @@ const LiquidProvideForm = () => {
     }
   }
 
-  const handleAddLiqUpdate = (inputTokenAmount: number) => {
+  const handleAddLiqUpdate = (inputTokenAmount: string) => {
     if (!payToken || !prices.get(payToken!)) {
       console.log("no paytoken price", payToken, prices.get(payToken!))
       return;
@@ -139,10 +139,14 @@ const LiquidProvideForm = () => {
 
     setInputTokenAmount(inputTokenAmount);
 
-    if(inputTokenAmount < 1){
+    // Convert string input to number for comparison and setting global state
+    const numericAmount = parseFloat(inputTokenAmount);
+    if(isNaN(numericAmount) || numericAmount < 1){
+      // Set a minimum value of 1 if input is invalid or less than 1
       setInputTokenAmtGlobal(1);
     } else {
-      setInputTokenAmtGlobal(inputTokenAmount);
+      // Set the parsed numeric value to maintain proper type
+      setInputTokenAmtGlobal(numericAmount);
     }
     // console.log("price", payToken,prices.get(payToken!) )
 
@@ -151,8 +155,10 @@ const LiquidProvideForm = () => {
     const poolAumUsd = poolData.lpStats.totalPoolValue;
     const lpTokenSupply = poolData.lpStats.lpTokenSupply;
     if (poolAumUsd.toString() !== '0' && lpTokenSupply.toString() !== '0') {
-      // replace 6 with token decimals
-      const depositUsd = new BN(inputTokenAmount * 10 ** 6).mul(payTokenPriceBN).div(new BN(10 ** 6))
+      // Convert inputTokenAmount to BN to avoid type error in arithmetic operation
+      // Use the token's decimals for proper scaling
+      const inputAmountBN = new BN(parseFloat(inputTokenAmount) * 10 ** 6);
+      const depositUsd = inputAmountBN.mul(payTokenPriceBN).div(new BN(10 ** 6));
       // console.log("depositUsd:",depositUsd.toString(), inputTokenAmount, payTokenPriceBN.toString())
       const shareBN = depositUsd.mul(new BN(10 ** 6)).div(poolAumUsd);
       // console.log("shareBN:",shareBN.toNumber())
@@ -160,11 +166,11 @@ const LiquidProvideForm = () => {
       const userLPtokensRecieveBN = lpTokenSupply.mul(shareBN).div(new BN(10 ** 6)); // div share decimals
       const useLPTokenUi = toUiDecimals(userLPtokensRecieveBN, POOL_CONFIG.lpDecimals, 4);
       // console.log("useLPTokenUi:",useLPTokenUi)
-      setInputLpTokenAmount(Number(useLPTokenUi))
+      setInputLpTokenAmount(useLPTokenUi)
     }
   }
 
-  const handleRemoveLiqUpdate = (inputLPTokenAmount: number) => {
+  const handleRemoveLiqUpdate = (inputLPTokenAmount: string) => {
     if (!payToken || !prices.get(payToken!)) {
       console.log("no paytoken price", payToken, prices.get(payToken!))
       return;
@@ -172,10 +178,14 @@ const LiquidProvideForm = () => {
 
     setInputLpTokenAmount(inputLPTokenAmount);
 
-    if(inputLPTokenAmount < 1){
-      setInputLPTokenAmtGlobal(1);
+    // Convert string input to number for comparison and setting global state
+    const numericAmount = parseFloat(inputLPTokenAmount);
+    if(isNaN(numericAmount) || numericAmount < 1){
+      // Set a minimum value of 1 if input is invalid or less than 1
+      setInputTokenAmtGlobal(1);
     } else {
-      setInputLPTokenAmtGlobal(inputLPTokenAmount);
+      // Set the parsed numeric value to maintain proper type
+      setInputTokenAmtGlobal(numericAmount);
     }
 
     const payTokenCustody = POOL_CONFIG.custodies.find(i => i.symbol=== payToken);
@@ -190,17 +200,19 @@ const LiquidProvideForm = () => {
 
     if (poolAumUsd.toString() !== '0' && lpTokenSupply.toString() !== '0') {
       const lpTokenPrice = poolAumUsd.div(lpTokenSupply);
-      console.log("lpTokenPrice:",lpTokenPrice.toString())
-      // replace 6 with token decimals
-      const depositUsd = new BN(inputLPTokenAmount * 10 ** POOL_CONFIG.lpDecimals).mul(lpTokenPrice)
-      console.log("depositUsd:",depositUsd.toString(), inputLPTokenAmount, payTokenPriceBN.toString())
+      console.log("lpTokenPrice:", lpTokenPrice.toString())
+      // Convert inputLPTokenAmount to BN to avoid type error in arithmetic operation
+      // Use the LP token decimals for proper scaling
+      const inputLPAmountBN = new BN(parseFloat(inputLPTokenAmount) * 10 ** POOL_CONFIG.lpDecimals);
+      const depositUsd = inputLPAmountBN.mul(lpTokenPrice).div(new BN(10 ** POOL_CONFIG.lpDecimals));
+      console.log("depositUsd:", depositUsd.toString(), inputLPTokenAmount, payTokenPriceBN.toString())
       // const shareBN = depositUsd.mul(new BN(10 ** 6)).div(poolAumUsd);
       // console.log("shareBN:",shareBN.toNumber())
 
       const usertokensRecieveBN = depositUsd.mul(new BN(10 ** payTokenCustody.decimals)).div(payTokenPriceBN); // div share decimals
       const useTokenUi = toUiDecimals(usertokensRecieveBN, payTokenCustody.decimals, 4);
       // console.log("useLPTokenUi:",useLPTokenUi)
-      setInputTokenAmount(Number(useTokenUi))
+      setInputTokenAmount(useTokenUi)
     } else {
       console.error("error  lpTokenSupply zero ", lpTokenSupply.toString());
     }
@@ -281,23 +293,25 @@ const LiquidProvideForm = () => {
             <div className="relative flex-grow">
               {activeTab === Tab.Add ? (
                 <Input 
-                  type="number"
+                  type="text"
+                  placeholder="0.00"
+                  inputMode='decimal'
                   value={inputTokenAmount} 
                   onChange={(e) => {
-                    const text = e.currentTarget.value;
-                    handleAddLiqUpdate(Number(text)); // on changeing here set in setTokenAmt() hook
+                    handleAddLiqUpdate(e.currentTarget.value); // on changeing here set in setTokenAmt() hook
                   }}
-                  className="bg-[#1E1E1E] border-gray-700 pr-16"
+                  className="bg-[#1E1E1E] border-gray-700"
                 />
               ) : (
                 <Input 
-                  type="number"
+                  type="text"
+                  placeholder="0.00"
+                  inputMode='decimal'
                   value={inputLpTokenAmount} 
                   onChange={(e) => {
-                    const text = e.currentTarget.value;
-                    handleRemoveLiqUpdate(Number(text)); // on changeing here set in setTokenAmt() hook
+                    handleRemoveLiqUpdate(e.currentTarget.value); // on changeing here set in setTokenAmt() hook
                   }}
-                  className="bg-[#1E1E1E] border-gray-700 pr-16"
+                  className="bg-[#1E1E1E] border-gray-700"
                 />
               )}
             </div>
@@ -329,13 +343,15 @@ const LiquidProvideForm = () => {
             <div className="relative flex-grow">
               { activeTab === Tab.Add ? (
                 <Input 
-                  value={inputLpTokenAmount} 
+                  placeholder="0.00"
+                  value={inputTokenAmount} 
                   className="bg-[#1E1E1E] border-gray-700 pr-16"
                   disabled
                 />
               ) : (
                 <Input 
-                  value={inputTokenAmount} 
+                  placeholder="0.00"
+                  value={inputLpTokenAmount} 
                   className="bg-[#1E1E1E] border-gray-700 pr-16"
                   disabled
                 />

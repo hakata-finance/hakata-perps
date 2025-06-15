@@ -22,6 +22,8 @@ interface UseLeaderboardReturn {
   loading: boolean;
   error: string | null;
   refetch: () => Promise<void>;
+  totalCount: number; // Total number of holders
+  totalPages: number; // Total number of pages
 }
 
 const WALLETS_TO_EXCLUDE = [
@@ -31,17 +33,29 @@ const WALLETS_TO_EXCLUDE = [
   'D94DYjWwgaZ3eH6VCWuwhfQs4hhKQEPrLDK7VZxJSss4',
   'HVDy1CG9b4b9khm2PPttesCBP71uAfCfsYf77WhaF2Kd',
   'BPvWuD1L73riKRnfyCqEYucxd2u3mebYP1hpMUDncRhA',
-  'AbHofCyTTLTrTqszBji59mLbiFZnaeRpWyzLjKUCpMGM'
+  'AbHofCyTTLTrTqszBji59mLbiFZnaeRpWyzLjKUCpMGM',
+  '2PLrwDEpJDjTybxFj7vYVwUKsaYmdvYxLuDM3xkHr5RC'
 ]
 
+/**
+ * Hook to fetch and manage leaderboard data with pagination support
+ * @param tokenMint - The token mint address to fetch holders for
+ * @param itemsPerPage - Number of items to display per page
+ * @param currentPage - Current page number (1-based)
+ * @param currentUserWallet - Current user's wallet address for highlighting
+ * @returns Leaderboard data with pagination information
+ */
 export const useLeaderboard = (
   tokenMint: string = 'FtQ7umDWQmGbuVAPEzhD4Mz8NZ3mCPNKYmZzMp2VWbeP',
-  limit: number = 10,
+  itemsPerPage: number = 10,
+  currentPage: number = 1,
   currentUserWallet?: string
 ): UseLeaderboardReturn => {
   const [leaderboard, setLeaderboard] = useState<LeaderboardData[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [totalCount, setTotalCount] = useState(0);
+  const [allHolders, setAllHolders] = useState<LeaderboardData[]>([]);
 
   // Use the same RPC endpoint as the compressed tokens
   const RPC_ENDPOINT = process.env.NEXT_PUBLIC_RPC_ENDPOINT;
@@ -50,7 +64,11 @@ export const useLeaderboard = (
     throw new Error('RPC_ENDPOINT is not set');
   }
 
-  const fetchLeaderboard = useCallback(async () => {
+  /**
+   * Fetches all token holders and processes them for display
+   * This method fetches all holders and stores them locally for pagination
+   */
+  const fetchAllHolders = useCallback(async () => {
     setLoading(true);
     setError(null);
 
@@ -89,6 +107,8 @@ export const useLeaderboard = (
       console.log(`Found ${filteredAccounts.length} token accounts after filtering`);
       
       if (filteredAccounts.length === 0) {
+        setAllHolders([]);
+        setTotalCount(0);
         setLeaderboard([]);
         return;
       }
@@ -130,18 +150,18 @@ export const useLeaderboard = (
         }
       }
       
-      // Sort by balance and assign ranks
+      // Sort by balance and assign ranks (process all holders)
       const sortedHolders = holders
         .filter(holder => !WALLETS_TO_EXCLUDE.includes(holder.owner))
         .sort((a, b) => b.balance - a.balance)
-        .slice(0, limit)
         .map((holder, index) => ({
           ...holder,
           rank: index + 1
         }));
       
-      console.log(`Returning ${sortedHolders.length} token holders`);
-      setLeaderboard(sortedHolders);
+      console.log(`Processed ${sortedHolders.length} total token holders`);
+      setAllHolders(sortedHolders);
+      setTotalCount(sortedHolders.length);
       
     } catch (err) {
       console.error('Error fetching leaderboard:', err);
@@ -149,16 +169,42 @@ export const useLeaderboard = (
     } finally {
       setLoading(false);
     }
-  }, [tokenMint, limit, RPC_ENDPOINT, currentUserWallet]);
+  }, [tokenMint, RPC_ENDPOINT, currentUserWallet]);
 
+  /**
+   * Updates the displayed leaderboard based on current page and items per page
+   */
+  const updateDisplayedLeaderboard = useCallback(() => {
+    if (allHolders.length === 0) {
+      setLeaderboard([]);
+      return;
+    }
+
+    const startIndex = (currentPage - 1) * itemsPerPage;
+    const endIndex = startIndex + itemsPerPage;
+    const paginatedHolders = allHolders.slice(startIndex, endIndex);
+    
+    setLeaderboard(paginatedHolders);
+  }, [allHolders, currentPage, itemsPerPage]);
+
+  // Fetch all holders when token mint or user wallet changes
   useEffect(() => {
-    fetchLeaderboard();
-  }, [fetchLeaderboard]);
+    fetchAllHolders();
+  }, [fetchAllHolders]);
+
+  // Update displayed leaderboard when pagination parameters change
+  useEffect(() => {
+    updateDisplayedLeaderboard();
+  }, [updateDisplayedLeaderboard]);
+
+  const totalPages = Math.ceil(totalCount / itemsPerPage);
 
   return {
     leaderboard,
     loading,
     error,
-    refetch: fetchLeaderboard
+    refetch: fetchAllHolders,
+    totalCount,
+    totalPages
   };
 }; 

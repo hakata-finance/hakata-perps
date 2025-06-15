@@ -113,6 +113,11 @@ pub fn close_position(ctx: Context<ClosePosition>, params: &ClosePositionParams)
         PerpetualsError::InstructionNotAllowed
     );
 
+    // validate market hours for closing positions
+    msg!("Check market hours");
+    let curtime = perpetuals.get_time()?;
+    custody.validate_market_hours(curtime, crate::state::market_hours::TradingOperation::ClosePosition)?;
+
     // validate inputs
     msg!("Validate inputs");
     if params.price == 0 {
