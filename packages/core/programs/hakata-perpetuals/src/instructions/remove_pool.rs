@@ -1,7 +1,6 @@
-//! RemovePool instruction handler
-
 use {
     crate::{
+        constants::{PERPETUALS_SEED, POOL_SEED},
         error::PerpetualsError,
         state::{
             multisig::{AdminInstruction, Multisig},
@@ -37,14 +36,14 @@ pub struct RemovePool<'info> {
         realloc = Perpetuals::LEN + (perpetuals.pools.len() - 1) * 32,
         realloc::payer = admin,
         realloc::zero = false,
-        seeds = [b"perpetuals"],
+        seeds = [PERPETUALS_SEED.as_bytes()],
         bump = perpetuals.perpetuals_bump
     )]
     pub perpetuals: Box<Account<'info, Perpetuals>>,
 
     #[account(
         mut,
-        seeds = [b"pool",
+        seeds = [POOL_SEED.as_bytes(),
                  pool.name.as_bytes()],
         bump = pool.bump,
         close = transfer_authority

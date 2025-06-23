@@ -1,16 +1,19 @@
-//! RemoveCollateral instruction handler
-
 use {
     crate::{
+        constants::{CUSTODY_TOKEN_ACCOUNT_SEED, PERPETUALS_SEED, POOL_SEED, POSITION_SEED},
         error::PerpetualsError,
         math,
+        oracle::OraclePrice,
         state::{
-            custody::Custody, oracle::OraclePrice, perpetuals::Perpetuals, pool::Pool,
-            position::Position,
+            custody::Custody,
+            perpetuals::Perpetuals,
+            pool::Pool,
+            position::{Position, Side},
         },
     },
-    anchor_lang::{prelude::*, solana_program::program_error::ProgramError},
+    anchor_lang::prelude::*,
     anchor_spl::token::{Token, TokenAccount},
+    solana_program::program_error::ProgramError,
 };
 
 #[derive(Accounts)]
@@ -34,14 +37,14 @@ pub struct RemoveCollateral<'info> {
     pub transfer_authority: AccountInfo<'info>,
 
     #[account(
-        seeds = [b"perpetuals"],
+        seeds = [PERPETUALS_SEED.as_bytes()],
         bump = perpetuals.perpetuals_bump
     )]
     pub perpetuals: Box<Account<'info, Perpetuals>>,
 
     #[account(
         mut,
-        seeds = [b"pool",
+        seeds = [POOL_SEED.as_bytes(),
                  pool.name.as_bytes()],
         bump = pool.bump
     )]
@@ -50,7 +53,7 @@ pub struct RemoveCollateral<'info> {
     #[account(
         mut,
         has_one = owner,
-        seeds = [b"position",
+        seeds = [POSITION_SEED.as_bytes(),
                  owner.key().as_ref(),
                  pool.key().as_ref(),
                  custody.key().as_ref(),
@@ -61,27 +64,36 @@ pub struct RemoveCollateral<'info> {
 
     #[account(
         mut,
-        seeds = [b"custody",
-                 pool.key().as_ref(),
-                 custody.mint.as_ref()],
-        bump = custody.bump
+        constraint = position.custody == custody.key()
     )]
     pub custody: Box<Account<'info, Custody>>,
 
     /// CHECK: oracle account for the collateral token
     #[account(
-        constraint = custody_oracle_account.key() == custody.oracle.oracle_account
+        constraint = custody_oracle_account.key() == custody.oracle.key()
     )]
     pub custody_oracle_account: AccountInfo<'info>,
 
     #[account(
         mut,
-        seeds = [b"custody_token_account",
-                 pool.key().as_ref(),
-                 custody.mint.as_ref()],
-        bump = custody.token_account_bump
+        constraint = position.collateral_custody == collateral_custody.key()
     )]
-    pub custody_token_account: Box<Account<'info, TokenAccount>>,
+    pub collateral_custody: Box<Account<'info, Custody>>,
+
+    /// CHECK: oracle account for the collateral token
+    #[account(
+        constraint = collateral_custody_oracle_account.key() == collateral_custody.oracle.key()
+    )]
+    pub collateral_custody_oracle_account: AccountInfo<'info>,
+
+    #[account(
+        mut,
+        seeds = [CUSTODY_TOKEN_ACCOUNT_SEED.as_bytes(),
+                 pool.key().as_ref(),
+                 collateral_custody.mint.as_ref()],
+        bump = collateral_custody.token_account_bump
+    )]
+    pub collateral_custody_token_account: Box<Account<'info, TokenAccount>>,
 
     token_program: Program<'info, Token>,
 }
@@ -99,6 +111,7 @@ pub fn remove_collateral(
     msg!("Check permissions");
     let perpetuals = ctx.accounts.perpetuals.as_mut();
     let custody = ctx.accounts.custody.as_mut();
+    let collateral_custody = ctx.accounts.collateral_custody.as_mut();
     require!(
         perpetuals.permissions.allow_collateral_withdrawal
             && custody.permissions.allow_collateral_withdrawal,
@@ -112,47 +125,56 @@ pub fn remove_collateral(
         return Err(ProgramError::InvalidArgument.into());
     }
     let pool = ctx.accounts.pool.as_mut();
-    let token_id = pool.get_token_id(&custody.key())?;
 
     // compute position price
     let curtime = perpetuals.get_time()?;
+    let clock = Clock::get()?;
 
     let token_price = OraclePrice::new_from_oracle(
-        custody.oracle.oracle_type,
         &ctx.accounts.custody_oracle_account.to_account_info(),
-        custody.oracle.max_price_error,
-        custody.oracle.max_price_age_sec,
-        curtime,
+        &clock,
+        custody.oracle,
         false,
     )?;
 
     let token_ema_price = OraclePrice::new_from_oracle(
-        custody.oracle.oracle_type,
         &ctx.accounts.custody_oracle_account.to_account_info(),
-        custody.oracle.max_price_error,
-        custody.oracle.max_price_age_sec,
-        curtime,
+        &clock,
+        custody.oracle,
         custody.pricing.use_ema,
     )?;
 
-    let max_price = if token_price > token_ema_price {
-        token_price
+    let collateral_token_price = OraclePrice::new_from_oracle(
+        &ctx.accounts
+            .collateral_custody_oracle_account
+            .to_account_info(),
+        &clock,
+        collateral_custody.oracle,
+        false,
+    )?;
+
+    let collateral_token_ema_price = OraclePrice::new_from_oracle(
+        &ctx.accounts
+            .collateral_custody_oracle_account
+            .to_account_info(),
+        &clock,
+        collateral_custody.oracle,
+        collateral_custody.pricing.use_ema,
+    )?;
+
+    let max_collateral_price = if collateral_token_price > collateral_token_ema_price {
+        collateral_token_price
     } else {
-        token_ema_price
+        collateral_token_ema_price
     };
 
-    // compute fee
-    let collateral = max_price.get_token_amount(params.collateral_usd, custody.decimals)?;
-    let fee_amount =
-        pool.get_remove_liquidity_fee(token_id, collateral, custody, &token_ema_price)?;
-    msg!("Collected fee: {}", fee_amount);
-
     // compute amount to transfer
+    let collateral = max_collateral_price
+        .get_token_amount(params.collateral_usd, collateral_custody.decimals)?;
     if collateral > position.collateral_amount {
         return Err(ProgramError::InsufficientFunds.into());
     }
-    let transfer_amount = math::checked_sub(collateral, fee_amount)?;
-    msg!("Amount out: {}", transfer_amount);
+    msg!("Amount out: {}", collateral);
 
     // update existing position
     msg!("Update existing position");
@@ -163,33 +185,41 @@ pub fn remove_collateral(
     // check position risk
     msg!("Check position risks");
     require!(
-        pool.check_leverage(position, &token_ema_price, custody, curtime, true)?,
+        pool.check_leverage(
+            position,
+            &token_price,
+            &token_ema_price,
+            custody,
+            &collateral_token_price,
+            &collateral_token_ema_price,
+            collateral_custody,
+            curtime,
+            true
+        )?,
         PerpetualsError::MaxLeverage
     );
 
     // transfer tokens
     msg!("Transfer tokens");
     perpetuals.transfer_tokens(
-        ctx.accounts.custody_token_account.to_account_info(),
+        ctx.accounts
+            .collateral_custody_token_account
+            .to_account_info(),
         ctx.accounts.receiving_account.to_account_info(),
         ctx.accounts.transfer_authority.to_account_info(),
         ctx.accounts.token_program.to_account_info(),
-        transfer_amount,
+        collateral,
     )?;
 
     // update custody stats
     msg!("Update custody stats");
-    custody.collected_fees.open_position_usd = custody
-        .collected_fees
-        .open_position_usd
-        .wrapping_add(token_ema_price.get_asset_amount_usd(fee_amount, custody.decimals)?);
+    collateral_custody.assets.collateral =
+        math::checked_sub(collateral_custody.assets.collateral, collateral)?;
 
-    custody.assets.collateral = math::checked_sub(custody.assets.collateral, collateral)?;
-
-    let protocol_fee = Pool::get_fee_amount(custody.fees.protocol_share, fee_amount)?;
-    custody.assets.protocol_fees = math::checked_add(custody.assets.protocol_fees, protocol_fee)?;
-
-    custody.remove_collateral(position.side, params.collateral_usd)?;
+    // if custody and collateral_custody accounts are the same, ensure that data is in sync
+    if position.side == Side::Long && !custody.is_virtual {
+        *custody = collateral_custody.clone();
+    }
 
     Ok(())
 }

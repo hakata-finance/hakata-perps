@@ -1,7 +1,6 @@
-//! RemoveCustody instruction handler
-
 use {
     crate::{
+        constants::{CUSTODY_SEED, CUSTODY_TOKEN_ACCOUNT_SEED, PERPETUALS_SEED, POOL_SEED},
         error::PerpetualsError,
         state::{
             custody::Custody,
@@ -35,7 +34,7 @@ pub struct RemoveCustody<'info> {
     pub transfer_authority: AccountInfo<'info>,
 
     #[account(
-        seeds = [b"perpetuals"],
+        seeds = [PERPETUALS_SEED.as_bytes()],
         bump = perpetuals.perpetuals_bump
     )]
     pub perpetuals: Box<Account<'info, Perpetuals>>,
@@ -46,7 +45,7 @@ pub struct RemoveCustody<'info> {
                               (pool.ratios.len() - 1) * std::mem::size_of::<TokenRatios>(),
         realloc::payer = admin,
         realloc::zero = false,
-        seeds = [b"pool",
+        seeds = [POOL_SEED.as_bytes(),
                  pool.name.as_bytes()],
         bump = pool.bump
     )]
@@ -54,7 +53,7 @@ pub struct RemoveCustody<'info> {
 
     #[account(
         mut,
-        seeds = [b"custody",
+        seeds = [CUSTODY_SEED.as_bytes(),
                  pool.key().as_ref(),
                  custody.mint.as_ref()],
         bump = custody.bump,
@@ -64,7 +63,7 @@ pub struct RemoveCustody<'info> {
 
     #[account(
         mut,
-        seeds = [b"custody_token_account",
+        seeds = [CUSTODY_TOKEN_ACCOUNT_SEED.as_bytes(),
                  pool.key().as_ref(),
                  custody.mint.as_ref()],
         bump = custody.token_account_bump,

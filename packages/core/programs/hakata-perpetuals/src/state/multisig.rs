@@ -1,5 +1,3 @@
-//! Multisig state and routines
-
 use {
     crate::{error::PerpetualsError, math},
     ahash::AHasher,
@@ -18,7 +16,7 @@ pub struct Multisig {
     pub instruction_data_len: u16,
     pub instruction_hash: u64,
     pub signers: [Pubkey; 6], // Multisig::MAX_SIGNERS
-    pub signed: [u8; 6],    // Multisig::MAX_SIGNERS
+    pub signed: [u8; 6],      // Multisig::MAX_SIGNERS
     pub bump: u8,
 }
 
@@ -33,7 +31,7 @@ pub enum AdminInstruction {
     SetBorrowRate,
     WithdrawFees,
     WithdrawSolFees,
-    SetTestOraclePrice,
+    SetCustomOraclePrice,
     SetTestTime,
     UpgradeCustody,
 }
@@ -174,7 +172,7 @@ impl Multisig {
             err!(PerpetualsError::MultisigAlreadySigned)
         } else if self.num_signed < self.min_signatures {
             // count the signature in
-            self.num_signed += 1;
+            self.num_signed = math::checked_add(self.num_signed, 1)?;
             self.signed[signer_idx] = 1;
 
             if self.num_signed == self.min_signatures {
@@ -212,7 +210,7 @@ impl Multisig {
         }
 
         // remove signature
-        self.num_signed -= 1;
+        self.num_signed = math::checked_sub(self.num_signed, 1)?;
         self.signed[signer_idx] = 0;
 
         Ok(())

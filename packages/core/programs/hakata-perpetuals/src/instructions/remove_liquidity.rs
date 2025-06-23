@@ -1,18 +1,22 @@
-//! RemoveLiquidity instruction handler
-
 use {
     crate::{
+        constants::{
+            CUSTODY_SEED, CUSTODY_TOKEN_ACCOUNT_SEED, LP_TOKEN_MINT_SEED, PERPETUALS_SEED,
+            POOL_SEED,
+        },
         error::PerpetualsError,
+        helpers::AccountMap,
         math,
+        oracle::OraclePrice,
         state::{
             custody::Custody,
-            oracle::OraclePrice,
             perpetuals::Perpetuals,
             pool::{AumCalcMode, Pool},
         },
     },
-    anchor_lang::{prelude::*, solana_program::program_error::ProgramError},
+    anchor_lang::prelude::*,
     anchor_spl::token::{Mint, Token, TokenAccount},
+    solana_program::program_error::ProgramError,
 };
 
 #[derive(Accounts)]
@@ -43,14 +47,14 @@ pub struct RemoveLiquidity<'info> {
     pub transfer_authority: AccountInfo<'info>,
 
     #[account(
-        seeds = [b"perpetuals"],
+        seeds = [PERPETUALS_SEED.as_bytes()],
         bump = perpetuals.perpetuals_bump
     )]
     pub perpetuals: Box<Account<'info, Perpetuals>>,
 
     #[account(
         mut,
-        seeds = [b"pool",
+        seeds = [POOL_SEED.as_bytes(),
                  pool.name.as_bytes()],
         bump = pool.bump
     )]
@@ -58,7 +62,7 @@ pub struct RemoveLiquidity<'info> {
 
     #[account(
         mut,
-        seeds = [b"custody",
+        seeds = [CUSTODY_SEED.as_bytes(),
                  pool.key().as_ref(),
                  custody.mint.as_ref()],
         bump = custody.bump
@@ -67,13 +71,13 @@ pub struct RemoveLiquidity<'info> {
 
     /// CHECK: oracle account for the returned token
     #[account(
-        constraint = custody_oracle_account.key() == custody.oracle.oracle_account
+        constraint = custody_oracle_account.key() == custody.oracle.key()
     )]
     pub custody_oracle_account: AccountInfo<'info>,
 
     #[account(
         mut,
-        seeds = [b"custody_token_account",
+        seeds = [CUSTODY_TOKEN_ACCOUNT_SEED.as_bytes(),
                  pool.key().as_ref(),
                  custody.mint.as_ref()],
         bump = custody.token_account_bump
@@ -82,7 +86,7 @@ pub struct RemoveLiquidity<'info> {
 
     #[account(
         mut,
-        seeds = [b"lp_token_mint",
+        seeds = [LP_TOKEN_MINT_SEED.as_bytes(),
                  pool.key().as_ref()],
         bump = pool.lp_token_bump
     )]
@@ -109,7 +113,9 @@ pub fn remove_liquidity(
     let perpetuals = ctx.accounts.perpetuals.as_mut();
     let custody = ctx.accounts.custody.as_mut();
     require!(
-        perpetuals.permissions.allow_remove_liquidity && custody.permissions.allow_remove_liquidity,
+        perpetuals.permissions.allow_remove_liquidity
+            && custody.permissions.allow_remove_liquidity
+            && !custody.is_virtual,
         PerpetualsError::InstructionNotAllowed
     );
 
@@ -124,22 +130,23 @@ pub fn remove_liquidity(
     // compute assets under management
     msg!("Compute assets under management");
     let curtime = perpetuals.get_time()?;
+    let clock = Clock::get()?;
+    let accounts_map = AccountMap::from_remaining_accounts(ctx.remaining_accounts);
+
+    // Refresh pool.aum_usm to adapt to token price change
+    pool.aum_usd = pool.get_assets_under_management_usd(AumCalcMode::EMA, &accounts_map, &clock)?;
 
     let token_price = OraclePrice::new_from_oracle(
-        custody.oracle.oracle_type,
         &ctx.accounts.custody_oracle_account.to_account_info(),
-        custody.oracle.max_price_error,
-        custody.oracle.max_price_age_sec,
-        curtime,
+        &clock,
+        custody.oracle,
         false,
     )?;
 
     let token_ema_price = OraclePrice::new_from_oracle(
-        custody.oracle.oracle_type,
         &ctx.accounts.custody_oracle_account.to_account_info(),
-        custody.oracle.max_price_error,
-        custody.oracle.max_price_age_sec,
-        curtime,
+        &clock,
+        custody.oracle,
         custody.pricing.use_ema,
     )?;
 
@@ -150,7 +157,7 @@ pub fn remove_liquidity(
     };
 
     let pool_amount_usd =
-        pool.get_assets_under_management_usd(AumCalcMode::Min, ctx.remaining_accounts, curtime)?;
+        pool.get_assets_under_management_usd(AumCalcMode::Min, &accounts_map, &clock)?;
 
     // compute amount of tokens to return
     let remove_amount_usd = math::checked_as_u64(math::checked_div(
@@ -228,8 +235,7 @@ pub fn remove_liquidity(
     // update pool stats
     msg!("Update pool stats");
     custody.exit(&crate::ID)?;
-    pool.aum_usd =
-        pool.get_assets_under_management_usd(AumCalcMode::EMA, ctx.remaining_accounts, curtime)?;
+    pool.aum_usd = pool.get_assets_under_management_usd(AumCalcMode::EMA, &accounts_map, &clock)?;
 
     Ok(())
 }

@@ -1,5 +1,3 @@
-//! SetAdminSigners instruction handler
-
 use {
     crate::state::multisig::{AdminInstruction, Multisig},
     anchor_lang::prelude::*,
